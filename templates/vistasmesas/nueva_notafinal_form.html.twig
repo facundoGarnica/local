@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-MiNotaFinal'},'action': path('nueva_notaFinal')} )}}
+        {{ form_row(form.nota) }}
+        {{ form_row(form.tomo) }}
+        {{ form_row(form.folio) }}
+        {{ form_row(form.alumno_id) }}
+        {{ form_row(form.examenFinal_id) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Asistencia{% endblock %}
+
+{% block body %}
+    <h1>Edit Asistencia</h1>
+
+    {{ include('asistencia/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_asistencia_index') }}">back to list</a>
+
+    {{ include('asistencia/_delete_form.html.twig') }}
+{% endblock %}

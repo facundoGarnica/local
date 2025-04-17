@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nota index{% endblock %}
+
+{% block body %}
+    <h1>Nota index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Parcial</th>
+                <th>Recuperatorio1</th>
+                <th>Parcial2</th>
+                <th>Recuperatorio2</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for notum in notas %}
+            <tr>
+                <td>{{ notum.id }}</td>
+                <td>{{ notum.parcial }}</td>
+                <td>{{ notum.recuperatorio1 }}</td>
+                <td>{{ notum.parcial2 }}</td>
+                <td>{{ notum.recuperatorio2 }}</td>
+                <td>
+                    <a href="{{ path('app_nota_show', {'id': notum.id}) }}">show</a>
+                    <a href="{{ path('app_nota_edit', {'id': notum.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_nota_new') }}">Create new</a>
+{% endblock %}

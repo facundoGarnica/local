@@ -1,0 +1,13 @@
+
+{{ form_start(form, {
+    'attr': {'id': 'form-crea-curso'},
+    'action': path('crear_curso', { 'tecnicatura_id': tecId, 'comision_id': comId })
+}) }}
+
+        {{ form_row(form.ciclo_lectivo) }}
+        {{ form_row(form.horario) }}
+        {{ form_row(form.asignatura) }}
+        {{ form_row(form.comision) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}
+

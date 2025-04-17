@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-alumno'}, 'action': path('crear_alumno_pre', { 'dni': dni, 'id': id } )}) }}
+    {{ form_row(form.titulo_sec) }} 
+    {{ form_row(form.escuela_sec) }} 
+    {{ form_row(form.anio_egreso) }} 
+    {{ form_row(form.persona) }} 
+    <button type="submit">Siguiente</button>
+{{ form_end(form) }}

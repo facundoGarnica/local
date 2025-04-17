@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Asignatura{% endblock %}
+
+{% block body %}
+    <h1>Asignatura</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ asignatura.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ asignatura.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Anio</th>
+                <td>{{ asignatura.anio }}</td>
+            </tr>
+            <tr>
+                <th>Modulos</th>
+                <td>{{ asignatura.cant_mod }}</td>
+            </tr>
+            <tr>
+                <th>Duracion</th>
+                <td>{{ asignatura.duracion }}</td>
+            </tr>
+            <tr>
+                <th>Programa</th>
+                <td>{{ asignatura.programa }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_asignatura_index') }}">back to list</a>
+
+    <a href="{{ path('app_asignatura_edit', {'id': asignatura.id}) }}">edit</a>
+
+    {{ include('asignatura/_delete_form.html.twig') }}
+{% endblock %}

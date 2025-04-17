@@ -1,0 +1,847 @@
+        /* Estilos para el modal */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8); 
+        }
+        
+        .modal-content {
+            background-color: rgba(30,30,30,0.8);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .offert {
+            width:100%;
+            padding-top:5px;
+        }
+        
+        input{
+            border-radius: 8px;
+        }
+        
+        .offert1 {
+            color:white;
+            font-size: 18px;
+           
+        }
+        
+        .offert2 {
+            padding-left: 100px;
+            font-size: 30px;
+            color:beige;
+        }
+        
+        #inscripcion-tec {
+          padding-left: 200px;
+        }
+        
+        #h1ins {
+            color: aliceblue;
+        }
+        
+        
+        #h1Insti {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        /* Search de institutos */
+        .search-container {
+            display: flex;  
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 80%;
+            gap: 10px;
+            margin: 20px 0;
+            margin-left:10%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px 1px rgb(76, 76, 222); 
+        }
+        
+        /* Estilos para las etiquetas y campos de entrada */
+        .search-container label {
+            color:black;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .search-container input[type="text"] {
+            color:black;
+            padding: 8px;
+            width: 180px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 5px;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .search-container input[type="text"]:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        /* Ajustes de tamaño y alineación */
+        .search-container input[type="text"]::placeholder {
+            color: #888;
+        }
+        
+        .search-container input[type="text"]:hover {
+            border-color: #007BFF;
+        }
+        
+        @media (max-width: 600px) {
+            .search-container {
+                flex-direction: column;
+            }
+        
+            .search-container label,
+            .search-container input[type="text"] {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        /* Tabla */
+        .tabla_home, .tabla_comision, .tabla_cursada , .tabla_curso, .tabla_curso_cursada, .tabla_cursada_docente{
+            width: 80%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px 1px white; 
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .tabla_home th, .tabla_home td,.tabla_comision th, .tabla_comision td, .tabla_cursada th, .tabla_cursada td, .tabla_curso th, .tabla_curso td, .tabla_curso_cursada th, .tabla_curso_cursada td, .tabla_cursada_docente th, .tabla_cursada_docente td  {
+            color:black;
+            padding: 10px 15px;
+            text-align: left;
+        }
+        
+        .tabla_home th, .tabla_comision th, .tabla_cursada th, .tabla_curso th, .tabla_curso_cursada th, .tabla_cursada_docente th {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .tabla_home td, .tabla_comision td, .tabla_cursada td, .tabla_curso td, .tabla_curso_cursada td, .tabla_cursada_docente td {
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tabla_home tr:nth-child(even), .tabla_comision tr:nth-child(even), .tabla_cursada tr:nth-child(even), .tabla_curso tr:nth-child(even) , .tabla_curso_cursada tr:nth-child(even), .tabla_cursada_docente tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .tabla_home tr:hover, .tabla_comision tr:hover, .tabla_cursada tr:hover, .tabla_curso tr:hover, .tabla_curso_cursada tr:hover, .tabla_cursada_docente tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .tabla_home td a, .tabla_comision td a, .tabla_cursada td a, .tabla_curso td a, .tabla_curso_cursada td a, .tabla_cursada_docente td a{
+            color: #007BFF;
+            text-decoration: none;
+        }
+        
+        .tabla_home td a:hover, .tabla_comision td a:hover, .tabla_cursada td a:hover, .tabla_curso td a:hover, .tabla_curso_cursada td a:hover, .tabla_cursada_docente td a:hover{
+            text-decoration: underline;
+        }
+
+
+
+
+        #table-content {
+            margin: 0;
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+          
+          }
+          
+          
+          #inscripcion-tec {
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+            padding: 20px;           
+            background-color: #333;   
+            border-radius: 10px;      
+            box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.5); 
+          }
+
+        #tabla_pre input {
+            width: 500px;
+        }
+        #offert2, #offert3 {
+            color:white;
+            justify-content: center;
+            display: flex;
+        }       
+        #divcaptcha, h4{
+            color:white;
+            
+        }
+        
+        #captcha {
+            display: flex;
+            justify-content: center;
+        }
+        #divcaptcha, h4{
+            color:white;
+            
+        }
+        
+        #captcha {
+            display: flex;
+            justify-content: center;
+          
+        }
+.captcha4 {
+      box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.5); 
+}
+
+#captchatext {
+    justify-content: center;
+    display: flex; 
+}
+.btn.btn-primary {
+    background: rgb(81, 81, 229);
+}
+.btn.btn-primary:hover {
+    background: rgb(23, 23, 225);
+}
+
+
+
+
+
+
+.home-input {
+    display:flex;
+    border: 1px solid #ccc;
+    padding-left: 20px;
+    width: 70%;
+    margin-left: 40px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+
+}
+
+.home-label {
+    display: flex;
+    width: 100%;
+    justify-content:   center;
+    color: black;
+}
+.home-div {
+            justify-content: center;
+            width: 50%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: rgb(79, 105, 185);
+            box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+            border-radius: 5px;
+}
+.home-div h1 {
+    display:flex;
+    justify-content: center;
+    color:black;
+}
+.home-input td{
+    color:black;
+}
+.home-input a {
+    color:black;
+}
+.home-input a:hover{
+    background-color: rgb(82, 59, 59, 0.3); 
+}
+.home-div button {
+    color:black;
+}
+.home-div a{
+    color:black;
+}
+
+input:invalid {
+    border: 2px solid red;
+}
+  
+input:valid {
+    border: 2px solid rgb(34, 34, 240);
+}
+@keyframes borderBlink {
+    0% {
+        border-color: red;
+    }
+    50% {
+        border-color: yellow;
+    }
+    100% {
+        border-color: red;
+    }
+}
+
+.error-message {
+    font-size: 22px;
+    color: red;
+    display: none;
+    border: 2px solid red; 
+    padding: 5px;
+
+}
+
+.error-message.blinking {
+    animation: borderBlink 1s infinite; 
+}
+
+#currentDate {
+    font-size: 27px;
+    color:white;
+}
+
+
+
+
+
+
+/*graficos de estadistica*/
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; 
+    margin-top:20px;
+    border: 1px solid #ccc;
+    padding-left: 20px;
+    width: 90%;
+    margin-left: 10px;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+    margin-top:30px;
+}
+
+.bar-chart {
+    background-color: #f0f0f0; 
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    
+}
+
+.vertical-chart {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.bar {
+ 
+    background-color: #2196F3;
+    color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    width: 100%; 
+    transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.bar:hover {
+    background-color: #0D47A1;
+}
+
+.bar-description {
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+}
+.bar-container {
+    border: 1px solid black; 
+    margin-bottom: 5px; 
+    padding: 5px;
+}
+.bar-container:hover{
+    background-color: rgba(223, 241, 126, 0.4); 
+    box-shadow: 0 0 10px 5px rgba(24, 24, 24, 0.4); 
+}
+
+#chartTCarreras, #chartTInstitutos {
+    width: 95%;
+    margin-left: 5px;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+    margin-top:30px;
+    background-color:black;
+}
+#chartCarreras, #chartInstitutos{
+    width: 95%;
+    margin-left: 5px;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+    margin-top:30px;
+}
+.estadistica_btn {
+    background-color: rgba(223, 241, 126, 0.4); 
+    box-shadow: 0 0 10px 5px rgba(24, 24, 24, 0.4); 
+    font-size: 22px;
+    border-radius: 4px;
+}
+.estadistica_btn:hover{
+        background-color: rgba(223, 241, 126, 0.7); 
+    box-shadow: 0 0 10px 5px rgba(24, 24, 24, 0.7); 
+}
+.bar-chart h3 {
+    color:black;
+    display:flex;
+    justify-content: center;
+}
+.pie-chart h3 {
+    color:white;
+    display:flex;
+    justify-content: center;
+}
+
+
+@media (max-width: 1600px) {
+    .charts-container {
+        grid-template-columns: 1fr; 
+    }
+}
+.stat-container {
+    
+    border: 1px solid #ccc;
+    padding-left: 20px;
+    width: 70%;
+    margin-left: 40px;
+    margin: 0 auto;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+    padding:10px;;
+}  
+.stat-container h1 {
+    display:flex;
+    justify-content: center;
+    color:black;
+}
+#status-inputs {
+    display:flex;
+    justify-content: center;
+    color:black; 
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+}
+#status-inputs label {
+    margin:10px;
+    font-size: 20px;
+}
+#status-results {
+    border: 1px solid #ccc;
+    background-color: white;
+    padding-left: 5px;
+    margin-left: 0px;
+    box-shadow: 0 0 10px 5px rgb(82, 59, 59, 0.7); 
+    margin-top:30px;
+}
+#total-preinscriptos, #carrera-mas-elegida, #instituto-mas-elegido {
+    color:black;
+    font-size:20px ;
+    border: 0.1px solid #ccc;
+
+}
+#total-preinscriptos span, #carrera-mas-elegida span, #instituto-mas-elegido span {
+    margin-left:4px ;
+}
+
+/*  zoom effect de los 5 elementos de graficos*/
+.zoom-effect {
+    transition: transform 0.3s ease-in-out; 
+}
+
+/* Zoom  */
+.zoom-effect:hover {
+    transform: scale(1.09); 
+}
+#search1, #search2{
+    display:flex;
+}
+
+.modal-content2 { /*error modal*/
+    background: red;
+      border: 6px solid black;
+    color:white;
+    font-size: 25px;
+}
+.modal-header2 {
+    color:red;
+    font-size: 25px;
+}
+
+
+
+
+/* Estilo para la imagen */
+
+
+#no-imagen {
+    max-width: 100%;          
+    height: auto;           
+    position: absolute;      
+    top: 35%;               
+    left: 50%;                
+    transform: translate(-50%, -25%);
+    box-shadow: 0 0 10px 5px rgb(255, 255, 255, 1.9); 
+}
+
+/* Contenedor para el texto sobre la imagen */
+#FondoSolo, #FondoSolo2 {
+    display: flex;
+    position: absolute;       
+    top: 50%;               
+    left: 50%;               
+    transform: translate(-50%, -50%); 
+    z-index: 2;              
+    color: white;             
+    background-color: rgba(0, 0, 0, 0.95);
+    padding: 20px;           
+    border-radius: 10px;     
+}
+
+/* Estilo para el párrafo */
+.cartel-no {
+    font-size: 1.3em;      
+    margin-top:20px;
+}
+#FondoSolo p {
+     font-size: 1.3em;     
+}
+#FondoSolo2 {
+    margin-top:-60px;
+}
+#FondoSolo {
+    margin-top:120px;
+}
+
+.contenedor-admin {       
+    width: 700px;
+    height: 500px;
+    position: absolute;      
+    top: 28%;               
+    left: 50%;                
+    transform: translate(-50%, -25%);
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 1.9); 
+    background: rgb(155, 155, 155, 1.9); 
+}
+.contenedor-admin label {
+    color:black;
+}
+.contenedor-admin h1 {
+    display:flex;
+    justify-content: center;
+    color:black;
+    margin: 10px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 1.9); 
+}
+.contenedor-admin form {
+    justify-content: center;
+    margin-top:50px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 0.9); 
+}
+.elemento1 {
+    transform: scale(2.0);
+    margin-left: 30px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 0.7); 
+}
+.elemento2 {
+    margin:10px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 0.5); 
+}
+.elemento3 {
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 0.5); 
+    width: 300px;
+    height: 100px;
+    margin-top:40px;
+}
+.elemento4 {
+    margin:10px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 0.5); 
+}
+#h1deladmin {
+    margin-left:30px;
+    margin-top:30px;
+    width: 900px;
+    height: 100px;
+    display:flex;  
+    justify-content: center;
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 10px 5px rgb(12, 12, 12, 1.9); 
+    background: rgb(155, 155, 155, 0.9); 
+}
+                                                
+/* Estilos básicos para el contenedor */
+.gird_admin {
+    display: flex;
+    width: 100%;
+    height: 300px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 40px;
+    background-color: #f0f0f0; 
+}
+
+/* Estilos básicos para el elemento <p> */
+#administrador_home {
+    width: 500px;
+    height: 100px;
+    justify-content: center;
+    display: flex;
+    font-size: 2rem; 
+    font-weight: bold;
+    color: black;
+    box-shadow: 2px 2px 15px rgba(236, 135, 135, 0.7); 
+    border-radius: 7px;
+}
+
+
+/*template vistas adicionales*/
+#vistas, #copied-arch {
+    display:flex;
+    justify-content: center;
+    color:black;
+}
+#body-vistas, #body-vistas2 {  
+    width: 100%;
+    height: 100%;
+}
+
+#tecnicaturaBody, #modalBody, #modalContent{
+    display: flex;
+    flex-direction: column; /* Para alinear los inputs en columna */
+    align-items: center; /* Centrar horizontalmente */
+    gap: 10px; /* Espacio entre los inputs */
+}
+
+#tecnicaturaBody input, #asignaturaModal input, #editModal input {
+    box-shadow: 0 0 10px 5px rgba(82, 59, 59, 0.7); 
+    width: 100%; /* O el ancho deseado */
+}
+#searchsEs {
+    max-width: 300px;
+    justify-content: center;
+    justify-items: center;
+    justify-self: center;
+    display: flex;
+    margin:auto;
+}
+.modal-content2 {
+    background-color: rgba(30,30,30,0.8);
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 700px;
+}
+
+.hidden-info {
+    visibility: hidden;  /* Oculta visualmente pero ocupa espacio */
+    position: absolute;  /* Posiciona fuera del flujo normal */
+    width: 0;            /* Asegura que no ocupe espacio */
+    height: 0;           /* Asegura que no ocupe espacio */
+    overflow: hidden;    /* Oculta el contenido que pueda sobresalir */
+}
+
+.tabla_cursada #searchAsignatura_1, .tabla_cursada #searchAnio_1 {
+    max-width: 100px;
+ }
+
+ .modal label {
+    width: 130px;
+}
+.modal button {
+    display: flex;
+    margin:  auto;
+}
+
+
+/*modal de estudiante datos*/
+.modal-contento {
+    margin: auto;
+}
+
+.info-pair {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.miinfo {
+    font-size: 20px;     
+}
+
+.miinfo2 {
+    font-size: 24px;
+    padding-left: 35px;
+}
+
+
+/*Mas estilos para Preinscriptos*/
+/* Estilos para el modal */
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: rgba(0,0,0,0.9);
+    color:white;
+    font-size: 22px;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.highlight-text td{
+    background-color: rgba(260,60,60,0.4); 
+}
+
+.highlight-text td:hover{
+    background-color: rgba(260,60,60,0.7); 
+}
+
+
+#contenedor-pre{
+    margin:20px;
+}
+  
+#contenedor-pre1 button {
+    display: flex;
+    margin-left:50px;
+}
+
+#pre2 {
+    margin-left:290px;
+    margin-top:-47px;
+}
+  
+#contenedor-pre2 {
+    display: flex;
+}
+  
+
+#pre2 button {
+    background-color: rgba(20,80,20,0.6);   
+}
+
+#pre2 button:hover {
+    background-color: rgba(20,80,20,0.9);   
+}
+
+#pre1 button {
+    background-color: rgba(60,0,160,0.6); 
+}
+
+#pre1 button:hover {
+    background-color: rgba(60,0,160,0.9); 
+}
+
+#btn-1-muestra {
+    display: flex;
+    margin-left: 50px;
+    margin-top:20px;
+    background-color: rgba(10,10,190,0.6); 
+}
+
+#btn-1-muestra:hover {
+    background-color: rgba(10,10,190,0.9); 
+}
+
+#btn-2-muestra {
+    display: flex;
+    margin-left:100px;
+    margin-top:20px;
+    background-color: rgba(40,80,40,0.6); 
+}
+
+#btn-2-muestra:hover {
+    background-color: rgba(40,80,40,0.9); 
+}
+ 
+.datos-filtered {
+    display: flex;
+    justify-content: center;
+    color: black;
+    font-family:  initial;
+    font-weight: bold;
+} 
+ 
+  
+#titulo-pre {
+    color: rgba(20,20,20,0.9);
+    font-size: 45px;
+} 
+  
+/* Estilo para el texto centrado */
+.modalDePre {
+    font-size: 44px;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.error {
+    margin-left:50px;
+    color: red;
+    font-weight: bold;
+    text-align:center;
+    font-size: 25px;
+}

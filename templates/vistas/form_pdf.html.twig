@@ -1,0 +1,5 @@
+<form action="{{ path('upload_pdf') }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="tecnicatura_id" value="{{ tecnicatura.id }}">
+    <input type="file" name="pdf_file" accept="application/pdf" required>
+    <button type="submit">Subir PDF</button>
+</form>

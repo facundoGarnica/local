@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comision index{% endblock %}
+
+{% block body %}
+    <h1>Comision index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Anio</th>
+                <th>Comision</th>
+                <th>Estado</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for comision in comisions %}
+            <tr>
+                <td>{{ comision.id }}</td>
+                <td>{{ comision.anio }}</td>
+                <td>{{ comision.comision }}</td>
+                <td>{{ comision.estado }}</td>
+                <td>
+                    <a href="{{ path('app_comision_show', {'id': comision.id}) }}">show</a>
+                    <a href="{{ path('app_comision_edit', {'id': comision.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_comision_new') }}">Create new</a>
+{% endblock %}

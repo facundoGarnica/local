@@ -1,0 +1,10 @@
+{# templates/vistas/create_form.html.twig #}
+
+{{ form_start(form, {'attr': {'id': 'form-crea-comision', 'action': path('crear_comision' )}}) }}
+        {{ form_row(form.anio) }} 
+        {{ form_row(form.comision) }}
+        {{ form_row(form.turno) }}
+        {{ form_row(form.tecnicatura) }}
+        {{ form_row(form.estado) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

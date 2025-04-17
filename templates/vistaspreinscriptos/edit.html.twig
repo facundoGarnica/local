@@ -1,0 +1,948 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Pre Inscriptos{% endblock %}
+
+{% block body %}
+    <h1>Editar Pre Inscriptos</h1>
+    <form action="{{ path('app_vistaspreinscriptos_edit', { id: record.id }) }}" method="post">
+        <div class="form-group">
+            <label for="persona_nombre1">Nombre:</label>
+            <input type="text" id="persona_nombre1" name="persona_nombre" value="{{ record.persona_nombre }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="persona_apellido1">Apellido:</label>
+            <input type="text" id="persona_apellido1" name="persona_apellido" value="{{ record.persona_apellido }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ record.fecha_nacimiento }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="dni_pasaporte">DNI/Pasaporte:</label>
+            <input type="text" id="dni_pasaporte" name="dni_pasaporte" value="{{ record.dni_pasaporte }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="tecnicatura_nombre">Nombre de la Tecnicatura:</label>
+            <input type="text" id="tecnicatura_nombre" name="tecnicatura_nombre" value="{{ record.tecnicatura_nombre }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="tecnicatura_resolucion">Resolución de la Tecnicatura:</label>
+            <input type="text" id="tecnicatura_resolucion" name="tecnicatura_resolucion" value="{{ record.tecnicatura_resolucion }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="turno_descripcion">Turno:</label>
+            <input type="text" id="turno_descripcion" name="turno_descripcion" value="{{ record.turno_descripcion }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="instituto_numero">Número de Instituto:</label>
+            <input type="text" id="instituto_numero" name="instituto_numero" value="{{ record.instituto_numero }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="instituto_cue">CUE del Instituto:</label>
+            <input type="text" id="instituto_cue" name="instituto_cue" value="{{ record.instituto_cue }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="new_field">Listo:</label>
+            <select id="new_field" name="new_field" class="form-control">
+                <option value="0" {% if record.new_field == '0' %}selected{% endif %}>0 - Por defecto</option>
+                <option value="1" {% if record.new_field == '1' %}selected{% endif %}>1 - Formulario de persona cargado</option>
+                <option value="2" {% if record.new_field == '2' %}selected{% endif %}>2 - Formulario de estudiante cargado</option>
+                <option value="3" {% if record.new_field == '3' %}selected{% endif %}>3 - Formulario de carrera cargado</option>
+                <option value="4" {% if record.new_field == '4' %}selected{% endif %}>4 - Formulario de Asignaturas cargado</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        {# reescribir logica para aidar la inscripcion arriba corroborar exitencia de campos #}
+        <button type="button" class="btn btn-primary"
+            onclick="openModalPersona(
+                '{{ record.persona_nombre }}', 
+                '{{ record.persona_apellido }}', 
+                '{{ record.fecha_nacimiento }}', 
+                '{{ record.dni_pasaporte }}', 
+                '{{ record.genero|default('') }}', 
+                '{{ record.email|default('') }}', 
+                '{{ record.telefono|default('') }}', 
+                '{{ record.partido|default('') }}', 
+                '{{ record.calle|default('') }}', 
+                '{{ record.numero|default('') }}', 
+                '{{ record.piso|default('') }}', 
+                '{{ record.departamento|default('') }}', 
+                '{{ record.pasillo|default('') }}', 
+                '{{ record.pais_descripcion|default('') }}', 
+                '{{ record.localidad_nombre|default('') }}',  
+                '{{ record.id }}'
+            )">
+            Inscribir
+        </button>
+    </form>
+
+
+
+
+
+
+
+
+
+
+        {% if dni is not null %}
+            <p>DNI encontrado: {{ dni }}</p>
+        {% else %}
+            <p>No hay un DNI en la sesión.</p>
+        {% endif %}
+
+
+
+
+
+        {# Verificar si hay un mensaje de éxito en la sesión #}
+    {% for message in app.flashes('success') %}
+        <div id="successModal" class="modal" style="display: block;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('successModal');
+            const closeBtn = document.querySelector('.modal .close');
+
+            if (modal) {
+                // Cerrar el modal cuando se hace clic en la 'X'
+                closeBtn.onclick = function() {
+                    modal.style.display = "none";
+                }
+
+                // Cerrar el modal cuando se hace clic fuera del modal
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            }
+        });
+
+
+        //CUANDO SE CARGA EL DOCUMENTO SE EVALUA LA SESION QUE CONTIENE EL DNI A INSCRIBIRSE
+        //ESTE ESTA SI PASO YA POR LA PRIMER INSTANCIA ACOMPAÑADO POR UN AUXILIAR PARA MARCAR LA ETAPA DE INSCRIPCION
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener el valor del DNI desde una variable Twig
+            const dniConPrefijo = "{{ dni }}";
+
+            // Verificar si el DNI tiene un valor, si existe y si tiene el prefijo '1.', '2.' o '3.'
+            if (dniConPrefijo && typeof dniConPrefijo === 'string') {
+                // Extraer solo el DNI sin el prefijo
+                const dni = dniConPrefijo.substring(2); // Obtiene el DNI sin el prefijo '1.', '2.' o '3.'
+
+                if (dniConPrefijo.startsWith('1.')) {
+                    // Buscar el botón "Crear alumno" con el id correspondiente
+                    const botonCrearAlumno = document.getElementById('crearAlumno_' + dni);
+                    if (botonCrearAlumno) {
+                        botonCrearAlumno.click();
+                    } 
+                } else if (dniConPrefijo.startsWith('2.')) {
+                    // Buscar el botón "Insertar en Carrera" con el id correspondiente
+                    const botonCrearCarrera = document.getElementById('crearCarrera_' + dni);                  
+                    if (botonCrearCarrera) {
+                        botonCrearCarrera.click();
+                    } 
+                } else if (dniConPrefijo.startsWith('3.')) {
+                    // Buscar el botón "Crear asignaturas" con el id correspondiente
+                    const botonCrearAsignaturas = document.getElementById('crearAsignaturas_' + dni);
+                    if (botonCrearAsignaturas) {
+                        botonCrearAsignaturas.click();
+                    }
+                } else {
+                    console.log('Prefijo no válido');
+                }
+            } else {
+                console.log('DNI no válido o sin prefijo');
+            }
+        });
+
+    </script>
+
+    <!-- Modal1 Crear persona y editar varios!!!-->
+    <div id="Modal1" class="modal" style="display: none;">
+        <div class="modal-content" >
+            <p class="modalDePre"> 1 Creando Persona</p>
+            <div class="modal-content2" >
+                <span class="close" onclick="closeModal1()">&times;</span>
+                <div id="modalBody-1" class="submodal"></div>
+            </div>
+        </div>    
+    </div>     
+
+
+    <!-- Modal2 para crear Estudiantes!!!-->
+    <div id="Modal2" class="modal" style="display: none;">
+        <div class="modal-content" >
+            <p class="modalDePre"> 2 Creando Estudiante</p>
+            <div id="modal-cursadas">
+                <div class="modal-content2">
+                    <span class="close" onclick="closeModalEst()">&times;</span>
+                    <div id="modalBody-2" class="submodal"></div>
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    
+    <!-- Modal4 para crear Carreras!!!-->
+    <div id="Modal4" class="modal" style="display: none;">
+        <div class="modal-content" >
+            <div id="modal-cursadas" >
+                <p class="modalDePre"> 3 Creando Carrera al Estudiante</p>
+                <div class="modal-content2">
+                    <span class="close" onclick="closeModal4()">&times;</span>
+                    <div id="modalBody-4" class="submodal"></div>
+                    {#<button type="button" class="btn btn-secondary" onclick="closeModal4()">Cerrar</button>#}
+                </div>
+            </div>
+        </div>    
+    </div>
+
+
+    {# Modal para crear cursadas por cohorte #}
+    <div id="Modal5" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div id="modal-Asignaturas">
+                <p class="modalDePre">4 Creando Cursadas de 1*</p>
+                <div class="modal-content2">
+                    <label for="inputAnio">Elige el año de inscripción:</label>
+                    <input type="number" id="inputAnio" />
+                    <button type="button" onclick="continuarInsercion()">Continuar</button> <!-- Botón para continuar -->
+                    <button type="button" class="btn btn-secondary" onclick="closeModal5()">Cerrar</button>
+                </div>
+                <div id="modalBody-5" class="submodal"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Modal para mostrar mensajes SUCCESS -->
+    <div id="confirmModal2" class="modal" style="display: none;">
+        <div class="modal-contentX">
+            <div class="modal-cursadasX">
+                <div class="modal-contentX2">
+
+            <span class="close" id="modalClose2" onclick="closeModal()">&times;</span>
+            <h5 class="modal-title" id="modalTitle"></h5>
+            <p id="modalMessage"></p>
+            <button type="button" class="btn btn-secondary" id="modalClose" onclick="closeModal()">Cerrar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de errores -->
+    <div id="errorModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>ERROR NO HAY PERSONA REGISTRADA PARA EL ESTUDIANTE</p>
+            <span class="close" onclick="closeModalerror()">&times;</span>
+            <button type="button" class="btn btn-secondary" onclick="closeModalerror()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de errores al crear PERSONA -->
+    <div id="errorModal2" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div id="errorModalBody">
+                <!-- Aquí se insertará el contenido dinámico -->
+            </div>
+            <button id="redirectButton">Siguiente</button>
+            {#<button type="button" class="btn btn-secondary" onclick="closeModalerror2()">Cerrar</button>#}
+        </div>
+    </div>
+
+    <!-- Modal de errores al crear ESTUDIANTES-->
+    <div id="errorModal3" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>ERROR YA HAY UN ESTUDIANTE CON EL MISMO DNI EN EL SISTEMA</p>
+            <span class="close" onclick="closeModalerror3()">&times;</span>
+            <button type="button" class="btn btn-secondary" onclick="closeModalerror3()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de errores INSERTAR A TECNICATURA -->
+    <div id="errorModal6" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>ERROR NO HAY TENICATURA CON EL MISMO NOMBRE Y/O RESOLUCION</p>
+            <span class="close" onclick="closeModalerror6()">&times;</span>
+            <button type="button" class="btn btn-secondary" onclick="closeModalerror6()">Cerrar</button>
+        </div>
+    </div>
+
+
+
+    <script>
+        const personas2 = {{ personas|raw }}; // personas ahora es un array de DNIs
+  
+        const alumnos2 = {{ alumnos|raw }}; 
+    
+
+        const carreras2 = {{carreras|raw }}; 
+   
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputTecnicatura = document.getElementById("tecnicatura_resolucion");
+
+            inputTecnicatura.addEventListener("input", function() {
+                validarTecnica();
+            });
+
+            function validarTecnica() {
+                const tecnicaturaIngresada = inputTecnicatura.value.trim();
+                
+                console.log("Resolución ingresada:", tecnicaturaIngresada);
+                console.log("Resoluciones disponibles:", carreras2);
+
+                // Verifica si existe una tecnicatura con esa resolución en carreras2
+                const existe = carreras2.some(carrera => carrera.tecnicatura === tecnicaturaIngresada);
+
+                if (existe) {
+                    inputTecnicatura.style.border = "";
+                    console.log("match!");
+                } else {
+                    console.log("error, not found");
+                    inputTecnicatura.style.border = "2px solid red";
+                }
+            }
+
+
+            function verificarComisionAntesDeContinuar() {
+                let resolucionCompleta = document.getElementById("tecnicatura_resolucion").value.trim(); // Obtener el valor del input como string
+                // Dividir la resolución en la parte antes del "/" y la parte después
+                const [resolucionParte1, N2] = resolucionCompleta.split('/');
+                // Obtener el año actual
+                const anioActual = new Date().getFullYear();
+                // Construir la URL reemplazando los valores en la ruta de Symfony
+                const url = "{{ path('verificar_comision', { 'resolucion': '__resolucion__', 'N2': '__N2__', 'anio': '__anio__' }) }}"
+                    .replace('__resolucion__', resolucionParte1)
+                    .replace('__N2__', N2)
+                    .replace('__anio__', anioActual);
+
+                // Hacer la solicitud AJAX
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error); // Mostrar mensaje si no hay comisiones
+                        } else {
+                            alert(data.success); // Mostrar éxito si hay comisiones
+                        }
+                    })
+                    .catch(error => console.error('Error en la verificación:', error));
+            }
+
+
+            // Validación inicial al cargar la página
+            validarTecnica();
+
+            verificarComisionAntesDeContinuar();
+        });
+
+
+
+
+
+
+
+        //CREAR PERSONA
+        function openModalPersona(nombre, apellido, fecha, dni, genero, email, telefono, partido, calle, numero, piso, depto, pasillo, pais, localidad, id) {
+            if (personas2.includes(dni)) {
+                // Mostrar el modal de error
+                const errorModal = document.getElementById('errorModal2');
+                const errorModalBody = document.getElementById('errorModalBody');
+
+                // Actualizar el contenido del modal con los datos de la persona
+                errorModalBody.innerHTML = `
+                    <p>La persona con el DNI <strong>${dni}</strong> ya existe.</p>
+                    <p><strong>Nombre:</strong> ${nombre}</p>
+                    <p><strong>Apellido:</strong> ${apellido}</p>
+                `;
+
+                // Mostrar el modal
+                errorModal.style.display = 'block';
+
+                // Configurar el botón de redirección
+                const redirectButton = document.getElementById('redirectButton');
+                const dniStr = String(dni); 
+                const url = "{{ path('persona_siguiente', { 'dni': '__dni__' }) }}"
+                    .replace('__dni__', dniStr);
+
+                redirectButton.onclick = function() {
+                    window.location.href = url;
+                };
+
+                return;
+            }
+
+            console.log("el nombre es: ",apellido);
+
+            const dniStr = String(dni); 
+            const url = "{{ path('crear_persona_pre', { 'dni': '__dni__', 'id': '__id__' }) }}"
+                .replace('__dni__', dniStr)
+                .replace('__id__', id);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+                    //Cuidado que aqui se hace referencia al formulario del modal y puede interferir con los campos del form edit del archivo
+                    const nombreInput = document.getElementById('persona_nombre');
+                    const apellidoInput = document.getElementById('persona_apellido');
+                    const fechaInput = document.getElementById('persona_fecha_nacimiento');
+                    const dniInput = document.getElementById('persona_dni_pasaporte');
+                    const generoInput = document.getElementById('persona_genero');
+                    const emailInput = document.getElementById('persona_email');
+                    const telefonoInput = document.getElementById('persona_telefono');
+                    const partidoInput = document.getElementById('persona_partido');
+                    const calleInput = document.getElementById('persona_calle');
+                    const numeroInput = document.getElementById('persona_numero');
+                    const pisoInput = document.getElementById('persona_piso');
+                    const departamentoInput = document.getElementById('persona_departamento');
+                    const pasilloInput = document.getElementById('persona_pasillo');
+                    const paisInput = document.getElementById('persona_pais');
+                    const localidadInput = document.getElementById('persona_localidad');
+              
+
+
+                    if (nombreInput) {  
+                        nombreInput.value = nombre;
+                        nombreInput.style.display = 'none';
+                    }  
+                    const labelnombre = document.querySelector('label[for="persona_nombre"]');
+                    if (labelnombre) {
+                        labelnombre.textContent = `Nombre: ${nombre}`;
+                    }
+
+
+                    if (apellidoInput) {  
+                        apellidoInput.value = apellido;
+                        apellidoInput.style.display = 'none';
+                    } 
+                    const labelapellido = document.querySelector('label[for="persona_apellido"]');
+                    if (labelapellido) {
+                        labelapellido.textContent = `Apellido: ${apellido}`;
+                    } 
+
+
+ 
+
+                    const diaInput = document.getElementById('persona_fecha_nacimiento_day');
+                    const mesInput = document.getElementById('persona_fecha_nacimiento_month');
+                    const anioInput = document.getElementById('persona_fecha_nacimiento_year');
+                    if (fecha) {
+                        const partesFecha = fecha.split('-');
+                        if (partesFecha.length === 3) {
+                            const [anio, mes, dia] = partesFecha;
+
+                            if (anioInput) {
+                                anioInput.value = anio;
+                            }
+
+                            // Forzar la selección correcta del mes
+                            if (mesInput) {
+                                for (let i = 0; i < mesInput.options.length; i++) {
+                                    // Asegurarse de que el valor tenga dos dígitos (agregar un cero a la izquierda si es necesario)
+                                    const valorMes = mesInput.options[i].value.padStart(2, '0');
+                                    if (valorMes === mes.padStart(2, '0')) {
+                                        mesInput.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Forzar la selección correcta del día
+                            if (diaInput) {
+                                for (let i = 0; i < diaInput.options.length; i++) {
+                                    // Asegurarse de que el valor tenga dos dígitos
+                                    const valorDia = diaInput.options[i].value.padStart(2, '0');
+                                    if (valorDia === dia.padStart(2, '0')) {
+                                        diaInput.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } 
+
+                    const labelfecha =  document.getElementById('label_fecha_persona_form');
+                    if (labelfecha) {
+                        labelfecha.style.display = 'none'; // Ocultar el label
+                    }
+                    if (fechaInput) {  
+                        fechaInput.style.display = 'none';
+                    }
+
+
+                    if (dniInput) {  
+                        dniInput.value = dni;
+                        dniInput.style.display = 'none';
+                    }
+
+                    const labeldni = document.querySelector('label[for="persona_dni_pasaporte"]');
+                    if (labeldni) {
+                        labeldni.textContent = `DNI: ${dni}`;
+                    } 
+
+                    if (generoInput) {
+                        let generoEncontrado = false;
+                        const opcionesGenero = generoInput.options;
+                        for (let i = 0; i < opcionesGenero.length; i++) {
+                            // Compara el valor de la opción con el valor recibido
+                            if (opcionesGenero[i].value.toLowerCase() === genero.toLowerCase().trim()) {
+                                generoInput.selectedIndex = i;
+                                generoEncontrado = true;
+                                break;
+                            }
+                        }
+                        // Si no se encontró el valor deseado, dejar la primera opción por defecto
+                        if (!generoEncontrado) {
+                            generoInput.selectedIndex = 1; // Selecciona la primera opción
+                        }
+                        generoInput.style.display = 'none';
+                    }
+                    const labelgenero = document.querySelector('label[for="persona_genero"]');
+                    if (labelgenero) {
+                        labelgenero.style.display = 'none';
+                    } 
+
+
+
+                    if (emailInput) {  
+                        emailInput.value = email;
+                        emailInput.style.display = 'none';
+                    }  
+                    const labelemail = document.querySelector('label[for="persona_email"]');
+                    if (labelemail) {
+                        labelemail.style.display = 'none';
+                    } 
+
+                    if (telefonoInput) {  
+                        telefonoInput.value = telefono;
+                        telefonoInput.style.display = 'none';
+                    }  
+                    const labeltelefono = document.querySelector('label[for="persona_telefono"]');
+                    if (labeltelefono) {
+                        labeltelefono.style.display = 'none';
+                    } 
+
+                    if (partidoInput) {  
+                        partidoInput.value = partido;
+                        partidoInput.style.display = 'none';
+                    }  
+                    const labelpartido = document.querySelector('label[for="persona_partido"]');
+                    if (labelpartido) {
+                        labelpartido.style.display = 'none';
+                    } 
+
+                    if (calleInput) {  
+                        calleInput.value = calle;
+                        calleInput.style.display = 'none';
+                    }
+                    const labelcalle = document.querySelector('label[for="persona_calle"]');
+                    if (labelcalle) {
+                        labelcalle.style.display = 'none';
+                    } 
+
+                    if (numeroInput) {  
+                        numeroInput.value = numero;
+                        numeroInput.style.display = 'none';
+                    }
+                    const labelnumero = document.querySelector('label[for="persona_numero"]');
+                    if (labelnumero) {
+                        labelnumero.style.display = 'none';
+                    } 
+
+                    if (pisoInput) {  
+                        pisoInput.value = piso;
+                        pisoInput.style.display = 'none';
+                    }
+                    const labelpiso = document.querySelector('label[for="persona_piso"]');
+                    if (labelpiso) {
+                        labelpiso.style.display = 'none';
+                    } 
+
+                    if (departamentoInput) {  
+                        departamentoInput.value = depto;
+                        departamentoInput.style.display = 'none';
+                    }
+                    const labeldepto = document.querySelector('label[for="persona_departamento"]');
+                    if (labeldepto) {
+                        labeldepto.style.display = 'none';
+                    } 
+
+                    if (pasilloInput) {  
+                        pasilloInput.value = pasillo;
+                        pasilloInput.style.display = 'none';
+                    }
+                    const labelpasillo = document.querySelector('label[for="persona_pasillo"]');
+                    if (labelpasillo) {
+                        labelpasillo.style.display = 'none';
+                    } 
+
+
+                    if (paisInput) {
+                        let paisEncontrado = false;
+                        const opcionesPais = paisInput.options;
+                        for (let i = 0; i < opcionesPais.length; i++) {
+                            // Compara el valor de la opción con el valor recibido
+                            if (opcionesPais[i].value.toLowerCase() === pais.toLowerCase().trim()) {
+                                paisInput.selectedIndex = i;
+                                paisEncontrado = true;
+                                break;
+                            }
+                        }
+                        // Si no se encontró el valor deseado, dejar la primera opción por defecto
+                        if (!paisEncontrado) {
+                            paisInput.selectedIndex = 0; // Selecciona la primera opción
+                        }
+                        paisInput.style.display = 'none';
+                    }
+                    const labelpais = document.querySelector('label[for="persona_pais"]');
+                    if (labelpais) {
+                        labelpais.style.display = 'none';
+                    } 
+
+
+                    if (localidadInput) {
+                        let localidadEncontrada = false;
+                        const opcionesLocalidad = localidadInput.options;
+                        for (let i = 0; i < opcionesLocalidad.length; i++) {
+                            // Compara el valor de la opción con el valor recibido
+                            if (opcionesLocalidad[i].value.toLowerCase() === localidad.toLowerCase().trim()) {
+                                localidadInput.selectedIndex = i;
+                                localidadEncontrada = true;
+                                break;
+                            }
+                        }
+                        // Si no se encontró el valor deseado, dejar la primera opción por defecto
+                        if (!localidadEncontrada) {
+                            localidadInput.selectedIndex = 0; // Selecciona la primera opción
+                        }
+                        localidadInput.style.display = 'none';
+                    }
+                    const labellocalidad = document.querySelector('label[for="persona_localidad"]');
+                    if (labellocalidad) {
+                        labellocalidad.style.display = 'none';
+                    } 
+
+
+                    // Simula un retraso  para enviar el formulario de crear persona
+                    setTimeout(() => {
+                        const form = document.getElementById('form-crea-persona');
+                        if (form) {
+                            form.submit();
+                        } else {
+                            console.error('Formulario de crear persona no encontrado');
+                        }
+                    }, 10); // Retraso 
+                    
+                    const BotonPersona = document.getElementById('siguientepersona');
+                    const csvButton = document.getElementById('editarcsv2_'+dni);
+                    BotonPersona.addEventListener('click', function() {
+                        csvButton.click();
+                    });
+          
+                    
+                    
+                })
+
+
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+  
+
+
+
+
+        function closeModal1() { 
+            document.getElementById('Modal1').style.display = 'none';
+            document.getElementById('modalBody-1').innerHTML = '';
+        }
+
+
+        function closeModalEst() { 
+            document.getElementById('Modal2').style.display = 'none';
+            document.getElementById('modalBody-2').innerHTML = '';
+        }
+
+
+        function closeModalerror() { 
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+
+        function closeModalerror2() { 
+            document.getElementById('errorModal2').style.display = 'none';
+        }
+
+
+        function closeModalerror3() { 
+            document.getElementById('errorModal3').style.display = 'none';
+        }
+
+
+        function closeModalerror6() { 
+            document.getElementById('errorModal6').style.display = 'none';
+        }
+
+
+        function filterEstudiante() {
+            let searchNombre = document.getElementById("searchEstudiante").value.toLowerCase();
+            let dropdown = document.getElementById("alumno_persona"); 
+            let options = dropdown.getElementsByTagName("option");
+                
+            for (let i = 0; i < options.length; i++) {
+                let optionText = options[i].textContent.toLowerCase();
+                if (optionText.includes(searchNombre)) {
+                    options[i].style.display = ""; 
+                } else {
+                    options[i].style.display = "none"; 
+                }
+            }
+        }
+
+
+
+        function focusDNI(dni) { //Para posible implementacion de enfocar un dni luego de una accion, se puede optar por el buscador de la tabla
+            // Encuentra todas las filas de la tabla
+            const rows = document.querySelectorAll('#copied-table tbody tr');
+            
+            rows.forEach(row => {
+                // Verifica si el DNI de la fila coincide con el DNI proporcionado
+                const cellDni = row.children[0].innerText.trim(); // Asumiendo que el DNI está en la primera columna
+                if (cellDni === dni) {
+                    // Aplica una clase para resaltar la fila
+                    row.classList.add('highlight-text');
+                    
+                    // Desplaza la fila al centro de la vista
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Puedes hacer otras cosas, como mostrar un mensaje o aplicar más estilos si es necesario
+                } else {
+                    // Opcional: Elimina el resaltado de otras filas
+                    row.classList.remove('highlight-text');
+                }
+            });
+        }
+    </script>
+
+    <!-- Modal de confirmación  no borrar seccion necesaria para depuracion-->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h5 class="modal-title">Confirmación</h5>
+            <p>¿Está seguro? Esto generará un nuevo archivo CSV y borrará los datos anteriores.</p>
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="confirmButton" onclick="confirmAction()">Confirmar</button>
+        </div>
+    </div> 
+
+    <!-- Modal de confirmación de la copia oculto, no borrar seccion necesaria para depuracion-->
+    <div id="confirmModal3" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal3()">&times;</span>
+            <h5 class="modal-title">Confirmación</h5>
+            <p>¿Está seguro? Esto generará un nuevo archivo CSV y borrará los datos anteriores.</p>
+            <button type="button" class="btn btn-secondary" onclick="closeModal3()">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="confirmButton3" onclick="confirmAction3()">Confirmar</button>
+        </div>
+    </div> 
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        function filterTable() {
+            const searchDNI = document.getElementById('searchDNI').value.toLowerCase();
+            const searchTec = document.getElementById('searchTec').value.toLowerCase();
+            const searchListo = document.getElementById('searchListo').value.toLowerCase();      
+            const table = document.getElementById('copied-table');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) { //Realizo un recorrido completo habilitando todo 
+                const cells = rows[i].getElementsByTagName('td');
+                const dni = cells[0].innerText.toLowerCase();
+                const tecnicatura = cells[3].innerText.toLowerCase();
+                const listo = cells[6].innerText.toLowerCase().toString();       
+                const matchesDNI = dni.indexOf(searchDNI) > -1;
+                const matchesTec = tecnicatura.indexOf(searchTec) > -1;
+                const matchesListo = searchListo === '' || listo.indexOf(searchListo) > -1;
+                if (matchesDNI && matchesTec && matchesListo) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = '';
+                }
+            }
+            for (let i = 0; i < rows.length; i++) { //Aqui realizo el filtro para mostrar
+                const cells = rows[i].getElementsByTagName('td');
+                const dni = cells[0].innerText.toLowerCase();
+                const tecnicatura = cells[3].innerText.toLowerCase();
+                const listo = cells[6].innerText.toLowerCase().toString();           
+                const matchesDNI = dni.indexOf(searchDNI) > -1;
+                const matchesTec = tecnicatura.indexOf(searchTec) > -1;
+                const matchesListo = searchListo === '' || listo.indexOf(searchListo) > -1;
+                if (matchesDNI && matchesTec && matchesListo) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        function sortTable() {
+            const table = document.getElementById('copied-table');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+            const isAscending = table.getAttribute('data-order') === 'asc';
+            
+            rows.sort((rowA, rowB) => {
+                const nameA = rowA.cells[1].innerText.trim().toLowerCase();
+                const nameB = rowB.cells[1].innerText.trim().toLowerCase();
+                return isAscending ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+            table.setAttribute('data-order', isAscending ? 'desc' : 'asc');
+        }
+
+
+        //busqueda en la tabla editable modificada copied
+        function filterDni() {
+            let searchDni = document.getElementById("searchDNI").value.toLowerCase();
+            let table = document.getElementById("copied-table");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let dni = cells[0].textContent.toLowerCase();
+                    if (dni.includes(searchDni)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        //busqueda tecnicatura
+        function filterTec() {
+            let searchDni = document.getElementById("searchTec").value.toLowerCase();
+            let table = document.getElementById("copied-table");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let dni = cells[3].textContent.toLowerCase();
+                    if (dni.includes(searchDni)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+
+        function openModal() {
+            var modal = document.getElementById('confirmModal');
+            modal.style.display = 'flex';
+        }
+        function closeModal() {
+            var modal = document.getElementById('confirmModal');
+            modal.style.display = 'none';
+        }
+
+        function openModal2(message, type) {
+            var modal = document.getElementById('confirmModal2');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalMessage = document.getElementById('modalMessage');
+
+            modalTitle.textContent = type === 'success' ? 'Éxito' : 'Error';
+            modalMessage.textContent = message;
+            modal.style.display = 'flex';
+        }
+        function closeModal2() {
+            var modal = document.getElementById('confirmModal2');
+            modal.style.display = 'none';
+        }
+
+        function openModal3() {
+            var modal = document.getElementById('confirmModal3');
+            modal.style.display = 'flex';
+        }
+        function closeModal3() {
+            var modal = document.getElementById('confirmModal3');
+            modal.style.display = 'none';
+        }
+
+        function closeModal4() { 
+            document.getElementById('Modal4').style.display = 'none';
+            document.getElementById('modalBody-4').innerHTML = '';
+        }
+
+        function closeModal5() { 
+            document.getElementById('Modal5').style.display = 'none';
+            document.getElementById('modalBody-5').innerHTML = '';
+            window.location.href = '{{ path('app_vistaspreinscriptos') }}';
+        }
+
+        function confirmAction() {
+            closeModal();
+            document.getElementById('generateCsvForm').submit();
+        }
+
+        function confirmAction3() {
+            document.getElementById('copyCsvForm').submit();
+        }
+
+        // Mostrar el modal si hay mensajes
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if success_message is defined %}
+                openModal2('{{ success_message|e('js') }}', 'success');
+            {% endif %}
+            {% if error_message is defined %}
+                openModal2('{{ error_message|e('js') }}', 'error');
+            {% endif %}
+        });
+
+        /*
+        // Ejecutar la redirección dos veces con un breve retraso cuando una session no logra limpiarse correctamente, dejar esta seccion comentada -solo para test-
+        document.addEventListener('DOMContentLoaded', function () {
+            function redirectTo(route) {
+                window.location.href = route;
+            }
+
+            function handleRedirect() {
+                const redirectUrl = '{{ path('app_vistaspreinscriptos') }}'; // URL de la ruta a redirigir
+
+                // Redirigir dos veces con un breve retraso
+                redirectTo(redirectUrl);
+
+                setTimeout(function () {
+                    redirectTo(redirectUrl);
+                }, 100); // 100 ms de retraso
+            }
+
+            // Asignar la función handleRedirect al botón del modal
+            document.getElementById('modalClose2').addEventListener('click', handleRedirect);
+            document.getElementById('modalClose').addEventListener('click', handleRedirect);
+        });*/
+    </script> 
+{% endblock %}
+

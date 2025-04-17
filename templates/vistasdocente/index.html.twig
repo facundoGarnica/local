@@ -1,0 +1,708 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DOCENTES{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {# Script para dirigir a la cursada seleccionada y poder asignar las notas #}
+    <script>
+        function showCursoCursada(cursoId) {
+            // oculta tablas no relevantes
+            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+            tablesToHide.forEach(table => table.style.display = 'none');
+
+            // oculta cursos
+            let cursadaTables = document.querySelectorAll('.tabla_curso');
+            cursadaTables.forEach(table => table.style.display = 'none');
+
+            // muestra tabla cursada específica
+            let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+            if (cursadaTable) {
+                cursadaTable.style.display = '';
+            }
+
+            // ocultar search
+            let search = document.getElementById('searchs');
+            if (search) {
+                search.style.display = 'none';
+            }
+
+            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = '';
+                backButton.onclick = function() {
+                    hideCursoCursada(cursoId);
+                };
+            }
+        }
+        function hideCursoCursada(cursoId) {
+            // oculta tabla cursada específica
+            let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+            if (cursadaTable) {
+                cursadaTable.style.display = 'none';
+            }
+
+            // muestra la tabla curso específica
+            let cursoTable = document.getElementById(`tablaTecnicaturas`);
+            if (cursoTable) {
+                cursoTable.style.display = '';
+            }
+
+            // oculta el botón regresar-volver
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = 'none';
+            }
+        }
+    </script>
+
+    {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
+    <script>
+        function showAsistencia(cursoId) {
+            // oculta tablas no relevantes
+            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+            tablesToHide.forEach(table => table.style.display = 'none');
+
+            // oculta cursos
+            let cursadaTables = document.querySelectorAll('.tabla_curso');
+            cursadaTables.forEach(table => table.style.display = 'none');
+
+            // muestra tabla cursada específica
+            let cursadaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
+            if (cursadaTable) {
+                cursadaTable.style.display = '';
+            }
+
+            // ocultar search
+            let search = document.getElementById('searchs');
+            if (search) {
+                search.style.display = 'none';
+            }
+
+            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = '';
+                backButton.onclick = function() {
+                    hideAsistencia(cursoId);
+                };
+            }
+        }
+        function hideAsistencia(cursoId) {
+            // oculta tabla cursada específica
+            let cursadaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
+            if (cursadaTable) {
+                cursadaTable.style.display = 'none';
+            }
+
+            // muestra la tabla curso específica
+            let cursoTable = document.getElementById(`tablaTecnicaturas`);
+            if (cursoTable) {
+                cursoTable.style.display = '';
+            }
+
+            // oculta el botón regresar-volver
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = 'none';
+            }
+        }
+
+
+
+
+
+        //para la segunda tabla de asistencia
+        function showAsistencia2(cursoId) {
+            // oculta tablas no relevantes
+            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+            tablesToHide.forEach(table => table.style.display = 'none');
+
+            // oculta cursos
+            let cursadaTables = document.querySelectorAll('.tabla_curso_cursada');
+            cursadaTables.forEach(table => table.style.display = 'none');
+
+            // muestra tabla cursada específica
+            let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
+            if (cursadaTable) {
+                cursadaTable.style.display = '';
+            }
+
+            // ocultar search
+            let search = document.getElementById('searchs');
+            if (search) {
+                search.style.display = 'none';
+            }
+
+            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = '';
+                backButton.onclick = function() {
+                    hideAsistencia2(cursoId);
+                };
+            }
+        }
+        function hideAsistencia2(cursoId) {
+    // Oculta la tabla de asistencias detalladas
+    let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
+    if (cursadaTable) {
+        cursadaTable.style.display = 'none';
+    }
+    
+    // Muestra la tabla de asistencias general
+    let asistenciaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
+    if (asistenciaTable) {
+        asistenciaTable.style.display = '';
+    }
+    // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = '';
+                backButton.onclick = function() {
+                    hideAsistencia(cursoId);
+                };
+            }
+
+    
+}
+
+    </script>
+
+    {# Script para cargar variable si hay sesion iniciada y mantener el punto de pantalla donde se dejo al realizar alguna operacion #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Evaluar si `comId` está definido y no es nulo
+            {% if cursoId is defined and cursoId is not null %}
+                // Llamar a showCursada con los IDs de cursada y tecnicatura
+                showCursoCursada({{ cursoId|default('null') }});
+            {% else %}
+            {% endif %}
+
+            {% if cursoId2 is defined and cursoId2 is not null %}
+                // Llamar a showCursada con los IDs de cursada y tecnicatura
+                showAsistencia({{ cursoId2|default('null') }});
+            {% else %}
+            {% endif %}
+        });
+    </script>
+
+    {# Filtro necesario para no acceder un docente a todas los cursos, aqui ademas el super-adminitrador puede acceder sin filtro a todos los registros #}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var userEmail = "{{ app.user.email }}";  // aqui obtenemos el correo del usuario logueado
+            var userDni = userEmail.split('@')[0];  // Extraer el DNI antes del '@'
+            
+            // Llamar a la función de filtrado
+            if (userEmail !== 'admin@admin.i12') {
+                filterTableByDni(userDni);
+            }
+        });
+
+        function filterTableByDni(dni) {
+            // Obtener todas las filas de la tabla
+            var rows = document.querySelectorAll("#tablaTecnicaturas tbody tr");
+            
+            // Recorrer cada fila y mostrar/ocultar según el DNI
+            rows.forEach(function(row) {
+                var docenteData = row.querySelector('td:first-child').innerText;  // Obtener el texto del primer <td> (Docente)
+                if (docenteData.includes(dni)) {
+                    row.style.display = '';  // Mostrar la fila
+                } else {
+                    row.style.display = 'none';  // Ocultar la fila
+                }
+            });
+        }
+    </script>
+
+{% endblock %}
+
+
+{% block body %}
+    <div id="body-vistas">
+        <h1 id="vistas">Central Docente/s</h1>
+        <table class="tabla_home" id="tablaTecnicaturas" border="1">
+            <thead>
+                <tr>
+                    <th>Docente</th>
+                    <th>Asignatura</th>
+                    <th>Comision</th>
+                    <th>Tecnicatura</th>
+                    <th>Asistencias</th>
+                    <th>Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cursada_docente in cursada_docentes %}
+                <tr>
+                    <td>{{ cursada_docente }}</td>
+                    <td>{{ cursada_docente.curso.asignatura.nombre }}</td>
+                    <td>{{ cursada_docente.curso.comision }}</td>
+                    <td>{{ cursada_docente.curso.comision.tecnicatura }}</td>
+                    <td>
+                        <button onclick="showAsistencia({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
+                    </td>
+                    <td>
+                        <button onclick="showCursoCursada({{ cursada_docente.curso.id }})" class="btn-primary">Notas</button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+        {% for curso in cursos %}
+            <table id="tablaCursoCursada_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
+                <thead>
+                    <tr>
+                        <th colspan="4">{{ curso.comision.tecnicatura }} -Cursadas de Curso-</th>
+                        <th colspan="3"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
+                    </tr>
+                    <tr>
+                        <th>Asignatura :</th>
+                        <th colspan="6"> {{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
+                    </tr>
+                    <tr>    
+                        <th>Curso</th>
+                        <th>Cursada</th>
+                        <th>N1</th>
+                        <th>R1</th>
+                        <th>N2</th>
+                        <th>R2</th>
+                        <th>Condicion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cursada in curso.cursadas %}
+                        {% if cursada.curso.ciclolectivo == curso.ciclolectivo %}
+                            <tr>
+                                <td>{{ curso.ciclolectivo }}</td>
+                                <td>{{ cursada.alumno }}</td>
+                                <td>
+                                    {{ cursada.getNotaId().parcial }}
+                                    <button 
+                                        onclick="openModal1({{ cursada.getNotaId().id }}, {{ curso.id }}, 'parcial')" 
+                                        {% if cursada.getNotaId().parcial is not null %}style="display: none;"{% endif %}
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    {{ cursada.getNotaId().recuperatorio1 }}
+                                    <button 
+                                        onclick="openModal1({{ cursada.getNotaId().id }}, {{ curso.id }}, 'recuperatorio1')" 
+                                        {% if cursada.getNotaId().recuperatorio1 is not null %}style="display: none;"{% endif %}
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    {{ cursada.getNotaId().parcial2 }}
+                                    <button 
+                                        onclick="openModal1({{ cursada.getNotaId().id }}, {{ curso.id }}, 'parcial2')" 
+                                        {% if cursada.getNotaId().parcial2 is not null %}style="display: none;"{% endif %}
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    {{ cursada.getNotaId().recuperatorio2 }}
+                                    <button 
+                                        onclick="openModal1({{ cursada.getNotaId().id }}, {{ curso.id }}, 'recuperatorio2')" 
+                                        {% if cursada.getNotaId().recuperatorio2 is not null %}style="display: none;"{% endif %}
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>{{ cursada.condicion }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+
+
+
+
+
+
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la fecha actual y formatearla en 'd-m-Y'
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedToday = `${day}-${month}-${year}`;
+
+            // Establecer la fecha generada en un elemento HTML
+            document.getElementById('fecha-tabla-asistencia').textContent = 'La fecha de hoy es: ' + formattedToday;
+            document.getElementById('hiddenFechaJavaScript').value = formattedToday;
+
+            // Comparar la fecha y actualizar la tabla
+            const fechaActual = formattedToday;
+            document.querySelectorAll('tbody').forEach(tbody => {
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const fechaAsistencia = row.querySelector('.fecha-asistencia');
+                    if (fechaAsistencia) {
+                        const asistenciaFecha = fechaAsistencia.textContent.trim();
+                        if (asistenciaFecha !== fechaActual) {
+                            row.style.display = 'none'; // Oculta las filas que no coinciden con la fecha actual
+                        } else {
+                            row.style.display = ''; // Muestra las filas que coinciden con la fecha actual
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Campo oculto para almacenar la fecha generada por JavaScript -->
+    <input type="hidden" id="hiddenFechaJavaScript">
+
+    {% for curso in cursos %}
+        <table id="tablaAsistencia_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="4">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
+                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
+                </tr>
+                <tr>
+                    <th>Asignatura :<p id="fecha-tabla-asistencia">Hoy es:</p></th>
+                    <th colspan="4"> {{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
+                    <th colspan="1"><button onclick="showAsistencia2({{ curso.id }})" class="btn-primary">Ver Asistencias</button></th>
+                </tr>
+                <tr>
+                    <th>Curso</th>
+                    <th>Cursada</th>
+                    <th>Fecha</th>
+                    <th>Asistencia</th>
+                    <th>Observacion</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cursada in curso.cursadas %}
+                    {% for asistencia in cursada.getAsistencias %}
+                        {% set asistenciaFecha = asistencia.fecha|date('d-m-Y') %}
+                        <tr>
+                                <td>{{ curso.ciclolectivo }}</td>
+                                <td>{{ cursada.alumno }}</td>
+                                <td class="fecha-asistencia">{{ asistenciaFecha }}</td>
+                                <td>{{ asistencia.asistencia }}</td>
+                                <td>{{ asistencia.observacion }}</td>
+                                <td>
+                                    <button onclick="openModal3({{ curso.id }}, {{ cursada.id }}, {{ asistencia.id }})">Editar</button>
+                                </td>                         
+                        </tr>
+                    {% else %}                
+           
+           
+                    {% endfor %}
+                {% endfor %}
+                {% set currentDate = "now"|date("m-d-Y") %}
+                        {% for cursada in curso.cursadas %}
+                            {% set asistenciaParaHoy = null %}
+                            {% for asistencia in cursada.getAsistencias %}
+                                {% if asistencia.fecha|date('m-d-Y') == currentDate %}
+                                    {% set asistenciaParaHoy = asistencia %}
+                                {% endif %}
+                            {% endfor %}
+                            <tr>
+                                {% if asistenciaParaHoy is not null %}
+                                {% else %}
+                                    <td>{{ curso.ciclolectivo }}</td>
+                                    <td>{{ cursada.alumno }}</td>
+                                    <td>
+                                        <button onclick="openModal2({{ curso.id }}, {{ cursada.id }}, '{{ cursada.alumno.persona.apellido }}')">Asistencia</button>
+                                    </td>
+                                    <td colspan="3">No hay asistencias registradas para hoy</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+
+            </tbody>
+        </table>
+
+
+
+
+
+
+        <table id="tablaAsistencia2_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="6">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
+                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
+                </tr>
+                <tr>
+                    <th colspan="2">Asignatura :<p id="fecha-tabla-asistencia"></p></th>
+                    <th colspan="6">{{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
+                </tr>
+                <tr>
+                    <th>Cursada</th>
+                    <th>Asistencias</th>
+                    <th>Inasistencias</th>
+                    <th>Media falta</th>
+                    <th>Justificada</th>
+                    <th>Total</th>
+                    <th>Porcentaje de asistencia</th>
+                    <th>Porcentaje de asistencia con justificada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cursada in curso.cursadas %}
+                    {% set total = 0 %}
+                    {% set asistencias = 0 %}
+                    {% set inasistencias = 0 %}
+                    {% set mediaFalta = 0 %}
+                    {% set justificada = 0 %}
+
+                    {% for asistencia in cursada.getAsistencias %}
+                        {% set total = total + 1 %}
+                        {% if asistencia.asistencia == 'presente' %}
+                            {% set asistencias = asistencias + 1 %}
+                        {% elseif asistencia.asistencia == 'ausente' %}
+                            {% set inasistencias = inasistencias + 1 %}
+                        {% elseif asistencia.asistencia == 'mediafalta' %}
+                            {% set mediaFalta = mediaFalta + 1 %}
+                        {% elseif asistencia.asistencia == 'justificada' %}
+                            {% set justificada = justificada + 1 %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if total > 0 %}
+                        {% set asistenciasTotales = asistencias + (mediaFalta * 0.5) %}
+                        {% set porcentajeAsistencia = (asistenciasTotales / total) * 100 %}
+                        {% set porcentajeJustificada = ((asistenciasTotales + justificada) / total) * 100 %}
+                    {% else %}
+                        {% set porcentajeAsistencia = 0 %}
+                        {% set porcentajeJustificada = 0 %}
+                    {% endif %}
+
+                    <tr>
+                        <td>{{ cursada.alumno }}</td>
+                        <td>{{ asistencias }}</td>
+                        <td>{{ inasistencias }}</td>
+                        <td>{{ mediaFalta }}</td>
+                        <td>{{ justificada }}</td>
+                        <td>{{ total }}</td>
+                        <td>{{ porcentajeAsistencia|number_format(2) }}%</td>
+                        <td>{{ porcentajeJustificada|number_format(2) }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+
+
+
+
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+
+        {# script asistencias #}
+        <script>
+            function openModal3(cursoId, cursadaId, asistenciaId) {
+                // Generar la URL con los IDs correctos
+                const url = "{{ path('editar_asistencias', { 'id': '__id__', 'curso_id': '__cursoId__' }) }}"
+                    .replace('__id__', asistenciaId)
+                    .replace('__cursoId__', cursoId);
+                // Realizar la solicitud fetch
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalBody-1').innerHTML = html;
+                        document.getElementById('Modal1').style.display = 'block';
+                            //asistencia_asistencia    asistencia_fecha       asistencia_observacion     asistencia_cursada
+
+                        // Configurar la fecha actual en los campos de mes, día y año
+                        const today = new Date();
+                        const dayInput = document.querySelector('#asistencia_fecha_day');
+                        const monthInput = document.querySelector('#asistencia_fecha_month');
+                        const yearInput = document.querySelector('#asistencia_fecha_year');
+
+                        if (dayInput) {
+                            dayInput.value = today.getDate();
+                        }
+                        if (monthInput) {
+                            monthInput.value = today.getMonth() + 1;
+                        }
+                        if (yearInput) {
+                            yearInput.value = today.getFullYear();
+                        }
+
+
+                        const cursadaInput = document.getElementById('asistencia_cursada');
+                        const labelCursada = document.querySelector('label[for="asistencia_cursada"]');
+                        if (labelCursada) {
+
+                            //labelCursada.style.display = 'none';
+                        }
+                        if (cursadaInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input 
+                            cursadaInput.value = cursadaId;
+                            cursadaInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                            cursadaInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                        }
+                
+                    })  
+                    .catch(error => console.error('Error al cargar el formulario de edición:', error));
+            }
+
+        </script>
+
+
+
+        {# script asistencias #}
+        <script>
+            function openModal2(cursoId, cursadaId, estud) {
+                
+                
+                // Generar la URL con los IDs correctos
+                const url = "{{ path('nuevas_asistencias', { 'curso_id': '__cursoId__' }) }}"
+                    .replace('__cursoId__', cursoId);
+                // Realizar la solicitud fetch
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalBody-1').innerHTML = html;
+                        document.getElementById('Modal1').style.display = 'block';
+                            //asistencia_asistencia    asistencia_fecha       asistencia_observacion     asistencia_cursada
+
+
+                        // Configurar la fecha actual en los campos de mes, día y año
+                        const today = new Date();
+                        const dayInput = document.querySelector('#asistencia_fecha_day');
+                        const monthInput = document.querySelector('#asistencia_fecha_month');
+                        const yearInput = document.querySelector('#asistencia_fecha_year');
+
+                        if (dayInput) {
+                            dayInput.value = today.getDate();
+                        }
+                        if (monthInput) {
+                            monthInput.value = today.getMonth() + 1;
+                        }
+                        if (yearInput) {
+                            yearInput.value = today.getFullYear();
+                        }
+
+                        const inputfecha = document.getElementById('asistencia_fecha');
+                        if (inputfecha) {
+                            inputfecha.style.display = 'none';
+                        }
+
+
+                        // Construir el texto de fecha y asignarlo al label
+                        const day = today.getDate();
+                        const month = today.getMonth() + 1;
+                        const year = today.getFullYear();
+                        const formattedDate = `Fecha: ${day}/${month}/${year}`; // Construir la cadena con la fecha
+
+                        const labelFecha = document.getElementById('label-fecha');
+                        if (labelFecha) {
+                            labelFecha.textContent = formattedDate; // Asignar el texto al label
+                            labelFecha.style.display = 'inline';
+                        }
+
+
+                        const cursadaInput = document.getElementById('asistencia_cursada');
+                        const labelCursada = document.querySelector('label[for="asistencia_cursada"]');
+                        if (labelCursada) {
+                            labelCursada.textContent = 'Estudiante: ' + estud;
+                             labelCursada.style.display = 'inline';
+                            //labelCursada.style.display = 'none';
+                        }
+                        if (cursadaInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input 
+                            cursadaInput.value = cursadaId;
+                            cursadaInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                            cursadaInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                        }
+
+                
+                    })  
+                    .catch(error => console.error('Error al cargar el formulario de edición:', error));
+            }
+        </script>
+
+
+        <script>
+            function openModal1(notaId, cursoId, campo) {
+                // Generar la URL con los IDs correctos
+                const url = "{{ path('editar_nota', { 'id': '__id__', 'curso_id': '__cursoId__' }) }}"
+                    .replace('__id__', notaId)
+                    .replace('__cursoId__', cursoId);
+                // Realizar la solicitud fetch
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalBody-1').innerHTML = html;
+                        document.getElementById('Modal1').style.display = 'block';
+                        
+                        // Ocultar campos según el parámetro 'campo'
+                        const campos = ['parcial', 'recuperatorio1', 'parcial2', 'recuperatorio2'];
+                        campos.forEach(c => {
+                            const label = document.querySelector(`label[for="nota_${c}"]`);
+                            const input = document.getElementById(`nota_${c}`);
+                            if (c !== campo) {
+                                if (label) label.style.display = 'none';
+                                if (input) input.style.display = 'none';
+                            }
+                        });
+                    })  
+                    .catch(error => console.error('Error al cargar el formulario de edición:', error));
+            }
+
+            function closeModal1() {
+                document.getElementById('Modal1').style.display = 'none';
+                document.getElementById('modalBody-1').innerHTML = ''; // Restablecer el contenido del modal
+            }
+        </script>
+
+        <!-- Modal1 para asignar notas a las materias de un docente!!!-->
+        <div id="Modal1" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-content21">
+                    <span class="close" onclick="closeModal1()">&times;</span>
+                    <div id="modalBody-1" class="submodal"></div>
+                </div>
+            </div>    
+        </div>
+
+        <!-- Modal2 para asignar Asistencias!!!-->
+        <div id="Modal2" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-content21">
+                    <span class="close" onclick="closeModal2()">&times;</span>
+                    <div id="modalBody-2" class="submodal"></div>
+                </div>
+            </div>    
+        </div>
+
+
+        <button id="backButton" style="display: none;" class="btn-primary">VOLVER</button>
+    </div>
+
+{% endblock %}

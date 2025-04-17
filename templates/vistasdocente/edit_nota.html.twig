@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-nota', 'action': path('editar_nota', {'curso_id': cursoId, 'id': nota.id})}}) }}
+        {{ form_row(form.parcial) }}
+        {{ form_row(form.recuperatorio1) }}
+        {{ form_row(form.parcial2) }}
+        {{ form_row(form.recuperatorio2) }}
+    <button type="submit" id="guarda-modal-edit">Guardar</button>
+{{ form_end(form) }}             

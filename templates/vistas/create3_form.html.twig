@@ -1,0 +1,7 @@
+{# create3_form.html.twig #}
+{{ form_start(form, {'attr': {'id': 'form-crea-correlativa', 'action': path('add_correlativa', {'asignatura_id': asignatura.id, 'tecnicatura_id': tecnicatura.id})}}) }}
+    {{ form_row(form.asignatura) }}
+    {{ form_row(form.correlativa) }}
+    {{ form_row(form.motivo) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

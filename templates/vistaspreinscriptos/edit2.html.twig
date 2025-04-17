@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %}OK de Pre Inscriptos{% endblock %}
+{% block body %}
+    <div class="modal">
+        <div class="modal-content" >
+            <p class="modalDePre"> 1 Persona ... OK</p>
+        </div>    
+    </div>  
+    <form action="{{ path('app_vistaspreinscriptos_edit2', { id: record.id }) }}" method="post" style="display: none;">
+        <div class="form-group">
+            <label for="new_field">Listo:</label>
+            <select id="new_field" name="new_field" class="form-control">
+                <option value="1" {% if record.new_field == '1' %}selected{% endif %}>1 - Formulario de persona cargado</option>
+            </select>
+        </div>
+        <button id="submitBtn" type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+    <script>
+        // Esperar 1 y enviar el formulario automáticamente
+        setTimeout(function() {
+            document.getElementById("submitBtn").click();
+        }, 10);
+    </script>
+{% endblock %}
+

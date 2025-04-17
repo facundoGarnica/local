@@ -1,0 +1,612 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vistas!{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# Script de filtros y muestra de tecnicatura seleccionada #}
+    <script>
+        function filterTableTecnicatura() {
+            let searchNombre = document.getElementById("searchNombre").value.toLowerCase();
+            let searchReso = document.getElementById("searchResolucion").value.toLowerCase();
+            let table = document.getElementById("tablaTecnicaturas"); // Obtener la tabla de tecnicaturas
+            let rows = table.getElementsByTagName("tr");       
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                let nombre = cells[0].textContent.toLowerCase();
+                let resolucion = cells[3].textContent.toLowerCase();
+                if (nombre.includes(searchNombre) && resolucion.includes(searchReso)) {
+                    rows[i].style.display = ""; 
+                } else {
+                    rows[i].style.display = "none"; 
+                }
+            }
+        }
+
+        function showAsignaturas(tecnicaturaId) {
+            // Ocultar todas las tablas de asignaturas
+            let tables = document.querySelectorAll('.tabla_home');
+            tables.forEach(table => table.style.display = 'none');
+
+            // Mostrar la tabla de asignaturas correspondiente
+            let asignaturasTable = document.getElementById(`tablaAsignaturas_${tecnicaturaId}`);
+            if (asignaturasTable) {
+                asignaturasTable.style.display = '';
+            }
+
+            // Ocultar filtro tecnicaturas
+            let search = document.getElementById(`searchs`);
+            if (search) {
+                search.style.display = 'none';
+            }
+
+            // Mostrar botón de regresar
+            let backButton = document.getElementById(`backButton`);
+            if (backButton) {
+                backButton.style.display = '';
+                // Asociar función para regresar
+                backButton.onclick = function() {
+                    hideAsignaturas(tecnicaturaId);
+                };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Twig evalúa si tecId está definido y no es nulo
+            {% if tecId is defined and tecId is not null %}
+                console.log('El ID de tecnicatura es: ', {{ tecId }});
+                showAsignaturas({{ tecId }});
+            {% else %}
+                console.log('El ID de tecnicatura no está definido o es nulo.');
+            {% endif %}
+        });
+
+        function hideAsignaturas(tecnicaturaId) {
+            // Ocultar la tabla de asignaturas correspondiente
+            let asignaturasTable = document.getElementById(`tablaAsignaturas_${tecnicaturaId}`);
+            if (asignaturasTable) {
+                asignaturasTable.style.display = 'none';
+            }
+
+            // Mostrar filtro tecnicaturas
+            let search = document.getElementById(`searchs`);
+            if (search) {
+                search.style.display = '';
+            }
+
+            // Mostrar la tabla de tecnicaturas principal
+            let tablaTecnicaturas = document.getElementById('tablaTecnicaturas');
+            if (tablaTecnicaturas) {
+                tablaTecnicaturas.style.display = '';
+            }
+
+            // Ocultar el botón de regresar
+            let backButton = document.getElementById(`backButton`);
+            if (backButton) {
+                backButton.style.display = 'none';
+            }
+        }
+    </script>
+
+    {#Seccion de modales edit create  #}
+    <script>
+        function openEditModal(asignaturaId, tecnicaturaId, anios) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('editar_asignatura', { 'id': '__asignaturaId__', 'tecnicatura_id': '__tecnicaturaId__' }) }}"
+                .replace('__asignaturaId__', asignaturaId)
+                .replace('__tecnicaturaId__', tecnicaturaId);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalContent').innerHTML = html;
+                    document.getElementById('editModal').style.display = 'block';
+                    hideFields('modalContent', tecnicaturaId, anios);
+                })
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+        // Función para cerrar el modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('modalContent').innerHTML = '';
+        }
+
+        function openCreateModal(tecnicaturaId, anio) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('crear_asignatura', { 'tecnicatura_id': '__tecnicaturaId__' }) }}"
+                .replace('__tecnicaturaId__', tecnicaturaId);
+
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody').innerHTML = html;
+                    document.getElementById('asignaturaModal').style.display = 'block';
+
+                    hideFields('modalBody', tecnicaturaId, anio);
+                })
+                .catch(error => console.error('Error al cargar el formulario de creación:', error));
+        }
+
+        function hideFields(containerId, tecnicaturaId, anio) {
+            const container = document.getElementById(containerId);
+            // Ocultar labels
+            const labelTecnicatura = container.querySelector('label[for="asignatura_tecnicatura"]');
+            if (labelTecnicatura) {
+                labelTecnicatura.style.display = 'none';
+            }
+
+            const labelAnio = container.querySelector('label[for="asignatura_anio"]');
+            if (labelAnio) {
+                labelAnio.style.display = 'none';
+            }
+
+            const labelProgram = container.querySelector('label[for="asignatura_programa"]');
+            if (labelProgram) {
+                labelProgram.style.display = 'none';
+            }
+
+            // Ocultar y asignar valores a los inputs
+            const tecnicaturaInput = container.querySelector('#asignatura_tecnicatura');
+            if (tecnicaturaInput) {
+                tecnicaturaInput.value = tecnicaturaId;
+                tecnicaturaInput.setAttribute('readonly', true);
+                tecnicaturaInput.style.display = 'none';
+            }
+
+            const programInput = container.querySelector('#asignatura_programa');
+            if (programInput) {
+                programInput.value = tecnicaturaId;
+                programInput.setAttribute('readonly', true);
+                programInput.style.display = 'none';
+            }
+
+            const anioInput = container.querySelector('#asignatura_anio');
+            if (anioInput) {
+                anioInput.value = anio;
+                anioInput.setAttribute('readonly', true);
+                anioInput.style.display = 'none';
+            }
+        }
+
+
+        function closeModalAsignatura() {
+            document.getElementById('asignaturaModal').style.display = 'none';
+             document.getElementById('modalBody').innerHTML = '';
+        }
+
+        //crear tecnicatura nueva
+        function openCreateModalTec() {
+            fetch("{{ path('crear_tecnicatura')}}")
+            .then(response => response.text())
+                .then(html => {
+                    // Mostrar el contenido en el modal
+                    document.getElementById('tecnicaturaBody').innerHTML = html;
+                    document.getElementById('tecnicaturaModal').style.display = 'block';
+                })
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+        function closeModalTecnicatura() {
+            document.getElementById('tecnicaturaModal').style.display = 'none';
+             document.getElementById('tecnicaturaBody').innerHTML = '';
+        }
+    </script>
+
+    
+    {# Seccion de ocultar los botones cuando no hay pdf y mostrar un label -no hay pdf- #}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Realiza una solicitud para obtener la lista de PDFs
+            fetch("{{ path('pdf_list')}}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Inicializar arrays vacíos para almacenar los PDFs
+                    let tecnicaturasPdfs = [];
+                    let asignaturasPdfs = [];
+
+                    // Construir tecnicaturasPdfs
+                    if (Array.isArray(data.tecnicaturas)) {
+                        data.tecnicaturas.forEach(item => {
+                            if (typeof item === 'string') {
+                                tecnicaturasPdfs.push(item.split('/').pop());
+                            } else if (typeof item === 'object' && Object.values(item).length > 0) {
+                                Object.values(item).forEach(pdf => {
+                                    tecnicaturasPdfs.push(pdf.split('/').pop());
+                                });
+                            }
+                        });
+                    } else if (typeof data.tecnicaturas === 'string') {
+                        tecnicaturasPdfs.push(data.tecnicaturas.split('/').pop());
+                    } else if (typeof data.tecnicaturas === 'object' && Object.values(data.tecnicaturas).length > 0) {
+                        Object.values(data.tecnicaturas).forEach(pdf => {
+                            tecnicaturasPdfs.push(pdf.split('/').pop());
+                        });
+                    }
+
+                    // Construir asignaturasPdfs
+                    if (Array.isArray(data.asignaturas)) {
+                        data.asignaturas.forEach(item => {
+                            if (typeof item === 'string') {
+                                asignaturasPdfs.push(item.split('/').pop());
+                            } else if (typeof item === 'object' && Object.values(item).length > 0) {
+                                Object.values(item).forEach(pdf => {
+                                    asignaturasPdfs.push(pdf.split('/').pop());
+                                });
+                            }
+                        });
+                    } else if (typeof data.asignaturas === 'string') {
+                        asignaturasPdfs.push(data.asignaturas.split('/').pop());
+                    } else if (typeof data.asignaturas === 'object' && Object.values(data.asignaturas).length > 0) {
+                        Object.values(data.asignaturas).forEach(pdf => {
+                            asignaturasPdfs.push(pdf.split('/').pop());
+                        });
+                    }
+
+                    // Log para verificar el contenido de las listas de PDFs (opcional)
+                    console.log('PDFs de Tecnicauras:', tecnicaturasPdfs);
+                    console.log('PDFs de Asignaturas:', asignaturasPdfs);
+
+                    // Selecciona todos los enlaces con la clase 'pdf-link'
+                    const pdfLinks = document.querySelectorAll('.pdf-link');
+
+                    pdfLinks.forEach(function(link) {
+                        const pdfPath = link.getAttribute('data-pdf-path');
+                        let pdfExists = false;
+
+                        // Verifica si el archivo existe en alguna de las listas de PDFs
+                        if (pdfPath.includes('tecnicaturas')) {
+                            pdfExists = tecnicaturasPdfs.includes(pdfPath.split('/').pop());
+                        } else if (pdfPath.includes('asignaturas')) {
+                            pdfExists = asignaturasPdfs.includes(pdfPath.split('/').pop());
+                        }
+
+                        if (!pdfExists) {
+                            // Si el archivo no existe, oculta el enlace y muestra el mensaje alternativo
+                            link.style.display = 'none';
+                            link.nextElementSibling.style.display = 'inline'; // Muestra "No hay PDF"
+                        } else {
+                            // Si el archivo existe, habilita el botón "Abrir PDF"
+                            link.querySelector('button').disabled = false;
+                        }
+                    });
+                })
+                .catch(error => {
+                    // Maneja cualquier error en la solicitud
+                    console.error('Error al obtener la lista de PDFs:', error);
+
+                    // Oculta todos los enlaces de PDFs y muestra el mensaje alternativo en caso de error
+                    const pdfLinks = document.querySelectorAll('.pdf-link');
+                    pdfLinks.forEach(function(link) {
+                        link.style.display = 'none';
+                        link.nextElementSibling.style.display = 'inline'; // Muestra "No hay PDF"
+                    });
+                });
+        });
+    </script>
+
+
+
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.session.flashbag.all() %}
+        {% for message in messages %}
+            {#<div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>#}
+        {% endfor %}
+    {% endfor %}
+
+    <div id="body-vistas">
+        <h1 id="vistas">Central Tecnicaturas y Asignaturas</h1>
+
+        <div id="searchs" class="search-container">
+            <label for="searchNombre">Buscar por Nombre:</label>
+            <input type="text" id="searchNombre" onkeyup="filterTableTecnicatura()" placeholder="Buscar por nombre...">
+            <label for="searchResolucion">Buscar por Resolucion:</label>
+            <input type="text" id="searchResolucion" onkeyup="filterTableTecnicatura()" placeholder="Buscar por resolucion...">
+            <button onclick="openCreateModalTec()" class="btn-primary">Crear Tecnicatura</button>
+        </div>
+
+        <table class="tabla_home" id="tablaTecnicaturas" border="1">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Duración</th>
+                    <th>Cantidad de Asignaturas</th>
+                    <th>Número de Resolución</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tecnicatura in tecnicaturas %}
+                    <tr>
+                        <td>{{ tecnicatura.nombre }}</td>
+                        <td>{{ tecnicatura.duracion }}</td>
+                        <td>{{ tecnicatura.cantidadAsignaturas }}</td>
+                        <td>{{ tecnicatura.numeroResolucion }}</td>
+                        <td>
+                            <button onclick="showAsignaturas({{ tecnicatura.id }})" class="btn-primary">Ir</button>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">No se encontraron registros</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% for tecnicatura in tecnicaturas %}
+            <table id="tablaAsignaturas_{{ tecnicatura.id }}" class="tabla_home" style="display: none;" border="1">
+                <thead>
+                    <tr>
+                        <th>{{tecnicatura}} </th>
+                        <th>
+                            <!-- Botón para guardar resolución -->
+                            <button id="guardar-resolucion-{{ tecnicatura.id }}" class="btn-primary" onclick="document.getElementById('upload-file-{{ tecnicatura.id }}').click();">
+                                Guardar res
+                            </button> 
+                            <!-- Formulario oculto -->
+                            <form id="upload-form-{{ tecnicatura.id }}" action="{{ path('upload_pdf') }}" method="post" enctype="multipart/form-data" style="display:none;">
+                                <input type="hidden" name="tecnicatura_id" value="{{ tecnicatura.id }}">
+                                <input type="file" id="upload-file-{{ tecnicatura.id }}" name="pdf_file" accept="application/pdf" onchange="document.getElementById('upload-form-{{ tecnicatura.id }}').submit();">
+                            </form>
+                        </th>
+                        <th>
+                            <a href="{{ asset('archivos/tecnicaturas/' ~ tecnicatura.id ~ '.pdf') }}" target="_blank" class="pdf-link" data-pdf-path="{{ asset('archivos/tecnicaturas/' ~ tecnicatura.id ~ '.pdf') }}">
+                                <button type="button" class="btn btn-primary">Abrir PDF</button>
+                            </a>
+                            <span class="pdf-not-found" style="display: none;">No hay PDF</span>
+                        </th>
+                    </tr>
+                    <tr>                  
+                        <th>Año 1</th>
+                        <th>Año 2</th>
+                        <th>Año 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set asignaturas_anio1 = [] %}
+                    {% set asignaturas_anio2 = [] %}
+                    {% set asignaturas_anio3 = [] %}
+
+                    {% for asignatura in asignaturas %}
+                        {% if asignatura.tecnicatura.id == tecnicatura.id %}
+                            {% if asignatura.anio == 1 %}
+                                {% set asignaturas_anio1 = asignaturas_anio1|merge([asignatura]) %}
+                            {% elseif asignatura.anio == 2 %}
+                                {% set asignaturas_anio2 = asignaturas_anio2|merge([asignatura]) %}
+                            {% elseif asignatura.anio == 3 %}
+                                {% set asignaturas_anio3 = asignaturas_anio3|merge([asignatura]) %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+
+                    {% set max_filas_anio1 = asignaturas_anio1|length + 1 %}
+                    {% set max_filas_anio2 = asignaturas_anio2|length + 1 %}
+                    {% set max_filas_anio3 = asignaturas_anio3|length + 1 %}
+
+                    {# Calcular el máximo manualmente #}
+                    {% set max_rows = max_filas_anio1 %}
+                    {% if max_filas_anio2 > max_rows %}
+                        {% set max_rows = max_filas_anio2 %}
+                    {% endif %}
+                    {% if max_filas_anio3 > max_rows %}
+                        {% set max_rows = max_filas_anio3 %}
+                    {% endif %}
+
+
+                   {# {% set max_rows = 12 %} {# Definir el número máximo de filas por columna #}
+
+                    {% for i in range(0, max_rows -1) %}
+                        <tr>
+                            <td>
+                                {{ asignaturas_anio1[i].nombre ?? '' }}<br>
+                                {% if asignaturas_anio1[i] is defined %}
+                                    <a href="javascript:void(0)" onclick="openEditModal({{ asignaturas_anio1[i].id }}, {{ tecnicatura.id }}, 1)">
+                                        <button type="button" class="btn-primary">Editar</button>
+                                    </a>
+                                    <button id="guardar-asignatura-{{ asignaturas_anio1[i].id }}" class="btn-primary" onclick="document.getElementById('upload-file-asignatura-{{ asignaturas_anio1[i].id }}').click();">
+                                        Guardar PDF
+                                    </button>
+                                    <!-- Formulario oculto para subir PDF de la asignatura -->
+                                    <form id="upload-form-asignatura-{{ asignaturas_anio1[i].id }}" action="{{ path('asignatura_pdf') }}" method="post" enctype="multipart/form-data" style="display:none;">
+                                        <input type="hidden" name="asignatura_id" value="{{ asignaturas_anio1[i].id }}">
+                                        <input type="hidden" name="tecnicatura_id" value="{{ asignaturas_anio1[i].tecnicatura.id }}"> <!-- Agregar el id de la tecnicatura -->
+                                        <input type="file" id="upload-file-asignatura-{{ asignaturas_anio1[i].id }}" name="pdf_file" accept="application/pdf" onchange="document.getElementById('upload-form-asignatura-{{ asignaturas_anio1[i].id }}').submit();">
+                                    </form>    
+                                    <!-- Botón para ver PDF de la asignatura -->
+                                    <a href="{{ asset('archivos/asignaturas/' ~ asignaturas_anio1[i].id ~ '.pdf') }}" target="_blank" class="pdf-link" data-pdf-path="{{ asset('archivos/asignaturas/' ~ asignaturas_anio1[i].id ~ '.pdf') }}">
+                                        <button type="button" class="btn btn-primary">Abrir PDF</button>
+                                    </a>
+                                    <span class="pdf-not-found" style="display: none;">No hay PDF</span>
+                                {% else %}
+                                    <button onclick="openCreateModal({{ tecnicatura.id }}, 1)" class="btn-primary">Crear</button>
+                                {% endif %}
+
+
+
+                            </td>
+                            <td>
+                                {{ asignaturas_anio2[i].nombre ?? '' }}<br>
+                                {% if asignaturas_anio2[i] is defined %}
+                                    <a href="javascript:void(0)" onclick="openEditModal({{ asignaturas_anio2[i].id }}, {{ tecnicatura.id }}, 2)">
+                                        <button type="button" class="btn-primary">Editar</button>
+                                    </a>
+                                    <button id="guardar-asignatura-{{ asignaturas_anio2[i].id }}" class="btn-primary" onclick="document.getElementById('upload-file-asignatura-{{ asignaturas_anio2[i].id }}').click();">
+                                        Guardar PDF
+                                    </button>
+                                    <!-- Formulario oculto para subir PDF de la asignatura -->
+                                    <form id="upload-form-asignatura-{{ asignaturas_anio2[i].id }}" action="{{ path('asignatura_pdf') }}" method="post" enctype="multipart/form-data" style="display:none;">
+                                        <input type="hidden" name="asignatura_id" value="{{ asignaturas_anio2[i].id }}">
+                                        <input type="hidden" name="tecnicatura_id" value="{{ asignaturas_anio2[i].tecnicatura.id }}"> <!-- Agregar el id de la tecnicatura -->
+                                        <input type="file" id="upload-file-asignatura-{{ asignaturas_anio2[i].id }}" name="pdf_file" accept="application/pdf" onchange="document.getElementById('upload-form-asignatura-{{ asignaturas_anio2[i].id }}').submit();">
+                                    </form>  
+                                    <!-- Botón para ver PDF de la asignatura -->
+                                    <a href="{{ asset('archivos/asignaturas/' ~ asignaturas_anio2[i].id ~ '.pdf') }}" target="_blank" class="pdf-link" data-pdf-path="{{ asset('archivos/asignaturas/' ~ asignaturas_anio2[i].id ~ '.pdf') }}">
+                                        <button type="button" class="btn btn-primary">Abrir PDF</button>
+                                    </a>
+                                    <span class="pdf-not-found" style="display: none;">No hay PDF</span>
+
+                                    <a href="javascript:void(0)" onclick="openModal('add', {{ asignaturas_anio2[i].id }}, {{ tecnicatura.id }})">
+                                        <button type="button" class="btn-primary">Agregar correlativa</button>
+                                    </a>
+
+                                    <a href="javascript:void(0)" onclick="openModal('view', {{ asignaturas_anio2[i].id }}, {{ tecnicatura.id }})">
+                                        <button type="button" class="btn-primary">Ver correlativas</button>
+                                    </a>
+
+
+
+                                {% else %}
+                                    <button onclick="openCreateModal({{ tecnicatura.id }}, 2)" class="btn-primary">Crear</button>
+                                {% endif %}
+
+
+
+                            </td>
+                            <td>
+                                {{ asignaturas_anio3[i].nombre ?? '' }}<br>
+                                {% if asignaturas_anio3[i] is defined %}
+                                    <a href="javascript:void(0)" onclick="openEditModal({{ asignaturas_anio3[i].id }}, {{ tecnicatura.id }}, 3)">
+                                        <button type="button" class="btn-primary">Editar</button>
+                                    </a>
+                                    <button id="guardar-asignatura-{{ asignaturas_anio3[i].id }}" class="btn-primary" onclick="document.getElementById('upload-file-asignatura-{{ asignaturas_anio3[i].id }}').click();">
+                                        Guardar PDF
+                                    </button>
+                                    <!-- Formulario oculto para subir PDF de la asignatura -->
+                                    <form id="upload-form-asignatura-{{ asignaturas_anio3[i].id }}" action="{{ path('asignatura_pdf') }}" method="post" enctype="multipart/form-data" style="display:none;">
+                                        <input type="hidden" name="asignatura_id" value="{{ asignaturas_anio3[i].id }}">
+                                        <input type="hidden" name="tecnicatura_id" value="{{ asignaturas_anio3[i].tecnicatura.id }}"> <!-- Agregar el id de la tecnicatura -->
+                                        <input type="file" id="upload-file-asignatura-{{ asignaturas_anio3[i].id }}" name="pdf_file" accept="application/pdf" onchange="document.getElementById('upload-form-asignatura-{{ asignaturas_anio3[i].id }}').submit();">
+                                    </form>              
+                                    <!-- Botón para ver PDF de la asignatura -->
+                                    <a href="{{ asset('archivos/asignaturas/' ~ asignaturas_anio3[i].id ~ '.pdf') }}" target="_blank" class="pdf-link" data-pdf-path="{{ asset('archivos/asignaturas/' ~ asignaturas_anio3[i].id ~ '.pdf') }}">
+                                        <button type="button" class="btn btn-primary">Abrir PDF</button>
+                                    </a>
+                                    <span class="pdf-not-found" style="display: none;">No hay PDF</span>
+
+
+                                    <a href="javascript:void(0)" onclick="openModal('add', {{ asignaturas_anio3[i].id }}, {{ tecnicatura.id }})">
+                                        <button type="button" class="btn-primary">Agregar correlativa</button>
+                                    </a>
+
+                                    <a href="javascript:void(0)" onclick="openModal('view', {{ asignaturas_anio3[i].id }}, {{ tecnicatura.id }})">
+                                        <button type="button" class="btn-primary">Ver correlativas</button>
+                                    </a>
+
+
+                                {% else %}
+                                    <button onclick="openCreateModal({{ tecnicatura.id }}, 3)" class="btn-primary">Crear</button>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+
+        <script>
+            function openModal(action, asignaturaId, tecnicaturaId) {
+                let url = '';
+                if (action === 'add') {
+                    url = "{{ path('add_correlativa', { 'asignatura_id': '__asignaturaId__', 'tecnicatura_id': '__tecnicaturaId__' }) }}"
+                        .replace('__asignaturaId__', asignaturaId)
+                        .replace('__tecnicaturaId__', tecnicaturaId);
+                                        fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalCorre').innerHTML = html;
+                        document.getElementById('correlativaModal').style.display = 'block';
+
+                            const correInput = document.getElementById('correlativa_asignatura');
+
+                            // Ocultar label de tecnicatura
+                            const labelCorre = document.querySelector('label[for="correlativa_asignatura"]');
+                            if (labelCorre) {
+                                labelCorre.style.display = 'none';
+                            }
+
+                            if (correInput) { 
+                                correInput.value = asignaturaId;
+                                correInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                                correInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                            }
+
+
+                    })
+                    .catch(error => console.error('Error al cargar el contenido del modal:', error));
+
+                } else if (action === 'view') {
+                    url = "{{ path('view_correlativas', { 'asignatura_id': '__asignaturaId__' }) }}"
+                        .replace('__asignaturaId__', asignaturaId);
+                    fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalCorre').innerHTML = html;
+                        document.getElementById('correlativaModal').style.display = 'block';
+                    })
+                    .catch(error => console.error('Error al cargar el contenido del modal:', error));    
+                }
+                
+            }
+
+            function closeCorrelativaModal() {
+                document.getElementById('correlativaModal').style.display = 'none';
+                document.getElementById('modalCorre').innerHTML = '';
+            }
+
+        </script>
+
+        <!-- Modal Correlativa -->
+        <div id="correlativaModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeCorrelativaModal()">&times;</span>
+                <div id="modalCorre" class="submodal"></div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Modal para editar asignatura -->
+        <div id="editModal" class="modal" style="display:none">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <div id="modalContent" class="submodal"></div>
+            </div>
+        </div>
+
+        <!-- Modal HTML para Crear Asignatura -->
+        <div id="asignaturaModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModalAsignatura()">&times;</span>
+                <div id="modalBody" class="submodal"></div>
+            </div>
+        </div>
+
+        <!-- Modal HTML para Crear tecnicatura -->
+        <div id="tecnicaturaModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModalTecnicatura()">&times;</span>
+                <div id="tecnicaturaBody" class="submodal"></div>
+            </div>
+        </div>
+
+
+        <button id="backButton" style="display: none;" class="btn-primary">TECNICATURAS</button>
+
+    </div>
+{% endblock %}
+

@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-alumno', 'action': path('editar_alumno', {'alumnoid': alumnoId, 'id': alumno.id})}}) }}
+        {{ form_row(form.titulo_sec) }}
+        {{ form_row(form.escuela_sec) }}
+        {{ form_row(form.anio_egreso) }}
+        {{ form_row(form.persona) }}
+    <button type="submit" id="guarda-modal-edit">Guardar</button>
+{{ form_end(form) }}  

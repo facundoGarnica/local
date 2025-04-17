@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Tecnicatura{% endblock %}
+
+{% block body %}
+    <h1>Edit Tecnicatura</h1>
+
+    {{ include('tecnicatura/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_tecnicatura_index') }}">back to list</a>
+
+    {{ include('tecnicatura/_delete_form.html.twig') }}
+{% endblock %}

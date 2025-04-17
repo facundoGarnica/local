@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-editar-asistencia'}, 'action': path('editar_asistencias', { 'curso_id': cursoId2,  'id': asistencium.id}) }) }}
+        {{ form_row(form.fecha) }}
+        {{ form_row(form.asistencia) }}
+        {{ form_row(form.observacion) }}
+        {{ form_row(form.cursada) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}    

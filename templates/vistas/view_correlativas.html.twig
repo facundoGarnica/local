@@ -1,0 +1,26 @@
+{% block body %}
+<h3>Correlativas de {{ asignatura.nombre }}</h3>
+
+<table class="tabla_home" id="tablaTecnicaturas" border="1">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Motivo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if correlativas is defined and correlativas is not null %}
+            {% for corre in correlativas %}
+                <tr>
+                    <td>{{ corre.correlativa.nombre }}</td>
+                    <td>{{ corre.motivo }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+{% endblock %}

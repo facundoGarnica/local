@@ -1,0 +1,15 @@
+
+{{ form_start(form, {
+    'attr': {'id': 'form-crea-cursadadocente'},
+    'action': path('crear_cursada_docente', { 'curso_id': cursoId })
+}) }}
+
+        {{ form_row(form.toma) }}
+        {{ form_row(form.cese) }}
+        {{ form_row(form.docente) }}
+        {{ form_row(form.revista) }}
+        {{ form_row(form.licencia) }}
+        {{ form_row(form.curso) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}
+ 

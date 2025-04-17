@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CursadaDocente index{% endblock %}
+
+{% block body %}
+    <h1>CursadaDocente index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Toma</th>
+                <th>Cese</th>
+                <th>Curso</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cursada_docente in cursada_docentes %}
+            <tr>
+                <td>{{ cursada_docente.id }}</td>
+                <td>{{ cursada_docente.toma ? cursada_docente.toma|date('Y-m-d') : '' }}</td>
+                <td>{{ cursada_docente.cese ? cursada_docente.cese|date('Y-m-d') : '' }}</td>
+                <td>{{ cursada_docente.curso }}</td>
+                <td>
+                    <a href="{{ path('app_cursada_docente_show', {'id': cursada_docente.id}) }}">show</a>
+                    <a href="{{ path('app_cursada_docente_edit', {'id': cursada_docente.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_cursada_docente_new') }}">Create new</a>
+{% endblock %}

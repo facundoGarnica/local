@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-MiMesa'},'action': path('nueva_mesa')} )}}
+        {{ form_row(form.fecha) }}
+        {{ form_row(form.presidente_id) }}
+        {{ form_row(form.Vocal1_id) }}
+        {{ form_row(form.Vocal2_id) }}
+        {{ form_row(form.asignatura_id) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

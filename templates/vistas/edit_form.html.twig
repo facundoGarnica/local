@@ -1,0 +1,10 @@
+{# edit_form.html.twig #}
+{{ form_start(form, {'attr': {'id': 'form-edit-asignatura', 'action': path('editar_asignatura', {'id': asignatura.id})}}) }}
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.anio, {'attr': {'readonly': 'readonly'}}) }} {# Hacer el campo solo lectura #}
+    {{ form_row(form.programa) }}
+    {{ form_row(form.tecnicatura, {'attr': {'readonly': 'readonly'}}) }} {# Hacer el campo solo lectura #}
+    {{ form_row(form.cant_mod) }}
+    {{ form_row(form.duracion) }}
+    <button type="submit" id="guarda-modal-edit">Guardar</button>
+{{ form_end(form) }} 

@@ -1,0 +1,9 @@
+asignatura tiene ->año 1 2 o 3
+
+tecnicatura su resolucion
+
+por lo que al armar una cursada (alumno - materia - nota - estado -) puedo automatizar mientras se filtra para llegar ahi
+
+tecnicatura toma su id, materia tiene su año que esta asociada a una tecnicatura  ahi es donde debo actura
+
+!!!!!--recordatorio gus!!!!!!!---

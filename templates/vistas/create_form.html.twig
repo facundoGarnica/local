@@ -1,0 +1,11 @@
+{# templates/vistas/create_form.html.twig #}
+
+{{ form_start(form, {'attr': {'id': 'form-crea-asignatura', 'action': path('crear_asignatura' )}}) }}
+        {{ form_row(form.nombre) }}
+        {{ form_row(form.anio) }}
+        {{ form_row(form.programa) }}
+        {{ form_row(form.tecnicatura) }}
+        {{ form_row(form.cant_mod) }}
+        {{ form_row(form.duracion) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

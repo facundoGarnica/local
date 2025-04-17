@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Instituto index{% endblock %}
+
+{% block body %}
+    <h1>Instituto index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Numero</th>
+                <th>Url_instituto</th>
+                <th>Tipo</th>
+                <th>Email</th>
+                <th>Calle</th>
+                <th>Altura</th>
+                <th>Numero_cue</th>
+                <th>Instituto</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for instituto in institutos %}
+            <tr>
+                <td>{{ instituto.id }}</td>
+                <td>{{ instituto.nombre }}</td>
+                <td>{{ instituto.numero }}</td>
+                <td>{{ instituto.urlInstituto }}</td>
+                <td>{{ instituto.tipo }}</td>
+                <td>{{ instituto.email }}</td>
+                <td>{{ instituto.calle }}</td>
+                <td>{{ instituto.altura }}</td>
+                <td>{{ instituto.numeroCue }}</td>
+                <td>{{ instituto.instituto }}</td>
+                <td>
+                    <a href="{{ path('app_instituto_show', {'id': instituto.id}) }}">show</a>
+                    <a href="{{ path('app_instituto_edit', {'id': instituto.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_instituto_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Habilitante{% endblock %}
+
+{% block body %}
+    <h1>Create new Habilitante</h1>
+
+    {{ include('habilitante/_form.html.twig') }}
+
+    <a href="{{ path('app_habilitante_index') }}">back to list</a>
+{% endblock %}

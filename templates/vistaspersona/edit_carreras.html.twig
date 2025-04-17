@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-carreras', 'action': path('editar_carreras', {'carrerasid': carrerasId, 'id': carreras.id})}}) }}
+    {{ form_row(form.estudiante_id) }} 
+    {{ form_row(form.tecnicatura_id) }} 
+    {{ form_row(form.estado) }} 
+    {{ form_row(form.inicio) }}
+    {{ form_row(form.fin) }} 
+    <button type="submit" id="guarda-modal-edit">Guardar</button>
+{{ form_end(form) }}  

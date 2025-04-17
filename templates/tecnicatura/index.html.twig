@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tecnicatura index{% endblock %}
+
+{% block body %}
+    <h1>Tecnicatura index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Duracion</th>
+                <th>Cantidad_asignaturas</th>
+                <th>Numero_resolucion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for tecnicatura in tecnicaturas %}
+            <tr>
+                <td>{{ tecnicatura.id }}</td>
+                <td>{{ tecnicatura.nombre }}</td>
+                <td>{{ tecnicatura.duracion }}</td>
+                <td>{{ tecnicatura.cantidadAsignaturas }}</td>
+                <td>{{ tecnicatura.numeroResolucion }}</td>
+                <td>
+                    <a href="{{ path('app_tecnicatura_show', {'id': tecnicatura.id}) }}">show</a>
+                    <a href="{{ path('app_tecnicatura_edit', {'id': tecnicatura.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_tecnicatura_new') }}">Create new</a>
+{% endblock %}

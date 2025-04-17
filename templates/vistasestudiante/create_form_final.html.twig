@@ -1,0 +1,6 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-MiFinal'},'action': path('nuevo_final')} )}}
+        {{ form_row(form.fecha) }}
+        {{ form_row(form.alumno_id) }}
+        {{ form_row(form.asignatura_id) }}
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

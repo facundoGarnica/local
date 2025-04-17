@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Curso index{% endblock %}
+
+{% block body %}
+    <h1>Curso index</h1>
+{#
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Horario</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for curso in cursos %}
+            <tr>
+                <td>{{ curso.id }}</td>
+                <td>{{ curso.horario }}</td>
+                <td>
+                    <a href="{{ path('app_curso_show', {'id': curso.id}) }}">show</a>
+                    <a href="{{ path('app_curso_edit', {'id': curso.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>#}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ciclo Lectivo</th>
+            <th>Horario</th>
+            <th>Asignatura</th>
+            <th>Comision</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for curso in cursos %}
+        <tr>
+            <td>{{ curso.id }}</td>
+            <td>{{ curso.cicloLectivo }}</td>
+            <td>{{ curso.horario }}</td>
+            <td>{{ curso.getAsignatura.nombre }}</td>
+            <td>{{ curso.getComision.comision }}</td>
+            <td>
+                <a href="{{ path('app_curso_show', {'id': curso.id}) }}">show</a>
+                <a href="{{ path('app_curso_edit', {'id': curso.id}) }}">edit</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7">no records found</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+    <a href="{{ path('app_curso_new') }}">Create new</a>
+{% endblock %}

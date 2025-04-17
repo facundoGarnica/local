@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-MiCursada'},'action': path('crear_MiCursada', { 'tecnicatura_id': tecId, 'comision_id': comId })}) }}
+        {{ form_row(form.condicion) }}
+        {{ form_row(form.alumno) }}
+        {{ form_row(form.modalidad) }}
+        {{ form_row(form.nota_id) }}
+        {{ form_row(form.curso) }} 
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}

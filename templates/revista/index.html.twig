@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Revista index{% endblock %}
+
+{% block body %}
+    <h1>Revista index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Descripcion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for revistum in revistas %}
+            <tr>
+                <td>{{ revistum.id }}</td>
+                <td>{{ revistum.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_revista_show', {'id': revistum.id}) }}">show</a>
+                    <a href="{{ path('app_revista_edit', {'id': revistum.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_revista_new') }}">Create new</a>
+{% endblock %}

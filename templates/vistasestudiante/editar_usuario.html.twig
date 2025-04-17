@@ -1,0 +1,9 @@
+{{ form_start(form, {'attr': {'id': 'form-editar-usuario'},'action': path('editar_usuario', { 'id': id })}) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.roles) }}
+        {{ form_row(form.password) }}
+        {{ form_row(form.nombre) }}
+        {{ form_row(form.apellido) }} 
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}       
+        
