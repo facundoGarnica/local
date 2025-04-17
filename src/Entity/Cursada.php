@@ -19,7 +19,7 @@ class Cursada
     private ?Alumno $alumno = null;
 
     #[ORM\ManyToOne(inversedBy: 'cursada')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Modalidad $modalidad = null;
 
     #[ORM\Column(length: 15)]

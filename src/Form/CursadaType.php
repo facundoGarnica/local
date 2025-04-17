@@ -9,6 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Entity\Modalidad;
 
 class CursadaType extends AbstractType
 {
@@ -23,16 +24,17 @@ class CursadaType extends AbstractType
         ;*/
         $builder
         ->add('condicion', TextType::class, [
-            'data' => 'regular', // Valor predeterminado
+            'data' => 'regular',
             'label' => 'Condición'
         ])
         ->add('alumno')
-        ->add('modalidad', TextType::class, [
-            'data' => 'presencial', // Valor predeterminado
+        ->add('modalidad', EntityType::class, [
+            'class' => Modalidad::class,
+            'choice_label' => 'descripcion', // Ahora usas el campo 'descripcion'
             'label' => 'Modalidad'
         ])
         ->add('nota_id')
-        ->add('curso')
+        ->add('curso');
     ;
 
 
