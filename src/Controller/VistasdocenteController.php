@@ -142,6 +142,12 @@ class VistasdocenteController extends AbstractController
             'cursoId2' => $cursoId,
         ]);
     }
+
+    #[Route('/nuevalista', name: 'app_nuevalista')]
+    public function listaNueva(): Response
+    {
+        return $this->render('vistasdocente/nuevalista.html.twig');
+    }
     
 }
 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nombre del Curso</title>
+
+    <!-- Vincula el archivo CSS PasarListas.css -->
+    <link rel="stylesheet" href="{{ asset('css/PasarListas.css') }}">
+</head>
+<body>
+    <!-- Aquí va tu contenido -->
+    <div class="curso-container">
+        <!-- Título del curso -->
+        <h1 class="curso-titulo">Nombre del Curso</h1>
+
+        <!-- Contenedor de botón y fecha alineados -->
+        <div class="fecha-actual-wrapper">
+            <button class="btn btn-success btn-pasar-lista">
+                📋 Pasar Lista
+            </button>
+
+            <span class="fecha-actual">
+                Fecha: DD/MM/AAAA
+            </span>
+        </div>
+
+        <!-- Buscar -->
+        <div class="buscador-alumno">
+            <label for="dni-buscar">Buscar alumno:</label>
+            <div class="input-group">
+                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
+                <input type="text" id="nombre-buscar" class="form-control" placeholder="Por Nombre..." aria-label="Buscar por Nombre">
+                <input type="text" id="apellido-buscar" class="form-control" placeholder="Por Apellido..." aria-label="Buscar por Apellido">
+            </div>
+        </div>
+
+        <!-- Tabla de alumnos -->
+        <div class="tabla-alumnos-wrapper">
+            <table class="curso-tabla">
+                <thead>
+                    <tr>
+                        <th class="col-nombre">Nombre</th>
+                        <th class="col-apellido">Apellido</th>
+                        <th class="col-dni">DNI</th>
+                        <th class="col-asistencia">Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Ejemplo de fila de alumno -->
+                    <tr class="fila-alumno">
+                        <td class="alumno-nombre">Juan</td>
+                        <td class="alumno-apellido">Pérez</td>
+                        <td class="alumno-dni">12345678</td>
+                        <td class="alumno-asistencia">
+                            <span class="estado-asistencia presente">Presente</span>
+                        </td>
+                    </tr>
+                    <tr class="fila-alumno">
+                        <td class="alumno-nombre">Ana</td>
+                        <td class="alumno-apellido">García</td>
+                        <td class="alumno-dni">87654321</td>
+                        <td class="alumno-asistencia">
+                            <span class="estado-asistencia ausente">Ausente</span>
+                        </td>
+                    </tr>
+                    <!-- Fin de ejemplo -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="total-presentes">
+                            Alumnos presentes: 1
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botón de volver al menú -->
+    <a href="#" class="btn btn-primary">
+        <button>Menu</button>
+    </a>
+
+    <!-- Modal base -->
+    <div class="modal-overlay"></div>
+    <div class="modal">
+        <div class="modal-body"></div>
+    </div>
+</body>
+</html>
