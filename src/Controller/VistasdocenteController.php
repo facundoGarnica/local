@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class VistasdocenteController extends AbstractController
 {
     #[Route('/vistasdocente', name: 'app_vistasdocente')]
+    #[Route('/nuevalista', name: 'app_nuevalista')]
     public function index(NotaRepository $notaRepository, CursadaDocenteRepository $cursadaDocenteRepository, CursoRepository $cursoRepository, Request $request): Response
     {
         // Recuperar `cursoId` de la sesión esto para cuando estoy cargando asignaturas y que no se pierda cursoId

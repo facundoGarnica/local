@@ -243,6 +243,8 @@
                     <td>{{ cursada_docente.curso.comision.tecnicatura }}</td>
                     <td>
                         <button onclick="showAsistencia({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
+                      
+                        
                     </td>
                     <td>
                         <button onclick="showCursoCursada({{ cursada_docente.curso.id }})" class="btn-primary">Notas</button>
@@ -368,6 +370,81 @@
             });
         });
     </script>
+    <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
+    <div class="curso-container">
+        <!-- Título del curso -->
+        <h1 class="curso-titulo">Nombre del Curso</h1>
+        <div class="curso-info">
+            <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
+            <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
+        </div>
+
+        <!-- Contenedor de botón y fecha alineados -->
+        <div class="fecha-actual-wrapper">
+            <button class="btn btn-success btn-pasar-lista">
+                Ver asistencias
+            </button>
+            <button class="btn btn-success btn-pasar-lista">
+                📋 Pasar Lista
+            </button>
+
+            <span class="fecha-actual">
+                Fecha: DD/MM/AAAA
+            </span>
+        </div>
+
+        <!-- Buscar -->
+        <div class="buscador-alumno">
+            <label for="dni-buscar">Buscar alumno:</label>
+            <div class="input-group">
+                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
+                <input type="text" id="nombre-buscar" class="form-control" placeholder="Por Nombre..." aria-label="Buscar por Nombre">
+                <input type="text" id="apellido-buscar" class="form-control" placeholder="Por Apellido..." aria-label="Buscar por Apellido">
+            </div>
+        </div>
+
+        <!-- Tabla de alumnos -->
+        <div class="tabla-alumnos-wrapper">
+            <table class="curso-tabla">
+                <thead>
+                    <tr>
+                        <th class="col-nombre">Nombre</th>
+                        <th class="col-apellido">Apellido</th>
+                        <th class="col-dni">DNI</th>
+                        <th class="col-asistencia">Asistencia</th>
+                        <th class="col-observaciones">Observaciones</th>
+                        <th class="col-editar">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="fila-alumno">
+                        <td class="alumno-nombre">Juan</td>
+                        <td class="alumno-apellido">Pérez</td>
+                        <td class="alumno-dni">12345678</td>
+                        <td class="alumno-asistencia">
+                            <span class="estado-asistencia presente">Presente</span>
+                        </td>
+                    </tr>
+                    <tr class="fila-alumno">
+                        <td class="alumno-nombre">Ana</td>
+                        <td class="alumno-apellido">García</td>
+                        <td class="alumno-dni">87654321</td>
+                        <td class="alumno-asistencia">
+                            <span class="estado-asistencia ausente">Ausente</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" class="total-presentes">
+                            Alumnos presentes: 1
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
 
     <!-- Campo oculto para almacenar la fecha generada por JavaScript -->
     <input type="hidden" id="hiddenFechaJavaScript">
@@ -518,9 +595,7 @@
 
 
 
-    <a href="{{ path('app_nuevalista') }}">
-        <button class="btn btn-primary">Ir a nueva lista</button>
-    </a>
+   
 
 
 
