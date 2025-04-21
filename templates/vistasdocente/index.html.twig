@@ -60,37 +60,60 @@
 
     {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
     <script>
-        function showAsistencia(cursoId) {
+        function showListaNueva(cursoId) {
             console.log("Curso ID recibido:", cursoId);
-            // oculta tablas no relevantes
-            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
-            tablesToHide.forEach(table => table.style.display = 'none');
-
-            // oculta cursos
-            let cursadaTables = document.querySelectorAll('.tabla_curso');
-            cursadaTables.forEach(table => table.style.display = 'none');
-
-            // muestra tabla cursada específica
-            let cursadaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
-            if (cursadaTable) {
-                cursadaTable.style.display = '';
+        
+            // Accedemos al curso usando el cursoId
+            const curso = cursosData[cursoId];
+        
+            // Si el curso existe
+            if (curso) {
+                // Mostrar el nombre del curso en el <h1> con la clase "curso-titulo"
+                document.querySelector('.curso-titulo').textContent = curso.asignatura;
+                
+                // Si también quieres mostrar la asignatura y otros datos en otras partes, los haces como antes
+                document.querySelector('.curso-info h2 span').textContent = curso.asignatura; // Asignatura Nombre
+                document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio; // Año
+                document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision; // Comisión
             }
-
-            // ocultar search
-            let search = document.getElementById('searchs');
-            if (search) {
-                search.style.display = 'none';
+        
+            // Ocultar otras tablas si es necesario (opcional)
+            let tablasOcultables = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+            tablasOcultables.forEach(tabla => tabla.style.display = 'none');
+        
+            // Mostrar ListaNueva
+            let lista = document.getElementById('ListaNueva');
+            if (lista) {
+                lista.style.display = '';
             }
-
-            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+        
+            // Mostrar el botón de regreso si existe
             let backButton = document.getElementById('backButton');
             if (backButton) {
                 backButton.style.display = '';
-                backButton.onclick = function() {
-                    hideAsistencia(cursoId);
+                backButton.onclick = function () {
+                    hideListaNueva(cursoId);
                 };
             }
         }
+  
+ 
+        const cursosData = {
+            {% for curso in cursos %}
+                {{ curso.id }}: {
+                    id: {{ curso.id }},
+                    asignatura: "{{ curso.asignatura.nombre }}", // Nombre de la asignatura
+                    anio: "{{ curso.comision.anio }}", // Año
+                    comision: "{{ curso.comision.comision }}" // Comisión
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+        
+        
+  
+        
+
+        
         function hideAsistencia(cursoId) {
             // oculta tabla cursada específica
             let cursadaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
@@ -111,29 +134,8 @@
             }
         }
 
-        //Funciones para la Lista nueva
-
-        function showListaNueva(cursoId) {
-            console.log("Curso ID recibido:", cursoId);
-            // Oculta todo lo demás si hace falta (opcional)
-            let tablasOcultables = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
-            tablasOcultables.forEach(tabla => tabla.style.display = 'none');
         
-            // Mostrar ListaNueva
-            let lista = document.getElementById('ListaNueva');
-            if (lista) {
-                lista.style.display = '';
-            }
         
-            // Mostrar botón de volver si existe
-            let backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.style.display = '';
-                backButton.onclick = function () {
-                    hideListaNueva(cursoId);
-                };
-            }
-        }
         
         function hideListaNueva(cursoId) {
             // Oculta ListaNueva
@@ -418,11 +420,11 @@
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     <div class="curso-container" id="ListaNueva"style="display: none;">
         <!-- Título del curso -->
-        <h1 class="curso-titulo">Nombre del Curso</h1>
-        <div class="curso-info">
-            <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
-            <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
-        </div>
+    <h1 class="curso-titulo">Nombre del Curso</h1>
+    <div class="curso-info">
+        <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
+        <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
+    </div>
 
         <!-- Contenedor de botón y fecha alineados -->
         <div class="fecha-actual-wrapper">
