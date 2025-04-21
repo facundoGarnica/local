@@ -61,6 +61,7 @@
     {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
     <script>
         function showAsistencia(cursoId) {
+            console.log("Curso ID recibido:", cursoId);
             // oculta tablas no relevantes
             let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
             tablesToHide.forEach(table => table.style.display = 'none');
@@ -110,7 +111,50 @@
             }
         }
 
+        //Funciones para la Lista nueva
 
+        function showListaNueva(cursoId) {
+            console.log("Curso ID recibido:", cursoId);
+            // Oculta todo lo demás si hace falta (opcional)
+            let tablasOcultables = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+            tablasOcultables.forEach(tabla => tabla.style.display = 'none');
+        
+            // Mostrar ListaNueva
+            let lista = document.getElementById('ListaNueva');
+            if (lista) {
+                lista.style.display = '';
+            }
+        
+            // Mostrar botón de volver si existe
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = '';
+                backButton.onclick = function () {
+                    hideListaNueva(cursoId);
+                };
+            }
+        }
+        
+        function hideListaNueva(cursoId) {
+            // Oculta ListaNueva
+            let lista = document.getElementById('ListaNueva');
+            if (lista) {
+                lista.style.display = 'none';
+            }
+        
+            // Mostrar algo al volver (por ejemplo, una tabla general)
+            let tablaPrincipal = document.getElementById('tablaTecnicaturas');
+            if (tablaPrincipal) {
+                tablaPrincipal.style.display = '';
+            }
+        
+            // Ocultar el botón volver
+            let backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.style.display = 'none';
+            }
+        }
+        
 
 
 
@@ -243,6 +287,7 @@
                     <td>{{ cursada_docente.curso.comision.tecnicatura }}</td>
                     <td>
                         <button onclick="showAsistencia({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
+                        <button onclick="showListaNueva({{ cursada_docente.curso.id }})" class="btn-primary">Lista nueva</button>
                       
                         
                     </td>
@@ -371,7 +416,7 @@
         });
     </script>
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
-    <div class="curso-container">
+    <div class="curso-container" id="ListaNueva"style="display: none;">
         <!-- Título del curso -->
         <h1 class="curso-titulo">Nombre del Curso</h1>
         <div class="curso-info">
