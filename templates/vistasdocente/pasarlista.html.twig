@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pasar Asistencia{% endblock %}
+
+{% block body %}
+<h1 class="asistencia-titulo">Asistencia</h1>
+
+<div id="alumno-container">
+    <div class="alumno-card">
+        <h2 class="alumno-nombre">Nombre Apellido</h2>
+        <p class="alumno-dni">DNI: 12345678</p>
+        <p id="estado">Estado: 
+            <span class="estado-text estado-neutral">No marcado</span>
+        </p>
+        <p id="observacion" style="visibility: hidden;">
+            Observación: <input type="text" id="observacion-input" placeholder="Completar...">
+        </p>
+    </div>
+</div>
+
+<div class="botones mt-3">
+    <button id="anterior">⬅️ Anterior</button>
+    <button id="presente">✅ Presente (F1)</button>
+    <button id="ausente">❌ Ausente (F2)</button>
+    <button id="mediafalta">⏳ Media falta (F3)</button>
+    <button id="justificada">📄✅ Justificada (F4)</button>
+    <button id="siguiente">Siguiente ➡️</button>
+</div>
+
+{% endblock %}

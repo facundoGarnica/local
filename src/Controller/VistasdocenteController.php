@@ -150,7 +150,14 @@ class VistasdocenteController extends AbstractController
         return $this->render('vistasdocente/nuevalista.html.twig');
     }
     
+    #[Route('/pasarlista', name: 'app_pasarlista')]
+    public function pasarlista(): Response
+    {
+        return $this->render('vistasdocente/pasarlista.html.twig');
+    }
+    
 }
 
 
+    
 
