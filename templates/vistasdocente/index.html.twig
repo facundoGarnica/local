@@ -63,32 +63,90 @@
         function showListaNueva(cursoId) {
             console.log("Curso ID recibido:", cursoId);
         
-            // Accedemos al curso usando el cursoId
             const curso = cursosData[cursoId];
         
-            // Si el curso existe
             if (curso) {
-                // Mostrar el nombre del curso en el <h1> con la clase "curso-titulo"
                 document.querySelector('.curso-titulo').textContent = curso.asignatura;
-                
-                // Si también quieres mostrar la asignatura y otros datos en otras partes, los haces como antes
-                document.querySelector('.curso-info h2 span').textContent = curso.asignatura; // Asignatura Nombre
-                document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio; // Año
-                document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision; // Comisión
+                document.querySelector('.curso-info h2 span').textContent = curso.asignatura;
+                document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio;
+                document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision;
+        
+                const tbody = document.querySelector('.curso-tabla tbody');
+                tbody.innerHTML = '';
+        
+                let presentes = 0;
+        
+                const today = new Date().toLocaleDateString('en-GB'); // formato: dd/mm/yyyy
+                const todayFormatted = today.split('/').reverse().join('-'); // yyyy-mm-dd
+        
+                const alumnosMostrados = new Set();
+        
+                curso.cursadas.forEach(cursada => {
+                    const alumnoId = cursada.alumno.id;
+                    let asistenciaHoy = null;
+        
+                    // Verificamos si ya hay asistencia para hoy
+                    cursada.asistencias.forEach(asistencia => {
+                        const fechaAsistencia = asistencia.fecha.split('-').reverse().join('-'); // convertir a yyyy-mm-dd
+                        if (fechaAsistencia === todayFormatted) {
+                            asistenciaHoy = asistencia;
+        
+                            const row = document.createElement('tr');
+                            row.classList.add('fila-alumno');
+        
+                            if (asistencia.asistencia.toLowerCase() === 'presente') {
+                                presentes++;
+                            }
+        
+                            row.innerHTML = `
+                                <td class="alumno-nombre">${cursada.alumno.nombre}</td>
+                                <td class="alumno-apellido">${cursada.alumno.apellido}</td>
+                                <td class="alumno-dni">${cursada.alumno.dni}</td>
+                                <td class="alumno-asistencia">
+                                    <span class="estado-asistencia ${asistencia.asistencia.toLowerCase()}">${asistencia.asistencia}</span>
+                                </td>
+                                <td class="alumno-observacion">${asistencia.observacion}</td>
+                                <td class="alumno-editar">
+                                    <button onclick="openModal3(${curso.id}, ${cursada.id}, ${asistencia.id})">Editar</button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        }
+                    });
+        
+                    // Si el alumno no tiene asistencia hoy, mostramos botón "Asistencia"
+                    if (!asistenciaHoy && !alumnosMostrados.has(alumnoId)) {
+                        const row = document.createElement('tr');
+                        row.classList.add('fila-alumno');
+                        row.innerHTML = `
+                            <td class="alumno-nombre">${cursada.alumno.nombre}</td>
+                            <td class="alumno-apellido">${cursada.alumno.apellido}</td>
+                            <td class="alumno-dni">${cursada.alumno.dni}</td>
+                            <td colspan="3">
+                                <button onclick="openModal2(${curso.id}, ${cursada.id}, '${cursada.alumno.apellido}')">Asistencia</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+        
+                    alumnosMostrados.add(alumnoId);
+                });
+        
+                const totalPresentes = document.querySelector('.total-presentes');
+                if (totalPresentes) {
+                    totalPresentes.textContent = `Alumnos presentes: ${presentes}`;
+                }
             }
         
-            // Ocultar otras tablas si es necesario (opcional)
-            let tablasOcultables = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
-            tablasOcultables.forEach(tabla => tabla.style.display = 'none');
+            // Ocultar otras tablas
+            document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso').forEach(tabla => {
+                tabla.style.display = 'none';
+            });
         
-            // Mostrar ListaNueva
-            let lista = document.getElementById('ListaNueva');
-            if (lista) {
-                lista.style.display = '';
-            }
+            const lista = document.getElementById('ListaNueva');
+            if (lista) lista.style.display = '';
         
-            // Mostrar el botón de regreso si existe
-            let backButton = document.getElementById('backButton');
+            const backButton = document.getElementById('backButton');
             if (backButton) {
                 backButton.style.display = '';
                 backButton.onclick = function () {
@@ -96,19 +154,56 @@
                 };
             }
         }
+        
+        
   
  
         const cursosData = {
             {% for curso in cursos %}
                 {{ curso.id }}: {
                     id: {{ curso.id }},
-                    asignatura: "{{ curso.asignatura.nombre }}", // Nombre de la asignatura
-                    anio: "{{ curso.comision.anio }}", // Año
-                    comision: "{{ curso.comision.comision }}" // Comisión
+                    asignatura: "{{ curso.asignatura.nombre|e('js') }}",
+                    anio: "{{ curso.comision.anio|e('js') }}",
+                    comision: "{{ curso.comision.comision|e('js') }}",
+                    cursadas: [
+                        {% for cursada in curso.cursadas %}
+                            {
+                                id: {{ cursada.id }},
+                                alumno: {
+                                    id: {{ cursada.alumno.id }},
+                                    nombre: "{{ cursada.alumno.nombre|e('js') }}",
+                                    apellido: "{{ cursada.alumno.apellido|e('js') }}",
+                                    dni: "{{ cursada.alumno.dniPasaporte|e('js') }}"
+                                },
+                                asistencias: [
+                                    {% for asistencia in cursada.getAsistencias %}
+                                        {
+                                            id: {{ asistencia.id }},
+                                            fecha: "{{ asistencia.fecha|date('d-m-Y') }}",
+                                            asistencia: "{{ asistencia.asistencia|e('js') }}",
+                                            observacion: "{{ asistencia.observacion|e('js') }}"
+                                        }{% if not loop.last %},{% endif %}
+                                    {% endfor %}
+                                ]
+                            }{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    ]
                 }{% if not loop.last %},{% endif %}
             {% endfor %}
         };
         
+
+        //Script para representar la fecha actual en el html , class .fecha-actual
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaSpan = document.querySelector('.fecha-actual');
+            if (fechaSpan) {
+                const hoy = new Date();
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anio = hoy.getFullYear();
+                fechaSpan.textContent = `Fecha: ${dia}/${mes}/${anio}`;
+            }
+        });
         
   
         
@@ -438,6 +533,7 @@
             <span class="fecha-actual">
                 Fecha: DD/MM/AAAA
             </span>
+            
         </div>
 
         <!-- Buscar -->

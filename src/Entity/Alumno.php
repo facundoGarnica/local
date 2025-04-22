@@ -193,21 +193,6 @@ class Alumno
         return $this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function __toString(): string
     {
         if ($this->persona) {
@@ -217,6 +202,21 @@ class Alumno
         }
     }
 
+    public function getNombre(): ?string
+    {
+        return $this->persona ? $this->persona->getNombre() : null;
+    }
+    
+    public function getApellido(): ?string
+    {
+        return $this->persona ? $this->persona->getApellido() : null;
+    }
+    
+    public function getDniPasaporte(): ?string
+    {
+        return $this->persona ? $this->persona->getDniPasaporte() : null;
+    }
+    
     /**
      * @return Collection<int, Carreras>
      */
