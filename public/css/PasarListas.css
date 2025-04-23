@@ -376,21 +376,17 @@
     text-align: center;
 }
 
-.fecha-actual-wrapper {
-    display: flex;
-    justify-content: space-between; /* Botón a la izquierda, fecha a la derecha */
-    align-items: center;
-    margin-bottom: 15px;
-}
-
 .fecha-actual {
-    background-color: #97a0a8; /* Gris elegante */
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Fondo blanco puro */
+    color: #1a202c; /* Negro grisáceo elegante */
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #cbd5e0; /* Gris azulado claro */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    display: inline-block;
+    margin-bottom: 12px;
 }
 
 /*css para mostrar la cantidad de presentes*/

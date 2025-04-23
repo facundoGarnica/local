@@ -3,28 +3,41 @@
 {% block title %}Pasar Asistencia{% endblock %}
 
 {% block body %}
-<h1 class="asistencia-titulo">Asistencia</h1>
+<div id="PasarAsistenciaModal" class="AsistenciaModal1">
+    <div id="alumno-container">
+        <div class="alumno-card">
+            <!-- Fecha con estilo profesional -->
+            <div class="fecha-actual" id="fecha-actual"></div>
 
-<div id="alumno-container">
-    <div class="alumno-card">
-        <h2 class="alumno-nombre">Nombre Apellido</h2>
-        <p class="alumno-dni">DNI: 12345678</p>
-        <p id="estado">Estado: 
-            <span class="estado-text estado-neutral">No marcado</span>
-        </p>
-        <p id="observacion" style="visibility: hidden;">
-            Observación: <input type="text" id="observacion-input" placeholder="Completar...">
-        </p>
+            <h2 class="alumno-nombre">Nombre Apellido</h2>
+            <p class="alumno-dni">DNI: 12345678</p>
+            <p id="estado">Estado: 
+                <span class="estado-text estado-neutral">No marcado</span>
+            </p>
+            <p id="observacion" style="visibility: hidden;">
+                Observación: <input type="text" id="observacion-input" placeholder="Completar...">
+            </p>
+        </div>
+    </div>
+
+    <div class="botones mt-3">
+        <button id="anterior">⬅️ Anterior</button>
+        <button id="presente">✅ Presente (F1)</button>
+        <button id="ausente">❌ Ausente (F2)</button>
+        <button id="mediafalta">⏳ Media falta (F3)</button>
+        <button id="justificada">📄✅ Justificada (F4)</button>
+        <button id="siguiente">Siguiente ➡️</button>
     </div>
 </div>
 
-<div class="botones mt-3">
-    <button id="anterior">⬅️ Anterior</button>
-    <button id="presente">✅ Presente (F1)</button>
-    <button id="ausente">❌ Ausente (F2)</button>
-    <button id="mediafalta">⏳ Media falta (F3)</button>
-    <button id="justificada">📄✅ Justificada (F4)</button>
-    <button id="siguiente">Siguiente ➡️</button>
-</div>
+<script>
+    // Obtener la fecha actual y mostrarla en el div
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+    const year = today.getFullYear();
+    const formattedDate = `Fecha: ${day}/${month}/${year}`;
 
+    document.getElementById('fecha-actual').textContent = formattedDate;
+</script>
 {% endblock %}
