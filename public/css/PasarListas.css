@@ -235,11 +235,13 @@
     border-color: #ffcc00; /* amarillo más intenso */
 }
 
-.estado-justificado {
-    background-color: #e2e8f0; /* gris claro */
-    color: #2d3748; /* gris oscuro para contraste */
-    border-color: #cbd5e0; /* gris neutro */
+.estado-justificada {
+    background-color: #ede9fe; /* lavanda claro */
+    color: #3e226b; /* púrpura profundo */
+    border-color: #8e66d0;
 }
+
+
 
 
 .botones {

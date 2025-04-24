@@ -125,5 +125,52 @@
         document.addEventListener('DOMContentLoaded', () => {
             mostrarAlumno(indiceActual);
         });
+
+        document.addEventListener('keydown', function (event) {
+            switch (event.key) {
+                case 'ArrowLeft':
+                    document.getElementById('anterior').click();
+                    break;
+                case 'ArrowRight':
+                    document.getElementById('siguiente').click();
+                    break;
+                    case 'F1':
+                    event.preventDefault();
+                    actualizarEstado('Presente');
+                    if (indiceActual < cursadasData.length - 1) {
+                        setTimeout(() => {
+                            indiceActual++;
+                            mostrarAlumno(indiceActual);
+                        }, 1000); // 1000 ms = 1 segundo
+                    }
+                    break;
+                
+                    case 'F2':
+                    event.preventDefault();
+                    actualizarEstado('Ausente');
+                    if (indiceActual < cursadasData.length - 1) {
+                        setTimeout(() => {
+                            indiceActual++;
+                            mostrarAlumno(indiceActual);
+                        }, 1000);
+                    }
+                    break;
+                    case 'F3':
+                    event.preventDefault();
+                    actualizarEstado('Media falta');
+                    if (indiceActual < cursadasData.length - 1) {
+                        setTimeout(() => {
+                            indiceActual++;
+                            mostrarAlumno(indiceActual);
+                        }, 1000);
+                    }
+                    break;
+                case 'F4':
+                    event.preventDefault();
+                    actualizarEstado('Justificada');
+                    break;
+            }
+        });
+        
     </script>
 {% endblock %}
