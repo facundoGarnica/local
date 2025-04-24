@@ -39,5 +39,91 @@
     const formattedDate = `Fecha: ${day}/${month}/${year}`;
 
     document.getElementById('fecha-actual').textContent = formattedDate;
-</script>
+    
+        const cursadasData = [
+            {% for cursada in cursadas %}
+                {
+                    id: {{ cursada.id }},
+                    alumno: {
+                        id: {{ cursada.alumno.id }},
+                        nombre: "{{ cursada.alumno.nombre|e('js') }}",
+                        apellido: "{{ cursada.alumno.apellido|e('js') }}",
+                        dni: "{{ cursada.alumno.dniPasaporte|e('js') }}"
+                    }
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        console.log(cursadasData);
+
+    
+        let indiceActual = 0;
+        let asistenciasMarcadas = {}; // para guardar temporalmente
+    
+        function mostrarAlumno(index) {
+            if (index < 0 || index >= cursadasData.length) return;
+    
+            const alumno = cursadasData[index].alumno;
+    
+            document.querySelector('.alumno-nombre').textContent = `${alumno.nombre} ${alumno.apellido}`;
+            document.querySelector('.alumno-dni').textContent = `DNI: ${alumno.dni}`;
+            document.querySelector('.estado-text').textContent = 'No marcado';
+            document.querySelector('.estado-text').className = 'estado-text estado-neutral';
+            document.getElementById('observacion').style.visibility = 'hidden';
+            document.getElementById('observacion-input').value = '';
+    
+            // Si ya se marcó asistencia antes, mostrarla
+            const previa = asistenciasMarcadas[alumno.id];
+            if (previa) {
+                actualizarEstado(previa.estado);
+                if (previa.observacion) {
+                    document.getElementById('observacion').style.visibility = 'visible';
+                    document.getElementById('observacion-input').value = previa.observacion;
+                }
+            }
+        }
+    
+        function actualizarEstado(estado) {
+            const spanEstado = document.querySelector('.estado-text');
+            spanEstado.textContent = estado;
+    
+            spanEstado.className = 'estado-text';
+            spanEstado.classList.add('estado-' + estado.toLowerCase().replace(' ', ''));
+    
+            if (estado === 'Justificada') {
+                document.getElementById('observacion').style.visibility = 'visible';
+            } else {
+                document.getElementById('observacion').style.visibility = 'hidden';
+            }
+    
+            // Guardar temporalmente
+            const alumnoId = cursadasData[indiceActual].alumno.id;
+            asistenciasMarcadas[alumnoId] = {
+                estado: estado,
+                observacion: document.getElementById('observacion-input').value || ''
+            };
+        }
+    
+        document.getElementById('anterior').addEventListener('click', () => {
+            if (indiceActual > 0) {
+                indiceActual--;
+                mostrarAlumno(indiceActual);
+            }
+        });
+    
+        document.getElementById('siguiente').addEventListener('click', () => {
+            if (indiceActual < cursadasData.length - 1) {
+                indiceActual++;
+                mostrarAlumno(indiceActual);
+            }
+        });
+    
+        document.getElementById('presente').addEventListener('click', () => actualizarEstado('Presente'));
+        document.getElementById('ausente').addEventListener('click', () => actualizarEstado('Ausente'));
+        document.getElementById('mediafalta').addEventListener('click', () => actualizarEstado('Media falta'));
+        document.getElementById('justificada').addEventListener('click', () => actualizarEstado('Justificada'));
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarAlumno(indiceActual);
+        });
+    </script>
 {% endblock %}

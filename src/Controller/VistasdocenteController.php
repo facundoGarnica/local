@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CursadaRepository;
 use App\Entity\Asistencia;
 use App\Form\AsistenciaType;
 use App\Repository\AsistenciaRepository;
@@ -150,11 +151,23 @@ class VistasdocenteController extends AbstractController
         return $this->render('vistasdocente/nuevalista.html.twig');
     }
     
-    #[Route('/pasarlista', name: 'app_pasarlista')]
-    public function pasarlista(): Response
+    #[Route('/pasarlista/{curso_id}', name: 'app_pasarlista')]
+    public function pasarlista(int $curso_id, CursoRepository $cursoRepository, CursadaRepository $cursadaRepository): Response
     {
-        return $this->render('vistasdocente/pasarlista.html.twig');
+        $curso = $cursoRepository->find($curso_id);
+    
+        if (!$curso) {
+            throw $this->createNotFoundException('Curso no encontrado.');
+        }
+    
+        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    
+        return $this->render('vistasdocente/pasarlista.html.twig', [
+            'curso' => $curso,
+            'cursadas' => $cursadas,
+        ]);
     }
+
     
 }
 

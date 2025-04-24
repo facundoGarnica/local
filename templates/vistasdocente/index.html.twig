@@ -136,6 +136,13 @@
                 if (totalPresentes) {
                     totalPresentes.textContent = `Alumnos presentes: ${presentes}`;
                 }
+        
+                // Actualiza el enlace "Pasar Lista"
+                const pasarListaBtn = document.getElementById('pasarListaBtn');
+                if (pasarListaBtn) {
+                    const url = `{{ path('app_pasarlista', { 'curso_id': '__cursoId__' }) }}`.replace('__cursoId__', cursoId);
+                    pasarListaBtn.setAttribute('href', url);
+                }
             }
         
             // Ocultar otras tablas
@@ -154,6 +161,7 @@
                 };
             }
         }
+        
         
         
   
@@ -526,9 +534,15 @@
             <button class="btn btn-success btn-pasar-lista">
                 Ver asistencias
             </button>
-            <button class="btn btn-success btn-pasar-lista">
-                📋 Pasar Lista
-            </button>
+            <a id="pasarListaBtn" href="#">
+                <button class="btn-pasar-lista">
+                    📋 Pasar Lista
+                </button>
+            </a>
+            
+            
+            
+            </a>
 
             <span class="fecha-actual">
                 Fecha: DD/MM/AAAA
@@ -924,8 +938,6 @@
 
         <button id="backButton" style="display: none;" class="btn-primary">VOLVER</button>
     </div>
-    <a href="{{ path('app_pasarlista') }}">
-        <button type="button">Ir a Pasar Lista</button>
-    </a>
+   
     
 {% endblock %}
