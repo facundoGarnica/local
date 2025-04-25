@@ -405,3 +405,12 @@
     margin-top: 20px;
 }
 
+#confirmacion {
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+#confirmacion.visible {
+    visibility: visible;
+    opacity: 1;
+}
