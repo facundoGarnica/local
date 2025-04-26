@@ -1,14 +1,14 @@
-{% extends 'base.html.twig' %}
+{% block title %}{% endblock %}
 
-{% block title %}Pasar Asistencia{% endblock %}
+<link rel="stylesheet" href="{{ asset('css/PasarListas.css') }}">
 
 {% block body %}
 <div id="PasarAsistenciaModal" class="AsistenciaModal1">
     <div id="alumno-container">
         <div class="alumno-card">
             <div class="fecha-actual" id="fecha-actual"></div>
-            <h2 class="alumno-nombre">Nombre Apellido</h2>
-            <p class="alumno-dni">DNI: 12345678</p>
+            <h2 class="AlumnoNombre">Nombre Apellido</h2> 
+            <p class="AlumnoDni">DNI: 12345678</p>
             <p id="estado">Estado: 
                 <span class="estado-text estado-neutral">No marcado</span>
             </p>
@@ -23,27 +23,45 @@
     </div>
 
     <div class="botones mt-3">
-        <button id="anterior">⬅️ Anterior</button>
+        <button id="anterior">⬅️</button>
         <button id="presente">✅ Presente (F1)</button>
         <button id="ausente">❌ Ausente (F2)</button>
         <button id="mediafalta">⏳ Media falta (F3)</button>
         <button id="justificada">📄✅ Justificada (F4)</button>
-        <button id="siguiente">Siguiente ➡️</button>
+        <button id="siguiente">➡️</button>
     </div>
 </div>
 
 <script>
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
+    window.onload = () => {
+        console.log("Cargando alumno...");
+        mostrarAlumno(indiceActual);
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificamos que cursadasData no esté vacío antes de llamar a mostrarAlumno
+        console.log(cursadasData); // Para comprobar si los datos están correctamente cargados
+    
+        if (cursadasData.length > 0) {
+            mostrarAlumno(indiceActual); // Cargar el primer alumno
+        } else {
+            console.error("No hay datos de alumnos disponibles.");
+        }
+    });
+    
+    
+    const fechaHoy = new Date();
+    
+    const day = String(fechaHoy.getDate()).padStart(2, '0');
+    const month = String(fechaHoy.getMonth() + 1).padStart(2, '0');
+    const year = fechaHoy.getFullYear();
     const formattedDate = `Fecha: ${day}/${month}/${year}`;
     const formattedFechaBack = `${year}-${month}-${day}`;
-
+    
     document.getElementById('fecha-actual').textContent = formattedDate;
 
     const cursadasData = [
-        {% for cursada in cursadas %}
+        {% for cursada in cursadas %} 
             {
                 id: {{ cursada.id }},
                 alumno: {
@@ -55,32 +73,56 @@
             }{% if not loop.last %},{% endif %}
         {% endfor %}
     ];
-
+    console.log(cursadasData);
     let indiceActual = 0;
     let asistenciasMarcadas = {};
 
     function mostrarAlumno(index) {
-        if (index < 0 || index >= cursadasData.length) return;
-
+        if (index < 0 || index >= cursadasData.length) {
+            console.log("Índice fuera de rango");
+            return;
+        }
+    
         const alumno = cursadasData[index].alumno;
-
-        document.querySelector('.alumno-nombre').textContent = `${alumno.nombre} ${alumno.apellido}`;
-        document.querySelector('.alumno-dni').textContent = `DNI: ${alumno.dni}`;
-        document.querySelector('.estado-text').textContent = 'No marcado';
-        document.querySelector('.estado-text').className = 'estado-text estado-neutral';
-        document.getElementById('observacion').style.visibility = 'hidden';
-        document.getElementById('enviar').style.visibility = 'hidden';
-        document.getElementById('observacion-input').value = '';
-
+        console.log("Mostrando alumno:", alumno);  // Añadir esta línea para depuración
+    
+        const alumnoNombreElemento = document.querySelector('.AlumnoNombre'); 
+        const alumnoDniElemento = document.querySelector('.AlumnoDni'); 
+    
+        if (alumnoNombreElemento) {
+            alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
+        }
+    
+        if (alumnoDniElemento) {
+            alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
+        }
+    
+        const estadoElemento = document.querySelector('.estado-text');
+        if (estadoElemento) {
+            estadoElemento.textContent = 'No marcado';
+            estadoElemento.className = 'estado-text estado-neutral';
+        }
+    
+        const observacionElemento = document.getElementById('observacion');
+        const enviarElemento = document.getElementById('enviar');
+        if (observacionElemento && enviarElemento) {
+            observacionElemento.style.visibility = 'hidden';
+            enviarElemento.style.visibility = 'hidden';
+            document.getElementById('observacion-input').value = '';
+        }
+    
         const previa = asistenciasMarcadas[alumno.id];
         if (previa) {
             actualizarEstado(previa.estado, false);
             if (previa.observacion) {
-                document.getElementById('observacion').style.visibility = 'visible';
-                document.getElementById('observacion-input').value = previa.observacion;
+                if (observacionElemento) {
+                    observacionElemento.style.visibility = 'visible';
+                    document.getElementById('observacion-input').value = previa.observacion;
+                }
             }
         }
     }
+    
 
     function guardarAsistencias() {
         const urlGuardar = "{{ path('guardar_asistencia') }}";
@@ -112,10 +154,10 @@
         const spanEstado = document.querySelector('.estado-text');
         spanEstado.textContent = estado;
         spanEstado.className = 'estado-text estado-' + estado.toLowerCase().replace(' ', '');
-    
+
         const alumnoId = cursadasData[indiceActual].alumno.id;
         let observacion = document.getElementById('observacion-input').value || '';
-    
+
         if (estado === 'Justificada') {
             document.getElementById('observacion').style.visibility = 'visible';
             document.getElementById('enviar').style.visibility = 'visible';
@@ -124,7 +166,7 @@
             document.getElementById('enviar').style.visibility = 'hidden';
             observacion = '';
         }
-    
+
         const existingAttendance = asistenciasMarcadas[alumnoId];
         if (existingAttendance && existingAttendance.fecha === formattedFechaBack) {
             existingAttendance.estado = estado;
@@ -137,21 +179,17 @@
                 observacion: observacion
             };
         }
-    
+
         if (guardar) {
             guardarAsistencias();
-    
-            // Mostrar el mensaje de confirmación cada vez que se guarda algo
             const confirmacion = document.getElementById('confirmacion');
             confirmacion.style.visibility = 'visible';
             confirmacion.textContent = '✅ Datos guardados correctamente';
-    
             setTimeout(() => {
                 confirmacion.style.visibility = 'hidden';
             }, 2000);
         }
     }
-    
 
     function avanzarSiEsPosible() {
         if (indiceActual < cursadasData.length - 1) {
@@ -181,9 +219,9 @@
     document.getElementById('mediafalta').addEventListener('click', () => actualizarEstado('Media falta'));
     document.getElementById('justificada').addEventListener('click', () => actualizarEstado('Justificada', false));
 
-    document.addEventListener('DOMContentLoaded', () => {
+    window.onload = () => {
         mostrarAlumno(indiceActual);
-    });
+    };
 
     document.addEventListener('keydown', function (event) {
         switch (event.key) {
@@ -215,4 +253,5 @@
         }
     });
 </script>
+
 {% endblock %}

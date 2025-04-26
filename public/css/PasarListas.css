@@ -99,10 +99,47 @@
     background-color: #abb9c5;
 }
 
-.alumno-nombre, .alumno-apellido, .alumno-dni, .alumno-asistencia {
-    font-weight: 500;
-    font-size: 25px;
+/* Estilo general para los datos del alumno */
+.AlumnoNombre,
+.AlumnoApellido, /* Corrigiendo el nombre para mantener consistencia en la nomenclatura */
+.AlumnoDni,
+.AlumnoAsistencia {  /* Asegurándonos de que las clases tengan nombres consistentes */
+    font-weight: 500; /* Peso de la fuente para una mejor legibilidad */
+    font-size: 25px; /* Tamaño adecuado para destacar la información */
+    line-height: 1.4; /* Un pequeño ajuste de altura de línea para mejorar la lectura */
+    color: #333; /* Color gris oscuro para mejorar la visibilidad */
+    margin-bottom: 10px; /* Espacio entre elementos para que no se vean tan apelotonados */
+    letter-spacing: 0.5px; /* Ligera separación entre letras para mejorar la legibilidad */
 }
+
+/* Estilo para el nombre y apellido del alumno */
+.AlumnoNombre {
+    font-size: 28px; /* Un poco más grande para destacarse como el encabezado */
+    font-weight: bold; /* Hacemos que el nombre sea más prominente */
+    color: #1e1e1e; /* Un tono oscuro para darle un toque más serio y profesional */
+}
+
+/* Estilo para el apellido, puede compartir la misma base que el nombre */
+.AlumnoApellido {
+    font-size: 25px; /* Mantener un tamaño consistente */
+    font-weight: 500;
+    color: #555; /* Un tono más suave para el apellido */
+}
+
+/* Estilo para el DNI del alumno */
+.AlumnoDni {
+    font-size: 22px; /* Un tamaño ligeramente más pequeño para detalles */
+    color: #666; /* Un color más suave para el DNI */
+}
+
+/* Estilo para el estado de asistencia del alumno */
+.AlumnoAsistencia {
+    font-size: 20px; /* Reducido para no destacar tanto como el nombre */
+    font-weight: 400; /* Peso normal para el estado */
+    color: #4caf50; /* Verde para representar un estado positivo */
+    text-transform: capitalize; /* Aseguramos que el texto esté correctamente capitalizado */
+}
+
 .btn-pasar-lista {
     display: inline-block;
     background-color: #2ebd59; /* Verde más vivo */
@@ -414,3 +451,51 @@
     visibility: visible;
     opacity: 1;
 }
+
+#spa-content {
+    position: fixed;       /* Fija el modal en la pantalla */
+    top: 50%;              /* Lo posiciona verticalmente al 50% de la altura de la ventana */
+    left: 50%;             /* Lo posiciona horizontalmente al 50% del ancho de la ventana */
+    transform: translate(-50%, -50%); /* Lo ajusta para que quede perfectamente centrado */
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 70%;            /* Ajusta el tamaño, puedes cambiarlo según lo necesites */
+    max-width: 1000px;      /* Ancho máximo */
+    max-height: 90vh;      /* Altura máxima */
+    overflow-y: auto;      /* Añade scroll si el contenido excede la altura */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);  /* Sombra para darle profundidad */
+    z-index: 1000;         /* Asegura que esté por encima de otros elementos */
+    opacity: 0;            /* Lo hace invisible por defecto */
+    pointer-events: none;  /* Impide que interactúes con el modal cuando está oculto */
+    transition: opacity 0.3s ease; /* Transición suave para la opacidad */
+}
+
+/* Cuando el modal está activo */
+#spa-content.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Fondo del overlay */
+#spa-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostrar el overlay cuando el modal está activo */
+#spa-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+

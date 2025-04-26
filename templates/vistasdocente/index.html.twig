@@ -162,14 +162,72 @@
                 };
             }
         }
+        let modalAbierto = false;
+
+function pasarLista() {
+    // Verificamos si el modal está abierto. Si está, no dejamos abrirlo de nuevo.
+    if (modalAbierto) {
+        console.log('El modal ya está abierto. Primero cierra el modal antes de abrirlo nuevamente.');
+        return;
+    }
+
+    if (selectedCursoId !== null) {
+        fetch(`/local/public/index.php/pasarlista/${selectedCursoId}`)
+            .then(response => response.text())
+            .then(html => {
+                const container = document.getElementById('spa-content');
+                container.innerHTML = html;
+
+                // Ejecutar scripts dentro del contenido cargado
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.innerHTML = oldScript.innerHTML;
+                    }
+                    document.body.appendChild(newScript);
+                });
+
+                // Ahora el modal está abierto, actualizamos el estado
+                modalAbierto = true;
+
+                // Mostrar modal y overlay usando la clase "show"
+                document.getElementById('spa-content').classList.add('show');
+                document.getElementById('spa-overlay').classList.add('show');
+            })
+            .catch(error => {
+                console.error('Error al cargar la página de pasar lista:', error);
+                alert('Hubo un error al intentar cargar la página.');
+            });
+    } else {
+        console.log('No se ha seleccionado un curso.');
+    }
+}
+
+function cerrarModal() {
+    // Verificamos si el modal está abierto antes de cerrarlo
+    if (modalAbierto) {
+        // Ocultamos el modal y el overlay quitando la clase "show"
+        document.getElementById('spa-content').classList.remove('show');
+        document.getElementById('spa-overlay').classList.remove('show');
+
+        // Restablecer el estado del modal a cerrado
+        modalAbierto = false;
+    }
+}
+
         
-        function pasarLista() {
-            if (selectedCursoId !== null) {
-                window.location.href = `/pasarlista/${selectedCursoId}`;
-            } else {
-                alert('No se ha seleccionado un curso.');
+        // Evento para cerrar el modal cuando se presiona Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modalAbierto) {
+                cerrarModal();
             }
-        }
+        });
+        
+        
+        
         
         
   
@@ -500,17 +558,22 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtener la fecha actual y formatearla en 'd-m-Y'
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const year = today.getFullYear();
-            const formattedToday = `${day}-${month}-${year}`;
-
-            // Establecer la fecha generada en un elemento HTML
-            document.getElementById('fecha-tabla-asistencia').textContent = 'La fecha de hoy es: ' + formattedToday;
-            document.getElementById('hiddenFechaJavaScript').value = formattedToday;
-
+            // Declarar formattedToday fuera del bloque if
+            let formattedToday;
+        
+            // Verifica si 'today' ya está declarado
+            if (typeof formattedToday === 'undefined') {
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, '0');
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const year = today.getFullYear();
+                formattedToday = `${day}-${month}-${year}`;
+            
+                // Establecer la fecha generada en un elemento HTML
+                document.getElementById('fecha-tabla-asistencia').textContent = 'La fecha de hoy es: ' + formattedToday;
+                document.getElementById('hiddenFechaJavaScript').value = formattedToday;
+            }
+        
             // Comparar la fecha y actualizar la tabla
             const fechaActual = formattedToday;
             document.querySelectorAll('tbody').forEach(tbody => {
@@ -527,6 +590,8 @@
                 });
             });
         });
+        
+        
     </script>
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     <div class="curso-container" id="ListaNueva"style="display: none;">
@@ -542,11 +607,9 @@
             <button class="btn-pasar-lista">
                 Ver asistencias
             </button>
-            <a id="pasarListaBtn" href="#" onclick="pasarLista()">
-                <button class="btn-pasar-lista">
-                    📋 Pasar Lista
-                </button>
-            </a>
+            <button class="btn-pasar-lista" onclick="pasarLista()">
+                📋 Pasar Lista
+            </button>
             
             
             
@@ -942,6 +1005,12 @@
                 </div>
             </div>    
         </div>
+           <div id="spa-overlay"></div>
+    <div id="spa-content">
+        <h2>Título del Modal</h2>
+        <p>Contenido del modal aquí...</p>
+        <button onclick="cerrarModal()">Cerrar</button>
+    </div>
 
 
         <button id="backButton" style="display: none;" class="btn-primary">VOLVER</button>
