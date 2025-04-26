@@ -7,6 +7,8 @@
 
     {# Script para dirigir a la cursada seleccionada y poder asignar las notas #}
     <script>
+        let selectedCursoId = null;
+
         function showCursoCursada(cursoId) {
             // oculta tablas no relevantes
             let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
@@ -61,6 +63,7 @@
     {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
     <script>
         function showListaNueva(cursoId) {
+            selectedCursoId = cursoId;
             console.log("Curso ID recibido:", cursoId);
         
             const curso = cursosData[cursoId];
@@ -160,6 +163,13 @@
             }
         }
         
+        function pasarLista() {
+            if (selectedCursoId !== null) {
+                window.location.href = `/pasarlista/${selectedCursoId}`;
+            } else {
+                alert('No se ha seleccionado un curso.');
+            }
+        }
         
         
   
@@ -532,7 +542,7 @@
             <button class="btn-pasar-lista">
                 Ver asistencias
             </button>
-            <a id="pasarListaBtn" href="#">
+            <a id="pasarListaBtn" href="#" onclick="pasarLista()">
                 <button class="btn-pasar-lista">
                     📋 Pasar Lista
                 </button>
