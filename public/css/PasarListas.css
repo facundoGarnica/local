@@ -452,50 +452,45 @@
     opacity: 1;
 }
 
-#spa-content {
-    position: fixed;       /* Fija el modal en la pantalla */
-    top: 50%;              /* Lo posiciona verticalmente al 50% de la altura de la ventana */
-    left: 50%;             /* Lo posiciona horizontalmente al 50% del ancho de la ventana */
-    transform: translate(-50%, -50%); /* Lo ajusta para que quede perfectamente centrado */
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 70%;            /* Ajusta el tamaño, puedes cambiarlo según lo necesites */
-    max-width: 1000px;      /* Ancho máximo */
-    max-height: 90vh;      /* Altura máxima */
-    overflow-y: auto;      /* Añade scroll si el contenido excede la altura */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);  /* Sombra para darle profundidad */
-    z-index: 1000;         /* Asegura que esté por encima de otros elementos */
-    opacity: 0;            /* Lo hace invisible por defecto */
-    pointer-events: none;  /* Impide que interactúes con el modal cuando está oculto */
-    transition: opacity 0.3s ease; /* Transición suave para la opacidad */
-}
 
-/* Cuando el modal está activo */
-#spa-content.show {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* Fondo del overlay */
-#spa-overlay {
+#PasarAsistenciaModal {
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000; /* más que el overlay */
+    width: 1000px; /* Aumenta el ancho del modal según lo necesites */
+    max-width: 80%; /* Esto asegura que no se haga más grande que el 80% del ancho de la pantalla */
 }
 
-/* Mostrar el overlay cuando el modal está activo */
-#spa-overlay.show {
-    opacity: 1;
-    pointer-events: auto;
+.alumnoeditar button {
+    background-color: #2a4365; /* Azul oscuro */
+    color: white; /* Texto blanco */
+    border: 1px solid #2a4365; /* Borde azul oscuro */
+    border-radius: 4px; /* Bordes redondeados */
+    padding: 6px 12px; /* Espaciado dentro del botón */
+    font-size: 14px; /* Tamaño de texto */
+    cursor: pointer; /* Cambiar a cursor tipo mano */
+    transition: all 0.3s ease; /* Transición suave para el hover */
+    text-align: center; /* Centrar texto */
+    display: inline-block; /* Para que el botón se ajuste al contenido */
 }
 
+.alumnoeditar button:hover {
+    background-color: #1e3549; /* Azul más oscuro al pasar el ratón */
+    border-color: #1e3549; /* Borde del mismo color en hover */
+}
 
+.alumnoeditar button:focus {
+    outline: none; /* Eliminar el borde predeterminado al hacer clic */
+    box-shadow: 0 0 0 3px rgba(42, 67, 101, 0.6); /* Sombra azul oscura al enfocar */
+}
 
+.alumnoeditar button:active {
+    background-color: #162d40; /* Azul más oscuro cuando se hace clic */
+    border-color: #162d40; /* Borde que coincide con el fondo al hacer clic */
+}
