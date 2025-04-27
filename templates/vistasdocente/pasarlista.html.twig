@@ -35,26 +35,20 @@
 <script>
     window.onload = () => {
         console.log("Cargando alumno...");
-        mostrarAlumno(indiceActual);
+        mostrarAlumno(indiceActual);  // Asegúrate de que el índice esté inicializado en 0
     };
     
-    document.addEventListener('DOMContentLoaded', function() {
-        // Verificamos que cursadasData no esté vacío antes de llamar a mostrarAlumno
-        console.log(cursadasData); // Para comprobar si los datos están correctamente cargados
-    
-        if (cursadasData.length > 0) {
-            mostrarAlumno(indiceActual); // Cargar el primer alumno
-        } else {
-            console.error("No hay datos de alumnos disponibles.");
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Cargando el primer alumno...");
+        mostrarAlumno(0); // Carga el primer alumno inmediatamente
     });
     
+    // Fecha específica para este template (renombrada para evitar conflicto)
+    const fechaAsistencia = new Date();
     
-    const fechaHoy = new Date();
-    
-    const day = String(fechaHoy.getDate()).padStart(2, '0');
-    const month = String(fechaHoy.getMonth() + 1).padStart(2, '0');
-    const year = fechaHoy.getFullYear();
+    const day = String(fechaAsistencia.getDate()).padStart(2, '0');
+    const month = String(fechaAsistencia.getMonth() + 1).padStart(2, '0');
+    const year = fechaAsistencia.getFullYear();
     const formattedDate = `Fecha: ${day}/${month}/${year}`;
     const formattedFechaBack = `${year}-${month}-${day}`;
     
@@ -71,58 +65,36 @@
                     dni: "{{ cursada.alumno.dniPasaporte|e('js') }}"
                 }
             }{% if not loop.last %},{% endif %}
-        {% endfor %}
+        {% endfor %} 
     ];
     console.log(cursadasData);
     let indiceActual = 0;
     let asistenciasMarcadas = {};
 
     function mostrarAlumno(index) {
+        console.log("Llamando a mostrarAlumno con índice:", index);
+    
+        // Verificar que el índice está dentro del rango
         if (index < 0 || index >= cursadasData.length) {
-            console.log("Índice fuera de rango");
+            console.error("Índice fuera de rango:", index);
             return;
         }
     
         const alumno = cursadasData[index].alumno;
-        console.log("Mostrando alumno:", alumno);  // Añadir esta línea para depuración
+        console.log("Datos del alumno:", alumno);
     
-        const alumnoNombreElemento = document.querySelector('.AlumnoNombre'); 
-        const alumnoDniElemento = document.querySelector('.AlumnoDni'); 
+        const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
+        const alumnoDniElemento = document.querySelector('.AlumnoDni');
     
-        if (alumnoNombreElemento) {
+        // Verifica si los elementos existen en el DOM
+        if (alumnoNombreElemento && alumnoDniElemento) {
+            console.log("Actualizando elementos con:", `${alumno.nombre} ${alumno.apellido}`);
             alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
-        }
-    
-        if (alumnoDniElemento) {
             alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
-        }
-    
-        const estadoElemento = document.querySelector('.estado-text');
-        if (estadoElemento) {
-            estadoElemento.textContent = 'No marcado';
-            estadoElemento.className = 'estado-text estado-neutral';
-        }
-    
-        const observacionElemento = document.getElementById('observacion');
-        const enviarElemento = document.getElementById('enviar');
-        if (observacionElemento && enviarElemento) {
-            observacionElemento.style.visibility = 'hidden';
-            enviarElemento.style.visibility = 'hidden';
-            document.getElementById('observacion-input').value = '';
-        }
-    
-        const previa = asistenciasMarcadas[alumno.id];
-        if (previa) {
-            actualizarEstado(previa.estado, false);
-            if (previa.observacion) {
-                if (observacionElemento) {
-                    observacionElemento.style.visibility = 'visible';
-                    document.getElementById('observacion-input').value = previa.observacion;
-                }
-            }
+        } else {
+            console.error("No se encontraron los elementos en el DOM para actualizar.");
         }
     }
-    
 
     function guardarAsistencias() {
         const urlGuardar = "{{ path('guardar_asistencia') }}";
@@ -218,10 +190,6 @@
     document.getElementById('ausente').addEventListener('click', () => actualizarEstado('Ausente'));
     document.getElementById('mediafalta').addEventListener('click', () => actualizarEstado('Media falta'));
     document.getElementById('justificada').addEventListener('click', () => actualizarEstado('Justificada', false));
-
-    window.onload = () => {
-        mostrarAlumno(indiceActual);
-    };
 
     document.addEventListener('keydown', function (event) {
         switch (event.key) {

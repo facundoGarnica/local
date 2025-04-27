@@ -164,60 +164,98 @@
         }
         let modalAbierto = false;
 
-function pasarLista() {
-    // Verificamos si el modal está abierto. Si está, no dejamos abrirlo de nuevo.
-    if (modalAbierto) {
-        console.log('El modal ya está abierto. Primero cierra el modal antes de abrirlo nuevamente.');
-        return;
-    }
-
-    if (selectedCursoId !== null) {
-        fetch(`/local/public/index.php/pasarlista/${selectedCursoId}`)
-            .then(response => response.text())
-            .then(html => {
-                const container = document.getElementById('spa-content');
-                container.innerHTML = html;
-
-                // Ejecutar scripts dentro del contenido cargado
-                const scripts = container.querySelectorAll('script');
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.innerHTML = oldScript.innerHTML;
-                    }
-                    document.body.appendChild(newScript);
-                });
-
-                // Ahora el modal está abierto, actualizamos el estado
-                modalAbierto = true;
-
-                // Mostrar modal y overlay usando la clase "show"
-                document.getElementById('spa-content').classList.add('show');
-                document.getElementById('spa-overlay').classList.add('show');
-            })
-            .catch(error => {
-                console.error('Error al cargar la página de pasar lista:', error);
-                alert('Hubo un error al intentar cargar la página.');
-            });
-    } else {
-        console.log('No se ha seleccionado un curso.');
-    }
-}
-
-function cerrarModal() {
-    // Verificamos si el modal está abierto antes de cerrarlo
-    if (modalAbierto) {
-        // Ocultamos el modal y el overlay quitando la clase "show"
-        document.getElementById('spa-content').classList.remove('show');
-        document.getElementById('spa-overlay').classList.remove('show');
-
-        // Restablecer el estado del modal a cerrado
-        modalAbierto = false;
-    }
-}
-
+               function pasarLista() {
+            if (modalAbierto) {
+                console.log('El modal ya está abierto. Primero cierra el modal antes de abrirlo nuevamente.');
+                return;
+            }
+        
+            if (selectedCursoId !== null) {
+                resetearModal(); // Limpia el modal antes de cargar contenido nuevo
+        
+                fetch(`/local/public/index.php/pasarlista/${selectedCursoId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        const container = document.getElementById('spa-content');
+        
+                        // Asignar el contenido HTML al modal
+                        container.innerHTML = html;
+        
+                        // Ejecutar los scripts dinámicos dentro del contenido cargado
+                        const scripts = container.querySelectorAll('script');
+                        scripts.forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            if (oldScript.src) {
+                                newScript.src = oldScript.src;
+                            } else {
+                                newScript.innerHTML = oldScript.innerHTML;
+                            }
+                            newScript.setAttribute('data-dynamic-script', 'true'); // Marcamos como dinámicos
+                            document.body.appendChild(newScript);
+                        });
+        
+                        // Marcar modal como abierto
+                        modalAbierto = true;
+        
+                        // Mostrar modal y overlay
+                        document.getElementById('spa-content').classList.add('show');
+                        document.getElementById('spa-overlay').classList.add('show');
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar la página de pasar lista:', error);
+                        alert('Hubo un error al intentar cargar la página.');
+                    });
+            } else {
+                console.log('No se ha seleccionado un curso.');
+            }
+        }
+        
+                function cerrarModal() {
+            if (modalAbierto) {
+                // Ocultar modal y overlay quitando la clase "show"
+                document.getElementById('spa-content').classList.remove('show');
+                document.getElementById('spa-overlay').classList.remove('show');
+        
+                // BORRAR scripts dinámicos agregados anteriormente
+                document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
+        
+                // Limpiar también el contenido HTML del modal
+                document.getElementById('spa-content').innerHTML = '';
+        
+                // Restablecer el estado del modal a cerrado
+                modalAbierto = false;
+            }
+        }
+        
+        function resetearModal() {
+            const container = document.getElementById('spa-content');
+            if (container) {
+                container.innerHTML = '';
+            }
+        
+            // Eliminar scripts dinámicos agregados anteriormente
+            document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
+        
+            // Resetear variables globales si existen
+            if (typeof cursadasData !== 'undefined') {
+                delete window.cursadasData;
+            }
+            if (typeof fechaPasarLista !== 'undefined') {
+                delete window.fechaPasarLista;
+            }
+            if (typeof indiceActual !== 'undefined') {
+                delete window.indiceActual;
+            }
+            if (typeof asistenciasMarcadas !== 'undefined') {
+                delete window.asistenciasMarcadas;
+            }
+        
+            // Opcionalmente remover event listeners si se agregaron directamente (esto depende de cómo estés implementando)
+            // Podríamos limpiar todo el overlay también si querés.
+        
+            console.log('Modal y variables reseteadas.');
+        }
+        
         
         // Evento para cerrar el modal cuando se presiona Escape
         document.addEventListener('keydown', function(event) {
