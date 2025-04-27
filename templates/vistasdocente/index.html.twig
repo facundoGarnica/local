@@ -101,86 +101,135 @@
             modalAbierto = true;
         }
         
-                function editarAsistencia(cursoId, cursadaId) {
-            // Busca el curso y la cursada en cursosData
-            const curso = cursosData[cursoId];
-            if (!curso) {
-                console.error("No se encontró el curso con ID:", cursoId);
-                return;
-            }
-        
-            const cursada = curso.cursadas.find(c => c.id === cursadaId);
-            if (!cursada) {
-                console.error("No se encontró la cursada con ID:", cursadaId);
-                return;
-            }
-        
-            const alumno = cursada.alumno;
-            const ultimaAsistencia = cursada.asistencias.length > 0
-                ? cursada.asistencias[cursada.asistencias.length - 1]
-                : null;
-        
-            // Cargar los datos del alumno en el modal
-            const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
-            const alumnoDniElemento = document.querySelector('.AlumnoDni');
-            const spanEstado = document.querySelector('.estado-text');
-            const observacionInput = document.getElementById('observacion-input');
-        
-            if (alumnoNombreElemento && alumnoDniElemento) {
-                alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
-                alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
-            }
-        
-            if (ultimaAsistencia) {
-                spanEstado.textContent = ultimaAsistencia.asistencia;
-                spanEstado.className = 'estado-text estado-' + ultimaAsistencia.asistencia.toLowerCase().replace(' ', '');
-                observacionInput.value = ultimaAsistencia.observacion || '';
-                document.getElementById('observacion').style.visibility = 'visible';
-                document.getElementById('enviar').style.visibility = 'visible';
-            } else {
-                spanEstado.textContent = 'No marcado';
-                spanEstado.className = 'estado-text estado-neutral';
-                observacionInput.value = '';
-                document.getElementById('observacion').style.visibility = 'hidden';
-                document.getElementById('enviar').style.visibility = 'hidden';
-            }
-        
-            // Mostrar el modal
-            document.getElementById('spa-overlay').style.display = 'block';
-            document.getElementById('PasarAsistenciaModal').style.display = 'block';
-            modalAbierto = true;
-        }
+                                                                   function editarAsistencia(cursoId, cursadaId) {
+                                                            // Realiza una solicitud al servidor para obtener los datos actualizados
+                                                            fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`)
+                                                                .then(response => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error('Error al obtener los datos actualizados');
+                                                                    }
+                                                                    return response.json();
+                                                                })
+                                                                .then(data => {
+                                                                    // Encuentra la cursada correspondiente en los datos actualizados
+                                                                    const cursada = data.find(c => c.id === cursadaId);
+                                                                    if (!cursada) {
+                                                                        console.error("No se encontró la cursada con ID:", cursadaId);
+                                                                        return;
+                                                                    }
+                                                        
+                                                                    const alumno = cursada;
+                                                                    const ultimaAsistencia = {
+                                                                        asistencia: alumno.asistencia,
+                                                                        observacion: alumno.observacion
+                                                                    };
+                                                        
+                                                                    // Cargar los datos del alumno en el modal
+                                                                    const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
+                                                                    const alumnoDniElemento = document.querySelector('.AlumnoDni');
+                                                                    const spanEstado = document.querySelector('.estado-text');
+                                                                    const observacionInput = document.getElementById('observacion-input');
+                                                        
+                                                                    if (alumnoNombreElemento && alumnoDniElemento) {
+                                                                        alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
+                                                                        alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
+                                                                    }
+                                                        
+                                                                    if (ultimaAsistencia) {
+                                                                        // Cargar el estado actual del alumno
+                                                                        spanEstado.textContent = ultimaAsistencia.asistencia;
+                                                                        spanEstado.className = 'estado-text estado-' + ultimaAsistencia.asistencia.toLowerCase().replace(' ', '');
+                                                                        observacionInput.value = ultimaAsistencia.observacion || '';
+                                                        
+                                                                        // Si el estado es "Justificada", muestra el campo de observación y el botón "Guardar"
+                                                                        if (ultimaAsistencia.asistencia.toLowerCase() === 'justificada') {
+                                                                            document.getElementById('observacion').style.visibility = 'visible';
+                                                                            document.getElementById('enviar').style.visibility = 'visible';
+                                                                        } else {
+                                                                            // Oculta el campo de observación y el botón "Guardar" para otros estados
+                                                                            document.getElementById('observacion').style.visibility = 'hidden';
+                                                                            document.getElementById('enviar').style.visibility = 'hidden';
+                                                                        }
+                                                                    } else {
+                                                                        // Si no hay asistencias, restablece los valores por defecto
+                                                                        spanEstado.textContent = 'No marcado';
+                                                                        spanEstado.className = 'estado-text estado-neutral';
+                                                                        observacionInput.value = '';
+                                                                        document.getElementById('observacion').style.visibility = 'hidden';
+                                                                        document.getElementById('enviar').style.visibility = 'hidden';
+                                                                    }
+                                                        
+                                                                    // Mostrar el modal
+                                                                    document.getElementById('spa-overlay').style.display = 'block';
+                                                                    document.getElementById('PasarAsistenciaModal').style.display = 'block';
+                                                                    modalAbierto = true;
+                                                                })
+                                                                .catch(error => console.error('Error al cargar los datos del alumno:', error));
+                                                        }
         // Función para cerrar el modal
-                function cerrarPasarAsistenciaModal() {
-            if (!modalAbierto) {
-                console.log('El modal ya está cerrado.');
-                return; // Evita intentar cerrar el modal si ya está cerrado
-            }
-        
-            // Ocultar overlay y modal
-            document.getElementById('spa-overlay').style.display = 'none';
-            document.getElementById('PasarAsistenciaModal').style.display = 'none';
-        
-            // Reiniciar el índice del array
-            indiceActual = 0;
-        
-            // Opcional: Limpia el contenido del modal si es necesario
-            const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
-            const alumnoDniElemento = document.querySelector('.AlumnoDni');
-            const spanEstado = document.querySelector('.estado-text');
-            const observacionInput = document.getElementById('observacion-input');
-        
-            if (alumnoNombreElemento) alumnoNombreElemento.textContent = 'Nombre Apellido';
-            if (alumnoDniElemento) alumnoDniElemento.textContent = 'DNI: 12345678';
-            if (spanEstado) {
-                spanEstado.textContent = 'No marcado';
-                spanEstado.className = 'estado-text estado-neutral';
-            }
-            if (observacionInput) observacionInput.value = '';
-        
-            // Cambiar el estado del modal a cerrado
-            modalAbierto = false;
-        }
+                                         function cerrarPasarAsistenciaModal() {
+                                if (!modalAbierto) {
+                                    console.log('El modal ya está cerrado.');
+                                    return; // Evita intentar cerrar el modal si ya está cerrado
+                                }
+                            
+                                // Ocultar overlay y modal
+                                document.getElementById('spa-overlay').style.display = 'none';
+                                document.getElementById('PasarAsistenciaModal').style.display = 'none';
+                            
+                                // Cambiar el estado del modal a cerrado
+                                modalAbierto = false;
+                            
+                                // Actualizar la tabla de alumnos
+                                const cursoId = selectedCursoId; // Asegúrate de que `selectedCursoId` esté definido
+                                fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`) // Ajusta la URL según tu configuración
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Error al obtener los datos actualizados');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        const tbody = document.querySelector('.curso-tabla tbody');
+                                        tbody.innerHTML = ''; // Limpia la tabla antes de agregar nuevas filas
+                            
+                                        let presentes = 0; // Contador de alumnos presentes
+                            
+                                        data.forEach(alumno => {
+                                            const row = document.createElement('tr');
+                                            row.classList.add('fila-alumno');
+                            
+                                            row.innerHTML = `
+                                                <td class="alumno-nombre">${alumno.nombre}</td>
+                                                <td class="alumno-apellido">${alumno.apellido}</td>
+                                                <td class="alumno-dni">${alumno.dni}</td>
+                                                <td class="alumno-asistencia">
+                                                    <span class="estado-asistencia ${alumno.asistencia.toLowerCase()}">
+                                                        ${alumno.asistencia}
+                                                    </span>
+                                                </td>
+                                                <td class="alumno-observacion">${alumno.observacion}</td>
+                                                <td class="alumnoeditar">
+                                                    <button onclick="editarAsistencia(${cursoId}, ${alumno.id})">Editar</button>
+                                                </td>
+                                            `;
+                            
+                                            tbody.appendChild(row);
+                            
+                                            // Incrementa el contador si el alumno está presente
+                                            if (alumno.asistencia.toLowerCase() === 'presente') {
+                                                presentes++;
+                                            }
+                                        });
+                            
+                                        // Actualiza el total de alumnos presentes
+                                        const totalPresentes = document.querySelector('.total-presentes');
+                                        if (totalPresentes) {
+                                            totalPresentes.textContent = `Alumnos presentes: ${presentes}`;
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al actualizar la tabla:', error));
+                            }
         document.getElementById('spa-overlay').addEventListener('click', cerrarPasarAsistenciaModal);
         
         // Evento para cerrar el modal cuando se presiona Escape
@@ -242,6 +291,32 @@
                 const anio = hoy.getFullYear();
                 fechaSpan.textContent = `Fecha: ${dia}/${mes}/${anio}`;
             }
+        });
+                document.addEventListener('DOMContentLoaded', () => {
+            // Botón "Presente"
+            document.getElementById('presente').addEventListener('click', () => {
+                actualizarEstado('Presente', true); // Marca como "Presente" y guarda
+                setTimeout(avanzarSiEsPosible, 1000); // Avanza al siguiente alumno después de 1 segundo
+            });
+        
+            // Botón "Ausente"
+            document.getElementById('ausente').addEventListener('click', () => {
+                actualizarEstado('Ausente', true); // Marca como "Ausente" y guarda
+                setTimeout(avanzarSiEsPosible, 1000); // Avanza al siguiente alumno después de 1 segundo
+            });
+        
+            // Botón "Media falta"
+            document.getElementById('mediafalta').addEventListener('click', () => {
+                actualizarEstado('Media falta', true); // Marca como "Media falta" y guarda
+                setTimeout(avanzarSiEsPosible, 1000); // Avanza al siguiente alumno después de 1 segundo
+            });
+        
+            // Botón "Justificada"
+            document.getElementById('justificada').addEventListener('click', () => {
+                actualizarEstado('Justificada', false); // Marca como "Justificada" pero no guarda automáticamente
+                document.getElementById('observacion').style.visibility = 'visible';
+                document.getElementById('enviar').style.visibility = 'visible';
+            });
         });
         
   
@@ -322,12 +397,18 @@
         }
 
     // Función para avanzar al siguiente alumno
-        function avanzarSiEsPosible() {
-        if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
-            indiceActual++;
-            mostrarAlumno(indiceActual);
+                function avanzarSiEsPosible() {
+            if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
+                // Avanza al siguiente alumno
+                indiceActual++;
+                mostrarAlumno(indiceActual);
+            } else {
+                // Si es el último alumno, cierra el modal después de 1 segundo
+                setTimeout(() => {
+                    cerrarPasarAsistenciaModal();
+                }, 1000);
+            }
         }
-    }
     
     function retrocederAlumno() {
         if (indiceActual > 0) {
@@ -1057,9 +1138,11 @@ document.addEventListener('keydown', function (event) {
             actualizarEstado('Media falta', true);  // Actualiza el estado a 'Media falta' y guarda
             setTimeout(avanzarSiEsPosible, 1000);  // Avanza al siguiente alumno después de un segundo
             break;
-        case 'F4': // F4 para marcar como "Justificada"
+            case 'F4': // F4 para marcar como "Justificada"
             event.preventDefault();
-            actualizarEstado('Justificada', false);  // Actualiza el estado a 'Justificada' sin guardar inmediatamente
+            actualizarEstado('Justificada', false); // No guarda automáticamente
+            document.getElementById('observacion').style.visibility = 'visible';
+            document.getElementById('enviar').style.visibility = 'visible';
             break;
     }
 });
@@ -1140,6 +1223,46 @@ document.addEventListener('DOMContentLoaded', () => {
         fechaActualElemento.textContent = `Fecha: ${dia}/${mes}/${anio}`;
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Selecciona los campos de búsqueda
+    const dniBuscar = document.getElementById('dni-buscar');
+    const nombreBuscar = document.getElementById('nombre-buscar');
+    const apellidoBuscar = document.getElementById('apellido-buscar');
+
+    // Agrega eventos de entrada (input) a cada campo
+    dniBuscar.addEventListener('input', filtrarAlumnos);
+    nombreBuscar.addEventListener('input', filtrarAlumnos);
+    apellidoBuscar.addEventListener('input', filtrarAlumnos);
+
+    function filtrarAlumnos() {
+        // Obtén los valores de los campos de búsqueda
+        const dniValor = dniBuscar.value.toLowerCase();
+        const nombreValor = nombreBuscar.value.toLowerCase();
+        const apellidoValor = apellidoBuscar.value.toLowerCase();
+
+        // Selecciona todas las filas de la tabla de alumnos
+        const filas = document.querySelectorAll('.curso-tabla tbody .fila-alumno');
+
+        // Itera sobre cada fila y verifica si coincide con los criterios de búsqueda
+        filas.forEach(fila => {
+            const dni = fila.querySelector('.alumno-dni').textContent.toLowerCase();
+            const nombre = fila.querySelector('.alumno-nombre').textContent.toLowerCase();
+            const apellido = fila.querySelector('.alumno-apellido').textContent.toLowerCase();
+
+            // Verifica si la fila coincide con los valores de búsqueda
+            if (
+                (dni.includes(dniValor) || dniValor === '') &&
+                (nombre.includes(nombreValor) || nombreValor === '') &&
+                (apellido.includes(apellidoValor) || apellidoValor === '')
+            ) {
+                fila.style.display = ''; // Muestra la fila si coincide
+            } else {
+                fila.style.display = 'none'; // Oculta la fila si no coincide
+            }
+        });
+    }
+});
         </script>
 
         <!-- Modal1 para asignar notas a las materias de un docente!!!-->
@@ -1163,9 +1286,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
            <div id="spa-overlay"></div>
     <div id="spa-content">
-        <h2>Título del Modal</h2>
-        <p>Contenido del modal aquí...</p>
-        <button onclick="cerrarPasarAsistenciaModal()">Cerrar</button>
     </div>
 
 

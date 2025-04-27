@@ -224,6 +224,34 @@ class VistasdocenteController extends AbstractController
         return new JsonResponse(['status' => 'success'], 200);
     }
     
+    #[Route('/actualizar-lista-alumnos/{curso_id}', name: 'actualizar_lista_alumnos', methods: ['GET'])]
+    public function actualizarListaAlumnos(int $curso_id, CursoRepository $cursoRepository, CursadaRepository $cursadaRepository): JsonResponse
+    {
+        $curso = $cursoRepository->find($curso_id);
+    
+        if (!$curso) {
+            return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+        }
+    
+        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    
+        $data = [];
+        foreach ($cursadas as $cursada) {
+            $alumno = $cursada->getAlumno();
+            $ultimaAsistencia = $cursada->getAsistencias()->last();
+    
+            $data[] = [
+                'id' => $cursada->getId(),
+                'nombre' => $alumno->getNombre(),
+                'apellido' => $alumno->getApellido(),
+                'dni' => $alumno->getDniPasaporte(),
+                'asistencia' => $ultimaAsistencia ? $ultimaAsistencia->getAsistencia() : 'No marcado',
+                'observacion' => $ultimaAsistencia ? $ultimaAsistencia->getObservacion() : '',
+            ];
+        }
+    
+        return new JsonResponse($data);
+    }
 
 }
 
