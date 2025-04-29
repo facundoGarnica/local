@@ -253,6 +253,11 @@ class VistasdocenteController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/templateprueba', name: 'app_prueba')]
+    public function prueba(): Response
+    {
+        return $this->render('vistasdocente/templateprueba.html.twig');
+    }
 }
 
 

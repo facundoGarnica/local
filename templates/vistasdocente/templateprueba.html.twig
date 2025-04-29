@@ -1,0 +1,71 @@
+
+<link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">
+{% block body %}
+<table id="EstadisticasModal" class="tabla_curso_cursada" border="1">
+    <thead>
+        <tr>
+            <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
+            <th colspan="2">Año: 2° Comision: A</th>
+        </tr>
+        <tr>
+            <th colspan="2">
+                Asignatura:
+                <p id="fecha-tabla-asistencia" style="margin: 0;">Abril 2025</p>
+            </th>
+            <th colspan="6">Programación II - Ciclo Lectivo 2025</th>
+        </tr>
+        <tr>
+            <th>Cursada</th>
+            <th>Asistencias</th>
+            <th>Inasistencias</th>
+            <th>Media falta</th>
+            <th>Justificada</th>
+            <th>Total</th>
+            <th>Porcentaje de asistencia</th>
+            <th>Porcentaje de asistencia con justificada</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Juan Pérez</td>
+            <td>18</td>
+            <td>2</td>
+            <td>1</td>
+            <td>1</td>
+            <td>22</td>
+            <td>88.64%</td>
+            <td>93.18%</td>
+        </tr>
+        <tr>
+            <td>María González</td>
+            <td>20</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+            <td>21</td>
+            <td>95.24%</td>
+            <td>95.24%</td>
+        </tr>
+        <tr>
+            <td>Luis Fernández</td>
+            <td>16</td>
+            <td>4</td>
+            <td>2</td>
+            <td>2</td>
+            <td>24</td>
+            <td>75.00%</td>
+            <td>83.33%</td>
+        </tr>
+        <tr>
+            <td>Carla Martínez</td>
+            <td>22</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>22</td>
+            <td>100.00%</td>
+            <td>100.00%</td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
