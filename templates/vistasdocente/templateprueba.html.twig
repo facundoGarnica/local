@@ -1,7 +1,7 @@
 
 <link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">
 {% block body %}
-<table id="EstadisticasModal" class="tabla_curso_cursada" border="1">
+<table id="EstadisticasModal" class="tablaCursada" border="1">
     <thead>
         <tr>
             <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
@@ -68,4 +68,10 @@
         </tr>
     </tbody>
 </table>
+
+<a href="{{ path('app_vistasdocente')}}">
+    <button class="btn-pasar-lista">
+        Regresar a la lista
+    </button>
+ </a>
 {% endblock %}
