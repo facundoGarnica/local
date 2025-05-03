@@ -466,18 +466,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
 }
 
-    function abrirPorcentaje() {
-        const modal = document.getElementById('modalporcentaje');
-        if (modal) {
-            modal.style.display = 'block';
-        }
-    }
-    function cerrarPorcentaje() {
-        const modal = document.getElementById('modalporcentaje');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    }
+function abrirPorcentaje() {
+    const modal = document.getElementById('modalporcentaje');
+    const lista = document.getElementById('ListaNueva');
+
+    if (modal) modal.style.display = 'block';
+    if (lista) lista.style.display = 'none';
+}
+
+function cerrarPorcentaje() {
+    const modal = document.getElementById('modalporcentaje');
+    const lista = document.getElementById('ListaNueva');
+
+    if (modal) modal.style.display = 'none';
+    if (lista) lista.style.display = 'block';
+}
 
     
     </script>
@@ -908,11 +911,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </tbody>
             </table>
             
-                <button class="btn-pasar-lista" onclick= "cerrarPorcentaje()">
+                <button class="botondeporcentaje" onclick= "cerrarPorcentaje()">
                     Regresar a la lista
                 </button>
             
-                <button class="btn-pasar-lista">
+                <button class="botondeporcentaje">
                     Descargar
                 </button>
         </div>
