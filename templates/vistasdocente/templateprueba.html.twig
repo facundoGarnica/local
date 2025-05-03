@@ -1,7 +1,6 @@
-
 <link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">
 {% block body %}
-<table id="EstadisticasModal" class="tabla_curso_cursada" border="1">
+<table id="EstadisticasModal" class="tablaCursada" border="1">
     <thead>
         <tr>
             <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
@@ -15,14 +14,14 @@
             <th colspan="6">Programación II - Ciclo Lectivo 2025</th>
         </tr>
         <tr>
-            <th>Cursada</th>
-            <th>Asistencias</th>
-            <th>Inasistencias</th>
+            <th>Alumnos</th>
+            <th>Presente</th>
+            <th>Ausente</th>
             <th>Media falta</th>
             <th>Justificada</th>
-            <th>Total</th>
+            <th>Total Asistencias</th>
             <th>Porcentaje de asistencia</th>
-            <th>Porcentaje de asistencia con justificada</th>
+            <th>Porcentaje de asistencia justificada</th>
         </tr>
     </thead>
     <tbody>
@@ -68,9 +67,16 @@
         </tr>
     </tbody>
 </table>
-        <a href="{{ path('app_vistasdocente')}}">
-            <button class="btn-pasar-lista">
-                volver atras
-            </button>
-        </a>
+
+<a href="{{ path('app_vistasdocente')}}">
+    <button class="btn-pasar-lista">
+        Regresar a la lista
+    </button>
+ </a>
+
+ <a href="{{ path('app_vistasdocente')}}">
+    <button class="btn-pasar-lista">
+        Descargar
+    </button>
+ </a>
 {% endblock %}
