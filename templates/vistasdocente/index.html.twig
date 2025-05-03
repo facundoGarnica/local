@@ -466,6 +466,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
 }
 
+    function abrirPorcentaje() {
+        const modal = document.getElementById('modalporcentaje');
+        if (modal) {
+            modal.style.display = 'block';
+        }
+    }
+    function cerrarPorcentaje() {
+        const modal = document.getElementById('modalporcentaje');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    
     </script>
 
     {# Script para cargar variable si hay sesion iniciada y mantener el punto de pantalla donde se dejo al realizar alguna operacion #}
@@ -686,11 +700,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Contenedor de botón y fecha alineados -->
         <div class="fecha-actual-wrapper">
-            <a href="{{ path('app_prueba')}}"
-            <button class="btn-pasar-lista">
+            <button class="btn-pasar-lista" onclick="abrirPorcentaje()">
                 Ver asistencias
             </button>
-            </a>
+
             <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal()">
                 📋 Pasar Lista
             </button>
@@ -826,9 +839,83 @@ document.addEventListener('DOMContentLoaded', () => {
             </tbody>
         </table>
 
-        <table>
+        <div id="modalporcentaje" style="display: none;" >
+            <table id="EstadisticasModal" class="tablillacursada" border="1">
+                <thead>
+                    <tr>
+                        <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
+                        <th colspan="2">Año: 2° Comision: A</th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Asignatura:
+                            <p id="fechatablilla" style="margin: 0;">Abril 2025</p>
+                        </th>
+                        <th colspan="6">Programación II - Ciclo Lectivo 2025</th>
+                    </tr>
+                    <tr>
+                        <th>Alumnos</th>
+                        <th>Presente</th>
+                        <th>Ausente</th>
+                        <th>Media falta</th>
+                        <th>Justificada</th>
+                        <th>Total Asistencias</th>
+                        <th>Porcentaje de asistencia</th>
+                        <th>Porcentaje de asistencia justificada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Juan Pérez</td>
+                        <td>18</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>22</td>
+                        <td>88.64%</td>
+                        <td>93.18%</td>
+                    </tr>
+                    <tr>
+                        <td>María González</td>
+                        <td>20</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>21</td>
+                        <td>95.24%</td>
+                        <td>95.24%</td>
+                    </tr>
+                    <tr>
+                        <td>Luis Fernández</td>
+                        <td>16</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>2</td>
+                        <td>24</td>
+                        <td>75.00%</td>
+                        <td>83.33%</td>
+                    </tr>
+                    <tr>
+                        <td>Carla Martínez</td>
+                        <td>22</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>22</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                    </tr>
+                </tbody>
+            </table>
             
-        </table>
+                <button class="btn-pasar-lista" onclick= "cerrarPorcentaje()">
+                    Regresar a la lista
+                </button>
+            
+                <button class="btn-pasar-lista">
+                    Descargar
+                </button>
+        </div>
 
 
 

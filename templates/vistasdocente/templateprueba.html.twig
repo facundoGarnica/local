@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">
+
 {% block body %}
-<table id="EstadisticasModal" class="tablaCursada" border="1">
+<table id="EstadisticasModal" class="tablillacursada" border="1">
     <thead>
         <tr>
             <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
@@ -9,7 +9,7 @@
         <tr>
             <th colspan="2">
                 Asignatura:
-                <p id="fecha-tabla-asistencia" style="margin: 0;">Abril 2025</p>
+                <p id="fechatablilla" style="margin: 0;">Abril 2025</p>
             </th>
             <th colspan="6">Programación II - Ciclo Lectivo 2025</th>
         </tr>
@@ -68,13 +68,13 @@
     </tbody>
 </table>
 
-<a href="{{ path('app_vistasdocente')}}">
+<a>
     <button class="btn-pasar-lista">
         Regresar a la lista
     </button>
  </a>
 
- <a href="{{ path('app_vistasdocente')}}">
+ <a>
     <button class="btn-pasar-lista">
         Descargar
     </button>
