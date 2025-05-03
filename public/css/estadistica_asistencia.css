@@ -36,3 +36,19 @@
     font-weight: bold;
     color: #004a99;
 }
+.botondeporcentaje {
+    display: block;
+    margin: 30px auto 0;
+    padding: 10px 20px;
+    background-color: #004a99;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botondeporcentaje:hover {
+    background-color: #003366;
+}

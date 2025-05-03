@@ -466,18 +466,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
 }
 
-    function abrirPorcentaje() {
-        const modal = document.getElementById('modalporcentaje');
-        if (modal) {
-            modal.style.display = 'block';
-        }
-    }
+function abrirPorcentaje() {
+    const modal = document.getElementById('modalporcentaje');
+    const lista = document.getElementById('ListaNueva');
+
+    if (modal) modal.style.display = 'block';
+    if (lista) lista.style.display = 'none';
+}
+    
     function cerrarPorcentaje() {
         const modal = document.getElementById('modalporcentaje');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    } 
+        const lista = document.getElementById('ListaNueva');
+    
+        if (modal) modal.style.display = 'none';
+        if (lista) lista.style.display = 'block';
+    }
+
+
     </script>
 
     {# Script para cargar variable si hay sesion iniciada y mantener el punto de pantalla donde se dejo al realizar alguna operacion #}
@@ -913,13 +918,13 @@ document.addEventListener('DOMContentLoaded', () => {
     </table>
     
     
-        <button class="btn-pasar-lista" onclick="cerrarPorcentaje()">
+        <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
             Regresar a la lista
         </button>
     
     
     
-        <button class="btn-pasar-lista">
+        <button class="botondeporcentaje">
             Descargar
         </button>
      
