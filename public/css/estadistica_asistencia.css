@@ -1,13 +1,6 @@
 /* estadistica_asistencia.css */
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f8;
-    margin: 20px;
-    padding: 0;
-}
-
-.tablaCursada {
+.tablillacursada {
     width: 100%;
     border-collapse: collapse;
     margin: 0 auto;
@@ -17,44 +10,28 @@ body {
     font-size: 14px;
 }
 
-.tablaCursada th, .tablaCursada td {
+.tablillacursada th,.tablillacursada . td {
     padding: 12px;
     border: 1px solid #ccc;
 }
 
-.tablaCursada thead th {
+.tablillacursada thead th {
     background-color: #004a99;
     color: white;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-.tablaCursada tbody tr:nth-child(even) {
+.tablillacursada tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.tablaCursada tbody tr:hover {
+.tablillacursada tbody tr:hover {
     background-color: #e6f0ff;
 }
 
-#fecha-tabla-asistencia {
+#fechatablilla {
     font-weight: bold;
     color: #004a99;
 }
 
-.btn-pasar-lista {
-    display: block;
-    margin: 30px auto 0;
-    padding: 10px 20px;
-    background-color: #004a99;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-pasar-lista:hover {
-    background-color: #003366;
-}
