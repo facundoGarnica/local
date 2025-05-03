@@ -686,9 +686,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Contenedor de botón y fecha alineados -->
         <div class="fecha-actual-wrapper">
-            <button class="btn-pasar-lista">
-                Ver asistencias
-            </button>
+        
+            <a href="{{ path('app_prueba')}}">
+                <button class="btn-pasar-lista">
+                    Ver asistencias
+                </button>
+             </a>
             <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal()">
                 📋 Pasar Lista
             </button>
