@@ -258,6 +258,8 @@ class VistasdocenteController extends AbstractController
     {
         return $this->render('vistasdocente/templateprueba.html.twig');
     }
+
+    
 }
 
 
