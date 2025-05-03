@@ -1,43 +1,225 @@
-{% extends 'base.html.twig' %}
+{% block title %}{% endblock %}
 
-{% block title %}Pasar Asistencia{% endblock %}
+<link rel="stylesheet" href="{{ asset('css/PasarListas.css') }}">
 
 {% block body %}
 <div id="PasarAsistenciaModal" class="AsistenciaModal1">
     <div id="alumno-container">
         <div class="alumno-card">
-            <!-- Fecha con estilo profesional -->
             <div class="fecha-actual" id="fecha-actual"></div>
-
-            <h2 class="alumno-nombre">Nombre Apellido</h2>
-            <p class="alumno-dni">DNI: 12345678</p>
+            <h2 class="AlumnoNombre">Nombre Apellido</h2> 
+            <p class="AlumnoDni">DNI: 12345678</p>
             <p id="estado">Estado: 
                 <span class="estado-text estado-neutral">No marcado</span>
             </p>
             <p id="observacion" style="visibility: hidden;">
                 Observación: <input type="text" id="observacion-input" placeholder="Completar...">
             </p>
+            <button id="enviar" style="visibility: hidden;" class="btn btn-primary mt-2">Guardar</button>
+            <p id="confirmacion" style="visibility: hidden; color: green; margin-top: 10px;">
+                ✅ Datos guardados correctamente
+            </p>
         </div>
     </div>
 
     <div class="botones mt-3">
-        <button id="anterior">⬅️ Anterior</button>
+        <button id="anterior">⬅️</button>
         <button id="presente">✅ Presente (F1)</button>
         <button id="ausente">❌ Ausente (F2)</button>
         <button id="mediafalta">⏳ Media falta (F3)</button>
         <button id="justificada">📄✅ Justificada (F4)</button>
-        <button id="siguiente">Siguiente ➡️</button>
+        <button id="siguiente">➡️</button>
     </div>
 </div>
 
 <script>
-    // Obtener la fecha actual y mostrarla en el div
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
-    const year = today.getFullYear();
+    window.onload = () => {
+        console.log("Cargando alumno...");
+        mostrarAlumno(indiceActual);  // Asegúrate de que el índice esté inicializado en 0
+    };
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Cargando el primer alumno...");
+        mostrarAlumno(0); // Carga el primer alumno inmediatamente
+    });
+    
+    // Fecha específica para este template (renombrada para evitar conflicto)
+    const fechaAsistencia = new Date();
+    
+    const day = String(fechaAsistencia.getDate()).padStart(2, '0');
+    const month = String(fechaAsistencia.getMonth() + 1).padStart(2, '0');
+    const year = fechaAsistencia.getFullYear();
     const formattedDate = `Fecha: ${day}/${month}/${year}`;
-
+    const formattedFechaBack = `${year}-${month}-${day}`;
+    
     document.getElementById('fecha-actual').textContent = formattedDate;
+
+    const cursadasData = [
+        {% for cursada in cursadas %} 
+            {
+                id: {{ cursada.id }},
+                alumno: {
+                    id: {{ cursada.alumno.id }},
+                    nombre: "{{ cursada.alumno.nombre|e('js') }}",
+                    apellido: "{{ cursada.alumno.apellido|e('js') }}",
+                    dni: "{{ cursada.alumno.dniPasaporte|e('js') }}"
+                }
+            }{% if not loop.last %},{% endif %}
+        {% endfor %} 
+    ];
+    console.log(cursadasData);
+    let indiceActual = 0;
+    let asistenciasMarcadas = {};
+
+    function mostrarAlumno(index) {
+        console.log("Llamando a mostrarAlumno con índice:", index);
+    
+        // Verificar que el índice está dentro del rango
+        if (index < 0 || index >= cursadasData.length) {
+            console.error("Índice fuera de rango:", index);
+            return;
+        }
+    
+        const alumno = cursadasData[index].alumno;
+        console.log("Datos del alumno:", alumno);
+    
+        const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
+        const alumnoDniElemento = document.querySelector('.AlumnoDni');
+    
+        // Verifica si los elementos existen en el DOM
+        if (alumnoNombreElemento && alumnoDniElemento) {
+            console.log("Actualizando elementos con:", `${alumno.nombre} ${alumno.apellido}`);
+            alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
+            alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
+        } else {
+            console.error("No se encontraron los elementos en el DOM para actualizar.");
+        }
+    }
+
+    function guardarAsistencias() {
+        const urlGuardar = "{{ path('guardar_asistencia') }}";
+
+        fetch(urlGuardar, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(Object.values(asistenciasMarcadas)),
+        })
+        .then(response => {
+            if (response.ok) {
+                const confirmacion = document.getElementById('confirmacion');
+                confirmacion.style.visibility = 'visible';
+                confirmacion.textContent = '✅ Datos guardados correctamente';
+
+                setTimeout(() => {
+                    confirmacion.style.visibility = 'hidden';
+                }, 2000);
+            } else {
+                response.text().then(text => console.error("Error al guardar:", text));
+            }
+        })
+        .catch(error => console.error('Error en la petición:', error));
+    }
+
+    function actualizarEstado(estado, guardar = true) {
+        const spanEstado = document.querySelector('.estado-text');
+        spanEstado.textContent = estado;
+        spanEstado.className = 'estado-text estado-' + estado.toLowerCase().replace(' ', '');
+
+        const alumnoId = cursadasData[indiceActual].alumno.id;
+        let observacion = document.getElementById('observacion-input').value || '';
+
+        if (estado === 'Justificada') {
+            document.getElementById('observacion').style.visibility = 'visible';
+            document.getElementById('enviar').style.visibility = 'visible';
+        } else {
+            document.getElementById('observacion').style.visibility = 'hidden';
+            document.getElementById('enviar').style.visibility = 'hidden';
+            observacion = '';
+        }
+
+        const existingAttendance = asistenciasMarcadas[alumnoId];
+        if (existingAttendance && existingAttendance.fecha === formattedFechaBack) {
+            existingAttendance.estado = estado;
+            existingAttendance.observacion = observacion;
+        } else {
+            asistenciasMarcadas[alumnoId] = {
+                cursada_id: cursadasData[indiceActual].id,
+                fecha: formattedFechaBack,
+                estado: estado,
+                observacion: observacion
+            };
+        }
+
+        if (guardar) {
+            guardarAsistencias();
+            const confirmacion = document.getElementById('confirmacion');
+            confirmacion.style.visibility = 'visible';
+            confirmacion.textContent = '✅ Datos guardados correctamente';
+            setTimeout(() => {
+                confirmacion.style.visibility = 'hidden';
+            }, 2000);
+        }
+    }
+
+    function avanzarSiEsPosible() {
+        if (indiceActual < cursadasData.length - 1) {
+            indiceActual++;
+            mostrarAlumno(indiceActual);
+        }
+    }
+
+    document.getElementById('enviar').addEventListener('click', () => {
+        actualizarEstado('Justificada', true);
+        setTimeout(() => {
+            avanzarSiEsPosible();
+        }, 1000);
+    });
+
+    document.getElementById('anterior').addEventListener('click', () => {
+        if (indiceActual > 0) {
+            indiceActual--;
+            mostrarAlumno(indiceActual);
+        }
+    });
+
+    document.getElementById('siguiente').addEventListener('click', avanzarSiEsPosible);
+
+    document.getElementById('presente').addEventListener('click', () => actualizarEstado('Presente'));
+    document.getElementById('ausente').addEventListener('click', () => actualizarEstado('Ausente'));
+    document.getElementById('mediafalta').addEventListener('click', () => actualizarEstado('Media falta'));
+    document.getElementById('justificada').addEventListener('click', () => actualizarEstado('Justificada', false));
+
+    document.addEventListener('keydown', function (event) {
+        switch (event.key) {
+            case 'ArrowLeft':
+                document.getElementById('anterior').click();
+                break;
+            case 'ArrowRight':
+                avanzarSiEsPosible();
+                break;
+            case 'F1':
+                event.preventDefault();
+                actualizarEstado('Presente', true);
+                setTimeout(avanzarSiEsPosible, 1000);
+                break;
+            case 'F2':
+                event.preventDefault();
+                actualizarEstado('Ausente', true);
+                setTimeout(avanzarSiEsPosible, 1000);
+                break;
+            case 'F3':
+                event.preventDefault();
+                actualizarEstado('Media falta', true);
+                setTimeout(avanzarSiEsPosible, 1000);
+                break;
+            case 'F4':
+                event.preventDefault();
+                actualizarEstado('Justificada', false);
+                break;
+        }
+    });
 </script>
+
 {% endblock %}

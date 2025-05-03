@@ -99,10 +99,47 @@
     background-color: #abb9c5;
 }
 
-.alumno-nombre, .alumno-apellido, .alumno-dni, .alumno-asistencia {
-    font-weight: 500;
-    font-size: 25px;
+/* Estilo general para los datos del alumno */
+.AlumnoNombre,
+.AlumnoApellido, /* Corrigiendo el nombre para mantener consistencia en la nomenclatura */
+.AlumnoDni,
+.AlumnoAsistencia {  /* Asegurándonos de que las clases tengan nombres consistentes */
+    font-weight: 500; /* Peso de la fuente para una mejor legibilidad */
+    font-size: 25px; /* Tamaño adecuado para destacar la información */
+    line-height: 1.4; /* Un pequeño ajuste de altura de línea para mejorar la lectura */
+    color: #333; /* Color gris oscuro para mejorar la visibilidad */
+    margin-bottom: 10px; /* Espacio entre elementos para que no se vean tan apelotonados */
+    letter-spacing: 0.5px; /* Ligera separación entre letras para mejorar la legibilidad */
 }
+
+/* Estilo para el nombre y apellido del alumno */
+.AlumnoNombre {
+    font-size: 28px; /* Un poco más grande para destacarse como el encabezado */
+    font-weight: bold; /* Hacemos que el nombre sea más prominente */
+    color: #1e1e1e; /* Un tono oscuro para darle un toque más serio y profesional */
+}
+
+/* Estilo para el apellido, puede compartir la misma base que el nombre */
+.AlumnoApellido {
+    font-size: 25px; /* Mantener un tamaño consistente */
+    font-weight: 500;
+    color: #555; /* Un tono más suave para el apellido */
+}
+
+/* Estilo para el DNI del alumno */
+.AlumnoDni {
+    font-size: 22px; /* Un tamaño ligeramente más pequeño para detalles */
+    color: #666; /* Un color más suave para el DNI */
+}
+
+/* Estilo para el estado de asistencia del alumno */
+.AlumnoAsistencia {
+    font-size: 20px; /* Reducido para no destacar tanto como el nombre */
+    font-weight: 400; /* Peso normal para el estado */
+    color: #4caf50; /* Verde para representar un estado positivo */
+    text-transform: capitalize; /* Aseguramos que el texto esté correctamente capitalizado */
+}
+
 .btn-pasar-lista {
     display: inline-block;
     background-color: #2ebd59; /* Verde más vivo */
@@ -235,11 +272,13 @@
     border-color: #ffcc00; /* amarillo más intenso */
 }
 
-.estado-justificado {
-    background-color: #e2e8f0; /* gris claro */
-    color: #2d3748; /* gris oscuro para contraste */
-    border-color: #cbd5e0; /* gris neutro */
+.estado-justificada {
+    background-color: #ede9fe; /* lavanda claro */
+    color: #3e226b; /* púrpura profundo */
+    border-color: #8e66d0;
 }
+
+
 
 
 .botones {
@@ -403,3 +442,55 @@
     margin-top: 20px;
 }
 
+#confirmacion {
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+#confirmacion.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+#PasarAsistenciaModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000; /* más que el overlay */
+    width: 1000px; /* Aumenta el ancho del modal según lo necesites */
+    max-width: 80%; /* Esto asegura que no se haga más grande que el 80% del ancho de la pantalla */
+}
+
+.alumnoeditar button {
+    background-color: #2a4365; /* Azul oscuro */
+    color: white; /* Texto blanco */
+    border: 1px solid #2a4365; /* Borde azul oscuro */
+    border-radius: 4px; /* Bordes redondeados */
+    padding: 6px 12px; /* Espaciado dentro del botón */
+    font-size: 14px; /* Tamaño de texto */
+    cursor: pointer; /* Cambiar a cursor tipo mano */
+    transition: all 0.3s ease; /* Transición suave para el hover */
+    text-align: center; /* Centrar texto */
+    display: inline-block; /* Para que el botón se ajuste al contenido */
+}
+
+.alumnoeditar button:hover {
+    background-color: #1e3549; /* Azul más oscuro al pasar el ratón */
+    border-color: #1e3549; /* Borde del mismo color en hover */
+}
+
+.alumnoeditar button:focus {
+    outline: none; /* Eliminar el borde predeterminado al hacer clic */
+    box-shadow: 0 0 0 3px rgba(42, 67, 101, 0.6); /* Sombra azul oscura al enfocar */
+}
+
+.alumnoeditar button:active {
+    background-color: #162d40; /* Azul más oscuro cuando se hace clic */
+    border-color: #162d40; /* Borde que coincide con el fondo al hacer clic */
+}

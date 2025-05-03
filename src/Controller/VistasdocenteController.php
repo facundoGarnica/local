@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Cursada;
+use App\Repository\CursadaRepository;
 use App\Entity\Asistencia;
 use App\Form\AsistenciaType;
 use App\Repository\AsistenciaRepository;
@@ -20,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-
+use Psr\Log\LoggerInterface;
 class VistasdocenteController extends AbstractController
 {
     #[Route('/vistasdocente', name: 'app_vistasdocente')]
@@ -150,12 +153,111 @@ class VistasdocenteController extends AbstractController
         return $this->render('vistasdocente/nuevalista.html.twig');
     }
     
-    #[Route('/pasarlista', name: 'app_pasarlista')]
-    public function pasarlista(): Response
+    #[Route('/pasarlista/{curso_id}', name: 'app_pasarlista')]
+    public function pasarlista(int $curso_id, CursoRepository $cursoRepository, CursadaRepository $cursadaRepository): Response
     {
-        return $this->render('vistasdocente/pasarlista.html.twig');
+        $curso = $cursoRepository->find($curso_id);
+    
+        if (!$curso) {
+            throw $this->createNotFoundException('Curso no encontrado');
+        }
+    
+        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    
+        return $this->render('vistasdocente/pasarlista.html.twig', [
+            'curso' => $curso,
+            'cursadas' => $cursadas,
+            
+        ]);
+    }
+
+
+    #[Route('/guardar-asistencia', name: 'guardar_asistencia', methods: ['POST'])]
+    public function guardarAsistencia(Request $request, EntityManagerInterface $em, LoggerInterface $logger): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+    
+        $logger->info('Datos recibidos para guardar asistencia', ['data' => $data]);
+    
+        foreach ($data as $asistenciaData) {
+            $logger->info('Procesando asistencia', ['asistenciaData' => $asistenciaData]);
+    
+            // Buscar la cursada correspondiente
+            $cursada = $em->getRepository(Cursada::class)->find($asistenciaData['cursada_id']);
+    
+            if (!$cursada) {
+                $logger->error('Cursada no encontrada', ['cursada_id' => $asistenciaData['cursada_id']]);
+                continue;
+            }
+    
+            // Comprobar si ya existe una asistencia para la misma cursada y fecha
+            $fecha = new \DateTime($asistenciaData['fecha']);
+            $asistenciaExistente = $em->getRepository(Asistencia::class)->findOneBy([
+                'cursada' => $cursada,
+                'fecha' => $fecha
+            ]);
+    
+            if ($asistenciaExistente) {
+                // Si ya existe, actualizamos la asistencia
+                $logger->info('Actualizando asistencia existente', ['asistenciaExistente' => $asistenciaExistente]);
+    
+                $asistenciaExistente->setAsistencia($asistenciaData['estado']);
+                $asistenciaExistente->setObservacion($asistenciaData['observacion']);
+                
+                $em->persist($asistenciaExistente);
+            } else {
+                // Si no existe, creamos una nueva asistencia
+                $logger->info('Creando nueva asistencia', ['asistenciaData' => $asistenciaData]);
+    
+                $asistencia = new Asistencia();
+                $asistencia->setCursada($cursada);
+                $asistencia->setFecha($fecha);
+                $asistencia->setAsistencia($asistenciaData['estado']);
+                $asistencia->setObservacion($asistenciaData['observacion']);
+    
+                $em->persist($asistencia);
+            }
+        }
+    
+        $em->flush();
+    
+        return new JsonResponse(['status' => 'success'], 200);
     }
     
+    #[Route('/actualizar-lista-alumnos/{curso_id}', name: 'actualizar_lista_alumnos', methods: ['GET'])]
+    public function actualizarListaAlumnos(int $curso_id, CursoRepository $cursoRepository, CursadaRepository $cursadaRepository): JsonResponse
+    {
+        $curso = $cursoRepository->find($curso_id);
+    
+        if (!$curso) {
+            return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+        }
+    
+        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    
+        $data = [];
+        foreach ($cursadas as $cursada) {
+            $alumno = $cursada->getAlumno();
+            $ultimaAsistencia = $cursada->getAsistencias()->last();
+    
+            $data[] = [
+                'id' => $cursada->getId(),
+                'nombre' => $alumno->getNombre(),
+                'apellido' => $alumno->getApellido(),
+                'dni' => $alumno->getDniPasaporte(),
+                'asistencia' => $ultimaAsistencia ? $ultimaAsistencia->getAsistencia() : 'No marcado',
+                'observacion' => $ultimaAsistencia ? $ultimaAsistencia->getObservacion() : '',
+            ];
+        }
+    
+        return new JsonResponse($data);
+    }
+
+    #[Route('/templateprueba', name: 'app_prueba')]
+    public function prueba(): Response
+    {
+        return $this->render('vistasdocente/templateprueba.html.twig');
+    }
 }
 
 
