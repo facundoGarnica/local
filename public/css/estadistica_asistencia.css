@@ -19,7 +19,7 @@
 }
 
 .tablillacursada thead th {
-    background-color: #004a99;
+    background-color: #4e73df;
     color: white;
     font-weight: bold;
     text-transform: uppercase;
@@ -35,14 +35,14 @@
 
 #fechatablilla {
     font-weight: bold;
-    color: #004a99;
+    color:#ffffff;
 }
 
 .botondeporcentaje {
     display: block;
     margin: 30px auto 0;
     padding: 10px 20px;
-    background-color: #004a99;
+    background-color: #4e73df;
     color: white;
     border: none;
     border-radius: 6px;
@@ -52,5 +52,5 @@
 }
 
 .botondeporcentaje:hover {
-    background-color: #003366;
+    background-color: #4e73df;
 }

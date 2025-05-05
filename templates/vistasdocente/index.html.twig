@@ -633,8 +633,7 @@ function cerrarPorcentaje() {
                     <td>{{ cursada_docente.curso.comision }}</td>
                     <td>{{ cursada_docente.curso.comision.tecnicatura }}</td>
                     <td>
-                        <button onclick="showAsistencia({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
-                        <button onclick="showListaNueva({{ cursada_docente.curso.id }})" class="btn-primary">Lista nueva</button>
+                        <button onclick="showListaNueva({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
                       
                         
                     </td>
@@ -844,7 +843,13 @@ function cerrarPorcentaje() {
                 </tfoot>
             </table>
         </div>
+
+          <button class="btn-pasar-lista" onclick="hideListaNueva()">
+        Volver
+    </button>
     </div>
+  
+
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
 
     <!-- Campo oculto para almacenar la fecha generada por JavaScript -->
@@ -1084,7 +1089,7 @@ function cerrarPorcentaje() {
 
 
 
-
+   
    
 
 

@@ -2357,11 +2357,22 @@ fieldset:disabled a.btn {
   pointer-events: none;
 }
 
+
+
+
 .btn-primary {
-  color: #fff;
+  display: inline-block;
   background-color: #4e73df;
-  border-color: #4e73df;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
 
 .btn-primary:hover {
   color: #fff;
