@@ -25,7 +25,7 @@
     
         if (curso) {
             // Actualiza el título y la información del curso
-            document.querySelector('.curso-titulo').textContent = curso.asignatura;
+           // document.querySelector('.curso-titulo').textContent = curso.asignatura;
             document.querySelector('.curso-info h2 span').textContent = curso.asignatura;
             document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio;
             document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision;
@@ -202,6 +202,7 @@
                     asignatura: "{{ curso.asignatura.nombre|e('js') }}",
                     anio: "{{ curso.comision.anio|e('js') }}",
                     comision: "{{ curso.comision.comision|e('js') }}",
+                    tecnicatura: "{{ curso.comision.tecnicatura.nombre|e('js') }}",
                     cursadas: [
                         {% for cursada in curso.cursadas %}
                             {
@@ -466,6 +467,99 @@ document.addEventListener('DOMContentLoaded', () => {
     
 }
 
+function llenarTablaPorcentaje(cursoId) {
+    const curso = cursosData[cursoId];
+    const tbody = document.querySelector('#EstadisticasModal tbody');
+    tbody.innerHTML = ''; // Limpia la tabla
+
+    if (!curso) return;
+
+    // Obtener la asignatura y la tecnicatura
+    const nombreCurso = curso.asignatura || 'Nombre no disponible';  // Manejar caso cuando 'asignatura' no existe
+    const tecnicatura = curso.tecnicatura || '---';  // Ahora puedes acceder directamente a 'tecnicatura'
+    const anio = curso.anio;
+    const comision = curso.comision;
+
+    // Asignar datos al encabezado
+    document.querySelector('.nombre-tecnicatura').textContent = tecnicatura;
+    document.querySelector('.anio-comision').textContent = `Año: ${anio}° Comisión: ${comision}`;
+    document.querySelector('.nombre-asignatura').textContent = nombreCurso;
+
+    // Obtener la fecha actual
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const anioFecha = hoy.getFullYear();
+    const fechaActual = `Fecha: ${dia}/${mes}/${anioFecha}`;
+
+    // Asignar la fecha al elemento con la clase 'Fechadehoy'
+    document.querySelector('.Fechadehoy').textContent = fechaActual;
+
+    // Llenar la tabla de alumnos
+    curso.cursadas.forEach(cursada => {
+        const alumno = cursada.alumno;
+        const asistencias = cursada.asistencias;
+
+        let presente = 0;
+        let ausente = 0;
+        let mediaFalta = 0;
+        let justificada = 0;
+
+        asistencias.forEach(a => {
+            const tipo = a.asistencia.toLowerCase();
+            if (tipo === 'presente') presente++;
+            else if (tipo === 'ausente') ausente++;
+            else if (tipo === 'media falta') mediaFalta++;
+            else if (tipo === 'justificada') justificada++;
+        });
+
+        const total = presente + ausente + mediaFalta + justificada;
+        const porcentajePresente = total > 0 ? ((presente + mediaFalta * 0.5) / total * 100).toFixed(2) : '0.00';
+        const porcentajeJustificada = total > 0 ? ((presente + mediaFalta * 0.5 + justificada) / total * 100).toFixed(2) : '0.00';
+
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${alumno.nombre}</td>
+            <td>${alumno.apellido}</td>
+            <td>${alumno.dni}</td>
+            <td>${presente}</td>
+            <td>${ausente}</td>
+            <td>${mediaFalta}</td>
+            <td>${justificada}</td>
+            <td>${total}</td>
+            <td>${porcentajePresente}%</td>
+            <td>${porcentajeJustificada}%</td>
+        `;
+        tbody.appendChild(fila);
+    });
+}
+
+
+
+
+
+function abrirPorcentaje() {
+    const modal = document.getElementById('modalporcentaje');
+    const lista = document.getElementById('ListaNueva');
+
+    if (modal) modal.style.display = 'block';
+    if (lista) lista.style.display = 'none';
+
+    if (selectedCursoId !== undefined) {
+        llenarTablaPorcentaje(selectedCursoId);
+    }
+}
+
+
+function cerrarPorcentaje() {
+    const modal = document.getElementById('modalporcentaje');
+    const lista = document.getElementById('ListaNueva');
+
+    if (modal) modal.style.display = 'none';
+    if (lista) lista.style.display = 'block';
+}
+
+    
     </script>
 
     {# Script para cargar variable si hay sesion iniciada y mantener el punto de pantalla donde se dejo al realizar alguna operacion #}
@@ -678,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     <div class="curso-container" id="ListaNueva"style="display: none;">
         <!-- Título del curso -->
-    <h1 class="curso-titulo">Nombre del Curso</h1>
+        <!-- <h1 class="curso-titulo">Nombre del Curso</h1> -->
     <div class="curso-info">
         <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
         <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
@@ -686,20 +780,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Contenedor de botón y fecha alineados -->
         <div class="fecha-actual-wrapper">
-        
-            <a href="{{ path('app_prueba')}}">
-                <button class="btn-pasar-lista">
-                    Ver asistencias
-                </button>
-             </a>
+            <button class="btn-pasar-lista" onclick="abrirPorcentaje()">
+                Ver asistencias
+            </button>
+
             <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal()">
                 📋 Pasar Lista
             </button>
-            
-            
-            
-            
-            </a>
 
             <span class="fecha-actual">
                 Fecha: DD/MM/AAAA
@@ -736,15 +823,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td class="alumno-apellido">Pérez</td>
                         <td class="alumno-dni">12345678</td>
                         <td class="alumno-asistencia">
-                            <span class="estado-asistencia presente">Presente</span>
+                            <span class="estado-asistencia presente"></span>
                         </td>
                     </tr>
                     <tr class="fila-alumno">
-                        <td class="alumno-nombre">Ana</td>
-                        <td class="alumno-apellido">García</td>
-                        <td class="alumno-dni">87654321</td>
+                        <td class="alumno-nombre"></td>
+                        <td class="alumno-apellido"></td>
+                        <td class="alumno-dni"></td>
                         <td class="alumno-asistencia">
-                            <span class="estado-asistencia ausente">Ausente</span>
+                            <span class="estado-asistencia ausente"></span>
                         </td>
                     </tr>
                 </tbody>
@@ -827,8 +914,97 @@ document.addEventListener('DOMContentLoaded', () => {
             </tbody>
         </table>
 
-
-
+        <!-- TABLA DE PORCENTAJE /////// -->
+        <div id="modalporcentaje" style="display: none;" >
+            <table id="EstadisticasModal" class="tablillacursada" border="1">
+                <thead>
+                    <tr>
+                        <th colspan="6" class="nombre-tecnicatura">Tecnicatura en Informática - Cursadas de Curso -</th>
+                        <th colspan="2" class="anio-comision">Año: 2° Comision: A</th>
+                        <th colspan="2" class="Fechadehoy"></th>
+                    </tr>
+                    <tr>
+                        <th colspan="2" class="asignatura">
+                            Asignatura:
+                            <p id="fechatablilla" style="margin: 0;">Abril 2025</p>
+                        </th>
+                        <th colspan="6" class="nombre-asignatura">Programación II - Ciclo Lectivo 2025</th>
+                        <th colspan="6" class="titulo-porcentaje">Porcentaje de asistencia</th>
+                    </tr>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Dni</th>
+                        <th>Presente</th>
+                        <th>Ausente</th>
+                        <th>Media falta</th>
+                        <th>Justificada</th>
+                        <th>Total Asistencias</th>
+                        <th>Presente</th>
+                        <th>justificada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Juan </td>
+                        <td>Pérez</td>
+                        <td>45984323</td>
+                        <td>18</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>22</td>
+                        <td>88.64%</td>
+                        <td>93.18%</td>
+                    </tr>
+                    <tr>
+                        <td>María </td>
+                        <td>González</td>
+                        <td>12345678</td>
+                        <td>20</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>21</td>
+                        <td>95.24%</td>
+                        <td>95.24%</td>
+                    </tr>
+                    <tr>
+                        <td>Luis </td>
+                        <td>Fernández</td>
+                        <td>98765432</td>
+                        <td>16</td>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>2</td>
+                        <td>24</td>
+                        <td>75.00%</td>
+                        <td>83.33%</td>
+                    </tr>
+                    <tr>
+                        <td>Carla</td>
+                        <td>Martínez</td>
+                        <td>34567890</td>
+                        <td>22</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>22</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+                <button class="botondeporcentaje" onclick= "cerrarPorcentaje()">
+                    Regresar a la lista
+                </button>
+            
+                <button class="botondeporcentaje">
+                    Descargar
+                </button>
+        </div>
+        <!-- TABLA DE PORCENTAJE /////// -->
 
 
 
@@ -1294,6 +1470,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Selecciona los campos de búsqueda
     const dniBuscar = document.getElementById('dni-buscar');
@@ -1333,6 +1511,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
         </script>
 
         <!-- Modal1 para asignar notas a las materias de un docente!!!-->
@@ -1397,6 +1576,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <button id="backButton" style="display: none;" class="btn-primary">VOLVER</button>
     
-        
+   
     
 {% endblock %}

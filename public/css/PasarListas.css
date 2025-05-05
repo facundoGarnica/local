@@ -78,14 +78,15 @@
 }
 
 .buscador-alumno .form-control:focus {
-    border-color: #2ebd59; /* Verde más fuerte al hacer foco */
+    border-color: #3d58aa;
+        /* Azul más oscuro para el foco */
     outline: none;
-    box-shadow: 0 0 8px rgba(46, 189, 89, 0.4); /* Sombra verde */
+    box-shadow: 0 0 8px rgba(78, 115, 223, 1);
     background-color: #fff; /* Blanco cuando el campo tiene foco */
 }
 
 .buscador-alumno .form-control:hover {
-    border-color: #2ebd59; /* Verde más fuerte al pasar el mouse */
+    border-color: #4e73df;
     background-color: #f1faf0; /* Fondo claro en hover */
 }
 
@@ -142,7 +143,7 @@
 
 .btn-pasar-lista {
     display: inline-block;
-    background-color: #2ebd59; /* Verde más vivo */
+    background-color: #4e73df;
     color: white;
     padding: 12px 24px;
     border-radius: 10px;
@@ -198,7 +199,7 @@
 }
 
 .curso-tabla th {
-    background-color: #2a4365;
+    background-color: #4e73df;
     color: white;
 }
 
@@ -468,7 +469,8 @@
 }
 
 .alumnoeditar button {
-    background-color: #2a4365; /* Azul oscuro */
+    background-color: #4666c7;
+        /* Azul oscuro */
     color: white; /* Texto blanco */
     border: 1px solid #2a4365; /* Borde azul oscuro */
     border-radius: 4px; /* Bordes redondeados */
