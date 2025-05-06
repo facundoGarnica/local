@@ -8,9 +8,82 @@
     {# Script para dirigir a la cursada seleccionada y poder asignar las notas #}
 
         
-
+    <!-- SheetJS (para Excel) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF (para PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <!-- html2canvas (para jsPDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
         <script>
+           
+
+    function obtenerFechaActual() {
+        const hoy = new Date();
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const anio = String(hoy.getFullYear()).slice(-2); // Obtener solo los últimos dos dígitos del año
+        return `${dia}-${mes}-${anio}`;
+     }
+
+    // Función para descargar como Excel
+    function DescargarExcel() {
+        // Obtener el contenido HTML de la tabla
+        const tablaHTML = document.querySelector("#EstadisticasModal");
+    
+        // Convertir la tabla HTML a un libro de Excel
+        const wb = XLSX.utils.table_to_book(tablaHTML);
+    
+        // Obtener la fecha actual para añadirla al nombre del archivo
+        const fechaActual = obtenerFechaActual();
+    
+        // Exportar el archivo Excel con la fecha actual en el nombre
+        XLSX.writeFile(wb, `estadisticas_curso_${fechaActual}.xlsx`);
+    }
+    
+
+    // Función para descargar como PDF
+    // Función para descargar como PDF
+    function DescargarPdf() {
+        // Crear un nuevo documento PDF con jsPDF en orientación horizontal (landscape)
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'mm', 'a4'); // A4 horizontal
+    
+        // Obtener la fecha actual
+        const fechaActual = obtenerFechaActual();
+    
+        // Seleccionar la tabla que deseas exportar
+        const tabla = document.querySelector("#EstadisticasModal");
+    
+        // Configurar márgenes y escala
+        const margenIzquierdo = 10;
+        const margenSuperior = 10;
+    
+        // Usar html2canvas para capturar la tabla como imagen
+        html2canvas(tabla, {
+            scale: 1.6, // Incrementar un poco la escala para agrandar la imagen
+        }).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+    
+            // Calcular el ancho y alto de la imagen en mm
+            const imgWidth = doc.internal.pageSize.width - margenIzquierdo * 2;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+            // Ajustar la imagen al tamaño de la página
+            doc.addImage(imgData, "PNG", margenIzquierdo, margenSuperior, imgWidth, imgHeight);
+    
+            // Guardar el archivo PDF
+            doc.save(`estadisticas_curso_${fechaActual}.pdf`);
+        });
+    }
+    
+    
+
+
+
+
+
          function showListaNueva(cursoId) {
         selectedCursoId = cursoId;
         console.log("Curso ID recibido:", cursoId);
@@ -515,7 +588,9 @@ function llenarTablaPorcentaje(cursoId) {
 
         const total = presente + ausente + mediaFalta + justificada;
         const porcentajePresente = total > 0 ? ((presente + mediaFalta * 0.5) / total * 100).toFixed(2) : '0.00';
-        const porcentajeJustificada = total > 0 ? ((presente + mediaFalta * 0.5 + justificada) / total * 100).toFixed(2) : '0.00';
+        const porcentajeAusente = total > 0 ? ((ausente + mediaFalta * 0.5) / total * 100).toFixed(2) : '0.00';
+        const porcentajeJustificada = total > 0 ? (justificada / total * 100).toFixed(2) : '0.00';
+
 
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -528,6 +603,7 @@ function llenarTablaPorcentaje(cursoId) {
             <td>${justificada}</td>
             <td>${total}</td>
             <td>${porcentajePresente}%</td>
+            <td>${porcentajeAusente}%</td>
             <td>${porcentajeJustificada}%</td>
         `;
         tbody.appendChild(fila);
@@ -946,68 +1022,30 @@ function cerrarPorcentaje() {
                         <th>Justificada</th>
                         <th>Total Asistencias</th>
                         <th>Presente</th>
+                        <th>Ausente</th>
                         <th>justificada</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Juan </td>
-                        <td>Pérez</td>
-                        <td>45984323</td>
-                        <td>18</td>
-                        <td>2</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>22</td>
-                        <td>88.64%</td>
-                        <td>93.18%</td>
-                    </tr>
-                    <tr>
-                        <td>María </td>
-                        <td>González</td>
-                        <td>12345678</td>
-                        <td>20</td>
-                        <td>1</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>21</td>
-                        <td>95.24%</td>
-                        <td>95.24%</td>
-                    </tr>
-                    <tr>
-                        <td>Luis </td>
-                        <td>Fernández</td>
-                        <td>98765432</td>
-                        <td>16</td>
-                        <td>4</td>
-                        <td>2</td>
-                        <td>2</td>
-                        <td>24</td>
-                        <td>75.00%</td>
-                        <td>83.33%</td>
-                    </tr>
-                    <tr>
-                        <td>Carla</td>
-                        <td>Martínez</td>
-                        <td>34567890</td>
-                        <td>22</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>22</td>
-                        <td>100.00%</td>
-                        <td>100.00%</td>
-                    </tr>
+               
                 </tbody>
             </table>
             
-                <button class="botondeporcentaje" onclick= "cerrarPorcentaje()">
+            <div class="acciones">
+                <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
                     Regresar a la lista
                 </button>
+                
+                <div class="descarga-planilla">
+                    <h3>Descargar planilla como:</h3>
+                    <div class="botones-descarga">
+                        <button class="boton-excel" onclick="DescargarExcel()">Excel</button>
+                        <button class="boton-pdf" onclick="DescargarPdf()">PDF</button>
+                    </div>
+                </div>
+            </div>
             
-                <button class="botondeporcentaje">
-                    Descargar
-                </button>
+                
         </div>
         <!-- TABLA DE PORCENTAJE /////// -->
 
