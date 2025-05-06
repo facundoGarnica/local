@@ -225,6 +225,57 @@
             })
             .catch(error => console.error('Error al cargar los datos del alumno:', error));
     }
+
+
+    function showCursoCursada(cursoId) {
+        // oculta tablas no relevantes
+        let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+        tablesToHide.forEach(table => table.style.display = 'none');
+
+        // oculta cursos
+        let cursadaTables = document.querySelectorAll('.tabla_curso');
+        cursadaTables.forEach(table => table.style.display = 'none');
+
+        // muestra tabla cursada específica
+        let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+        if (cursadaTable) {
+            cursadaTable.style.display = '';
+        }
+
+        // ocultar search
+        let search = document.getElementById('searchs');
+        if (search) {
+            search.style.display = 'none';
+        }
+
+        // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+        let backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.style.display = '';
+            backButton.onclick = function() {
+                hideCursoCursada(cursoId);
+            };
+        }
+    }
+    function hideCursoCursada(cursoId) {
+        // oculta tabla cursada específica
+        let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+        if (cursadaTable) {
+            cursadaTable.style.display = 'none';
+        }
+
+        // muestra la tabla curso específica
+        let cursoTable = document.getElementById(`tablaTecnicaturas`);
+        if (cursoTable) {
+            cursoTable.style.display = '';
+        }
+
+        // oculta el botón regresar-volver
+        let backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.style.display = 'none';
+        }
+    }
         // Función para cerrar el modal
         function cerrarPasarAsistenciaModal() {
             if (!modalAbierto) {
