@@ -56,34 +56,35 @@
         // Crear un nuevo documento PDF con jsPDF en orientación horizontal (landscape)
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('landscape', 'mm', 'a4'); // A4 horizontal
-    
+        
         // Obtener la fecha actual
         const fechaActual = obtenerFechaActual();
-    
+        
         // Seleccionar la tabla que deseas exportar
         const tabla = document.querySelector("#EstadisticasModal");
-    
+        
         // Configurar márgenes y escala
         const margenIzquierdo = 10;
         const margenSuperior = 10;
-    
+        
         // Usar html2canvas para capturar la tabla como imagen
         html2canvas(tabla, {
-            scale: 1.6, // Incrementar un poco la escala para agrandar la imagen
+            scale: 1.2, // Reducir la escala para ajustar mejor la tabla al PDF
         }).then((canvas) => {
             const imgData = canvas.toDataURL("image/png");
-    
+        
             // Calcular el ancho y alto de la imagen en mm
             const imgWidth = doc.internal.pageSize.width - margenIzquierdo * 2;
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
+        
             // Ajustar la imagen al tamaño de la página
             doc.addImage(imgData, "PNG", margenIzquierdo, margenSuperior, imgWidth, imgHeight);
-    
+        
             // Guardar el archivo PDF
             doc.save(`estadisticas_curso_${fechaActual}.pdf`);
         });
     }
+    
     
     
 
@@ -817,30 +818,27 @@ function cerrarPorcentaje() {
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Declarar formattedToday fuera del bloque if
-            let formattedToday;
+       
         
-            // Verifica si 'today' ya está declarado
-            if (typeof formattedToday === 'undefined') {
-                const today = new Date();
-                const day = String(today.getDate()).padStart(2, '0');
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const year = today.getFullYear();
-                formattedToday = `${day}-${month}-${year}`;
-            
-                // Establecer la fecha generada en un elemento HTML
-                document.getElementById('fecha-tabla-asistencia').textContent = 'La fecha de hoy es: ' + formattedToday;
-                document.getElementById('hiddenFechaJavaScript').value = formattedToday;
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generar la fecha actual
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedToday = `${day}-${month}-${year}`; // Esta es la fecha formateada
         
             // Comparar la fecha y actualizar la tabla
-            const fechaActual = formattedToday;
+            const fechaActual = formattedToday;  // Usa formattedToday aquí
+        
             document.querySelectorAll('tbody').forEach(tbody => {
                 tbody.querySelectorAll('tr').forEach(row => {
                     const fechaAsistencia = row.querySelector('.fecha-asistencia');
+                    
                     if (fechaAsistencia) {
                         const asistenciaFecha = fechaAsistencia.textContent.trim();
+                        
+                        // Verificar si las fechas coinciden
                         if (asistenciaFecha !== fechaActual) {
                             row.style.display = 'none'; // Oculta las filas que no coinciden con la fecha actual
                         } else {
