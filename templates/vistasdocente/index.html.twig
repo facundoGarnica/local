@@ -32,8 +32,16 @@
         // Obtener el contenido HTML de la tabla
         const tablaHTML = document.querySelector("#EstadisticasModal");
     
+        // Eliminar la fecha de la tabla antes de exportarla
+        const fechaElement = document.querySelector('.Fechadehoy');
+        const fechaOriginal = fechaElement.textContent;  // Guardar la fecha original si quieres restaurarla después
+        fechaElement.textContent = '';  // Limpiar la fecha para que no se imprima en Excel
+    
         // Convertir la tabla HTML a un libro de Excel
         const wb = XLSX.utils.table_to_book(tablaHTML);
+    
+        // Restaurar la fecha original después de convertir la tabla
+        fechaElement.textContent = fechaOriginal;
     
         // Obtener la fecha actual para añadirla al nombre del archivo
         const fechaActual = obtenerFechaActual();
@@ -42,8 +50,7 @@
         XLSX.writeFile(wb, `estadisticas_curso_${fechaActual}.xlsx`);
     }
     
-
-    // Función para descargar como PDF
+    
     // Función para descargar como PDF
     function DescargarPdf() {
         // Crear un nuevo documento PDF con jsPDF en orientación horizontal (landscape)
@@ -82,7 +89,16 @@
 
 
 
-
+    let VistaAsistenciaActiva = false; // Variable para controlar que no se pueda pasar lista sin abrir el modal
+    
+    function ActivarEstadoAsistencia() {
+        VistaAsistenciaActiva = true; // Cambia el estado de VistaAsistenciaActiva
+        console.log("VistaAsistenciaActiva:", VistaAsistenciaActiva); // Muestra el estado actual en la consola
+    }
+    function DesactivarEstadoAsistencia() {
+        VistaAsistenciaActiva = false; // Cambia el estado de VistaAsistenciaActiva
+        console.log("VistaAsistenciaActiva:", VistaAsistenciaActiva); // Muestra el estado actual en la consola
+    }
 
          function showListaNueva(cursoId) {
         selectedCursoId = cursoId;
@@ -95,7 +111,7 @@
         }
     
         const curso = cursosData[cursoId];
-    
+        
         if (curso) {
             // Actualiza el título y la información del curso
            // document.querySelector('.curso-titulo').textContent = curso.asignatura;
@@ -128,7 +144,7 @@
                     </td>
                     <td class="alumno-observacion">${ultimaAsistencia ? ultimaAsistencia.observacion : ''}</td>
                     <td class="alumnoeditar">
-                          <button onclick="CambiarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
+                          <button onclick="ActivarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
                           
                     </td>
                 `;
@@ -303,13 +319,15 @@
         
             // Cambiar el estado del modal a cerrado
             modalAbierto = false;
+            DesactivarEstadoAsistencia();
+            DesactivarEstadoEditar();
         }
         document.getElementById('spa-overlay').addEventListener('click', cerrarPasarAsistenciaModal);
         
         // Evento para cerrar el modal cuando se presiona Escape
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && modalAbierto) {
-                cerrarPasarAsistenciaModal();
+                cerrarPasarAsistenciaModal();  
             }
         });
         
@@ -426,8 +444,12 @@
     let selectedCursoId = 1;  // Ejemplo de ID seleccionado, reemplaza con tu lógica
 
 
-    function CambiarEstadoEditar(){
+    function ActivarEstadoEditar(){
         ActivarEditar = true;  // Cambia el estado de ActivarEditar
+        console.log("ActivarEditar:", ActivarEditar);  // Muestra el estado actual en la consola
+    }
+    function DesactivarEstadoEditar(){
+        ActivarEditar = false;  // Cambia el estado de ActivarEditar
         console.log("ActivarEditar:", ActivarEditar);  // Muestra el estado actual en la consola
     }
     // Función para mostrar el alumno
@@ -533,63 +555,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-
-
-
-        //para la segunda tabla de asistencia
-        function showAsistencia2(cursoId) {
-            // oculta tablas no relevantes
-            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
-            tablesToHide.forEach(table => table.style.display = 'none');
-
-            // oculta cursos
-            let cursadaTables = document.querySelectorAll('.tabla_curso_cursada');
-            cursadaTables.forEach(table => table.style.display = 'none');
-
-            // muestra tabla cursada específica
-            let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
-            if (cursadaTable) {
-                cursadaTable.style.display = '';
-            }
-
-            // ocultar search
-            let search = document.getElementById('searchs');
-            if (search) {
-                search.style.display = 'none';
-            }
-
-            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
-            let backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.style.display = '';
-                backButton.onclick = function() {
-                    hideAsistencia2(cursoId);
-                };
-            }
-        }
-        function hideAsistencia2(cursoId) {
-    // Oculta la tabla de asistencias detalladas
-    let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
-    if (cursadaTable) {
-        cursadaTable.style.display = 'none';
-    }
-    
-    // Muestra la tabla de asistencias general
-    let asistenciaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
-    if (asistenciaTable) {
-        asistenciaTable.style.display = '';
-    }
-    // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
-            let backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.style.display = '';
-                backButton.onclick = function() {
-                    hideAsistencia(cursoId);
-                };
-            }
-
-    
-}
 
 function llenarTablaPorcentaje(cursoId) {
     const curso = cursosData[cursoId];
@@ -851,13 +816,6 @@ function cerrarPorcentaje() {
 
 
 
-
-
-
-
-
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Declarar formattedToday fuera del bloque if
@@ -910,9 +868,10 @@ function cerrarPorcentaje() {
                 Ver asistencias
             </button>
 
-            <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal()">
+            <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal(); ActivarEstadoAsistencia();">
                 📋 Pasar Lista
             </button>
+            
 
             <span class="fecha-actual">
                 Fecha: DD/MM/AAAA
@@ -979,73 +938,6 @@ function cerrarPorcentaje() {
 
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
 
-    <!-- Campo oculto para almacenar la fecha generada por JavaScript -->
-    <input type="hidden" id="hiddenFechaJavaScript">
-
-    {% for curso in cursos %}
-        <table id="tablaAsistencia_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
-            <thead>
-                <tr>
-                    <th colspan="4">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
-                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
-                </tr>
-                <tr>
-                    <th>Asignatura :<p id="fecha-tabla-asistencia">Hoy es:</p></th>
-                    <th colspan="4"> {{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
-                    <th colspan="1"><button onclick="showAsistencia2({{ curso.id }})" class="btn-primary">Ver Asistencias</button></th>
-                </tr>
-                <tr>
-                    <th>Curso</th>
-                    <th>Cursada</th>
-                    <th>Fecha</th>
-                    <th>Asistencia</th>
-                    <th>Observacion</th>
-                    <th>Editar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cursada in curso.cursadas %}
-                    {% for asistencia in cursada.getAsistencias %}
-                        {% set asistenciaFecha = asistencia.fecha|date('d-m-Y') %}
-                        <tr>
-                                <td>{{ curso.ciclolectivo }}</td>
-                                <td>{{ cursada.alumno }}</td>
-                                <td class="fecha-asistencia">{{ asistenciaFecha }}</td>
-                                <td>{{ asistencia.asistencia }}</td>
-                                <td>{{ asistencia.observacion }}</td>
-                                <td>
-                                    <button onclick="openModal3({{ curso.id }}, {{ cursada.id }}, {{ asistencia.id }})">Editar</button>
-                                </td>                         
-                        </tr>
-                    {% else %}                
-           
-           
-                    {% endfor %}
-                {% endfor %}
-                {% set currentDate = "now"|date("m-d-Y") %}
-                        {% for cursada in curso.cursadas %}
-                            {% set asistenciaParaHoy = null %}
-                            {% for asistencia in cursada.getAsistencias %}
-                                {% if asistencia.fecha|date('m-d-Y') == currentDate %}
-                                    {% set asistenciaParaHoy = asistencia %}
-                                {% endif %}
-                            {% endfor %}
-                            <tr>
-                                {% if asistenciaParaHoy is not null %}
-                                {% else %}
-                                    <td>{{ curso.ciclolectivo }}</td>
-                                    <td>{{ cursada.alumno }}</td>
-                                    <td>
-                                        <button onclick="openModal2({{ curso.id }}, {{ cursada.id }}, '{{ cursada.alumno.persona.apellido }}')">Asistencia</button>
-                                    </td>
-                                    <td colspan="3">No hay asistencias registradas para hoy</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-
-            </tbody>
-        </table>
-
         <!-- TABLA DE PORCENTAJE /////// -->
         <div id="modalporcentaje" style="display: none;" >
             <table id="EstadisticasModal" class="tablillacursada" border="1">
@@ -1099,88 +991,6 @@ function cerrarPorcentaje() {
                 
         </div>
         <!-- TABLA DE PORCENTAJE /////// -->
-
-
-
-        <table id="tablaAsistencia2_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
-            <thead>
-                <tr>
-                    <th colspan="6">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
-                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
-                </tr>
-                <tr>
-                    <th colspan="2">Asignatura :<p id="fecha-tabla-asistencia"></p></th>
-                    <th colspan="6">{{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
-                </tr>
-                <tr>
-                    <th>Cursada</th>
-                    <th>Asistencias</th>
-                    <th>Inasistencias</th>
-                    <th>Media falta</th>
-                    <th>Justificada</th>
-                    <th>Total</th>
-                    <th>Porcentaje de asistencia</th>
-                    <th>Porcentaje de asistencia con justificada</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cursada in curso.cursadas %}
-                    {% set total = 0 %}
-                    {% set asistencias = 0 %}
-                    {% set inasistencias = 0 %}
-                    {% set mediaFalta = 0 %}
-                    {% set justificada = 0 %}
-
-                    {% for asistencia in cursada.getAsistencias %}
-                        {% set total = total + 1 %}
-                        {% if asistencia.asistencia == 'presente' %}
-                            {% set asistencias = asistencias + 1 %}
-                        {% elseif asistencia.asistencia == 'ausente' %}
-                            {% set inasistencias = inasistencias + 1 %}
-                        {% elseif asistencia.asistencia == 'mediafalta' %}
-                            {% set mediaFalta = mediaFalta + 1 %}
-                        {% elseif asistencia.asistencia == 'justificada' %}
-                            {% set justificada = justificada + 1 %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if total > 0 %}
-                        {% set asistenciasTotales = asistencias + (mediaFalta * 0.5) %}
-                        {% set porcentajeAsistencia = (asistenciasTotales / total) * 100 %}
-                        {% set porcentajeJustificada = ((asistenciasTotales + justificada) / total) * 100 %}
-                    {% else %}
-                        {% set porcentajeAsistencia = 0 %}
-                        {% set porcentajeJustificada = 0 %}
-                    {% endif %}
-
-                    <tr>
-                        <td>{{ cursada.alumno }}</td>
-                        <td>{{ asistencias }}</td>
-                        <td>{{ inasistencias }}</td>
-                        <td>{{ mediaFalta }}</td>
-                        <td>{{ justificada }}</td>
-                        <td>{{ total }}</td>
-                        <td>{{ porcentajeAsistencia|number_format(2) }}%</td>
-                        <td>{{ porcentajeJustificada|number_format(2) }}%</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-
-
-
-
-
-
-
-    {% endfor %}
-
-
-
-   
-   
-
 
 
 
@@ -1238,75 +1048,6 @@ function cerrarPorcentaje() {
 
 
         {# script asistencias #}
-        <script>
-            function openModal2(cursoId, cursadaId, estud) {
-                
-                
-                // Generar la URL con los IDs correctos
-                const url = "{{ path('nuevas_asistencias', { 'curso_id': '__cursoId__' }) }}"
-                    .replace('__cursoId__', cursoId);
-                // Realizar la solicitud fetch
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('modalBody-1').innerHTML = html;
-                        document.getElementById('Modal1').style.display = 'block';
-                            //asistencia_asistencia    asistencia_fecha       asistencia_observacion     asistencia_cursada
-
-
-                        // Configurar la fecha actual en los campos de mes, día y año
-                        const today = new Date();
-                        const dayInput = document.querySelector('#asistencia_fecha_day');
-                        const monthInput = document.querySelector('#asistencia_fecha_month');
-                        const yearInput = document.querySelector('#asistencia_fecha_year');
-
-                        if (dayInput) {
-                            dayInput.value = today.getDate();
-                        }
-                        if (monthInput) {
-                            monthInput.value = today.getMonth() + 1;
-                        }
-                        if (yearInput) {
-                            yearInput.value = today.getFullYear();
-                        }
-
-                        const inputfecha = document.getElementById('asistencia_fecha');
-                        if (inputfecha) {
-                            inputfecha.style.display = 'none';
-                        }
-
-
-                        // Construir el texto de fecha y asignarlo al label
-                        const day = today.getDate();
-                        const month = today.getMonth() + 1;
-                        const year = today.getFullYear();
-                        const formattedDate = `Fecha: ${day}/${month}/${year}`; // Construir la cadena con la fecha
-
-                        const labelFecha = document.getElementById('label-fecha');
-                        if (labelFecha) {
-                            labelFecha.textContent = formattedDate; // Asignar el texto al label
-                            labelFecha.style.display = 'inline';
-                        }
-
-
-                        const cursadaInput = document.getElementById('asistencia_cursada');
-                        const labelCursada = document.querySelector('label[for="asistencia_cursada"]');
-                        if (labelCursada) {
-                            labelCursada.textContent = 'Estudiante: ' + estud;
-                             labelCursada.style.display = 'inline';
-                            //labelCursada.style.display = 'none';
-                        }
-                        if (cursadaInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input 
-                            cursadaInput.value = cursadaId;
-                            cursadaInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
-                            cursadaInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
-                        }
-
-                
-                    })  
-                    .catch(error => console.error('Error al cargar el formulario de edición:', error));
-            }
-        </script>
 
 
         <script>
@@ -1343,62 +1084,76 @@ function cerrarPorcentaje() {
 
            let asistenciasMarcadas = {};
 
-    document.addEventListener('keydown', function (event) {
-        switch (event.key) {
-            case 'ArrowLeft': // Flecha izquierda para retroceder al alumno anterior
-                document.getElementById('anterior').click();
-                break;
-            case 'ArrowRight': // Flecha derecha para avanzar al siguiente alumno
-                avanzarSiEsPosible();
-                break;
-            case 'F1': // F1 para marcar como "Presente"
-                event.preventDefault();
-                actualizarEstado('Presente', true);  // Actualiza el estado a 'Presente' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                        console.log('ActivarEditar:', ActivarEditar);  // Verifica el valor de ActivarEditar
+           document.addEventListener('keydown', function (event) {
+            // Solo continua si alguna de las dos variables está activada
+            if (!VistaAsistenciaActiva && !ActivarEditar) return;
+        
+            switch (event.key) {
+                case 'ArrowLeft': // Flecha izquierda para retroceder al alumno anterior
+                    document.getElementById('anterior').click();
+                    break;
+        
+                case 'ArrowRight': // Flecha derecha para avanzar al siguiente alumno
+                    avanzarSiEsPosible();
+                    break;
+        
+                case 'F1': // F1 para marcar como "Presente"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Presente', true);  // Actualiza el estado a 'Presente' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                                console.log('ActivarEditar:', ActivarEditar);  // Verifica el valor de ActivarEditar
+                            }
+                        }, 1000);
                     }
-                }, 1000);
-            break;
-
-            case 'F2': // F2 para marcar como "Ausente"
-                event.preventDefault();
-                actualizarEstado('Ausente', true);  // Actualiza el estado a 'Ausente' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                        
+                    break;
+        
+                case 'F2': // F2 para marcar como "Ausente"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Ausente', true);  // Actualiza el estado a 'Ausente' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                            }
+                        }, 1000);
                     }
-                }, 1000);
-            break;
-            case 'F3': // F3 para marcar como "Media falta"
-                event.preventDefault();
-                actualizarEstado('Media falta', true);  // Actualiza el estado a 'Media falta' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                       
+                    break;
+        
+                case 'F3': // F3 para marcar como "Media falta"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Media falta', true);  // Actualiza el estado a 'Media falta' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                            }
+                        }, 1000);
                     }
-                }, 1000);
-            break;
-            case 'F4': // F4 para marcar como "Justificada"
-                event.preventDefault();
-                actualizarEstado('Justificada', false); // No guarda automáticamente
-                document.getElementById('observacion').style.visibility = 'visible';
-                document.getElementById('enviar').style.visibility = 'visible';
-            break;
-                }
-    });
+                    break;
+        
+                case 'F4': // F4 para marcar como "Justificada"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Justificada', false); // No guarda automáticamente
+                        document.getElementById('observacion').style.visibility = 'visible';
+                        document.getElementById('enviar').style.visibility = 'visible';
+                    }
+                    break;
+            }
+        });
+        
 
 // Función para actualizar el estado del alumno
 function actualizarEstado(estado, guardar = true) {
@@ -1499,7 +1254,7 @@ function guardarAsistencias() {
                             </td>
                             <td class="alumno-observacion">${alumno.observacion}</td>
                             <td class="alumnoeditar">
-                                <button onclick="CambiarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
+                                <button onclick="ActivarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
                             </td>
                         `;
 
