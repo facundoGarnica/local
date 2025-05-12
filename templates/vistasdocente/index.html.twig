@@ -500,25 +500,35 @@
             }
 
     // Función para avanzar al siguiente alumno
-                function avanzarSiEsPosible() {
-            if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
-                // Avanza al siguiente alumno
-                indiceActual++;
-                mostrarAlumno(indiceActual);
-            } else {
-                // Si es el último alumno, cierra el modal después de 1 segundo
-                setTimeout(() => {
-                    cerrarPasarAsistenciaModal();
-                }, 1000);
-            }
-        }
-    
-    function retrocederAlumno() {
-        if (indiceActual > 0) {
-            indiceActual--;
-            mostrarAlumno(indiceActual);
-        }
+  function avanzarSiEsPosible() {
+    if (!comprobarEdicion()) {
+        cerrarPasarAsistenciaModal();
+        return; // Si la edición está activada, no hacer nada
     }
+    
+    if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
+        // Avanza al siguiente alumno
+        indiceActual++;
+        mostrarAlumno(indiceActual);
+    } else {
+        // Si es el último alumno, cierra el modal después de 1 segundo
+        setTimeout(() => {
+            cerrarPasarAsistenciaModal();
+        }, 1000);
+    }
+}
+
+function retrocederAlumno() {
+    if (!comprobarEdicion()) {
+        cerrarPasarAsistenciaModal();
+        return; // Si la edición está activada, no hacer nada
+    }
+
+    if (indiceActual > 0) {
+        indiceActual--;
+        mostrarAlumno(indiceActual);
+    }
+}
     
 
     // Cargar el primer alumno al iniciar
@@ -856,8 +866,12 @@ function cerrarPorcentaje() {
         <!-- Título del curso -->
         <!-- <h1 class="curso-titulo">Nombre del Curso</h1> -->
     <div class="curso-info">
+
         <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
         <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
+        <div class="contenedor-fecha">
+                 <span class="fecha-actual">Fecha: 12/05/2025</span>
+            </div>
     </div>
 
         <!-- Contenedor de botón y fecha alineados -->
@@ -869,21 +883,15 @@ function cerrarPorcentaje() {
             <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal(); ActivarEstadoAsistencia();">
                 📋 Pasar Lista
             </button>
-            
-
-            <span class="fecha-actual">
-                Fecha: DD/MM/AAAA
-            </span>
-            
         </div>
 
         <!-- Buscar -->
         <div class="buscador-alumno">
             <label for="dni-buscar">Buscar alumno:</label>
             <div class="input-group">
-                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
                 <input type="text" id="nombre-buscar" class="form-control" placeholder="Por Nombre..." aria-label="Buscar por Nombre">
                 <input type="text" id="apellido-buscar" class="form-control" placeholder="Por Apellido..." aria-label="Buscar por Apellido">
+                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
             </div>
         </div>
 
@@ -972,19 +980,31 @@ function cerrarPorcentaje() {
                 </tbody>
             </table>
             
-            <div class="acciones">
-                <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
-                    Regresar a la lista
-                </button>
-                
-                <div class="descarga-planilla">
-                    <h3>Descargar planilla como:</h3>
-                    <div class="botones-descarga">
-                        <button class="boton-excel" onclick="DescargarExcel()">Excel</button>
-                        <button class="boton-pdf" onclick="DescargarPdf()">PDF</button>
+                    <!-- Contenedor principal -->
+            <div class="contenedor-acciones">
+
+                <!-- Botón a la izquierda -->
+                <div class="accion-izquierda">
+                    <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
+                        Regresar a la lista
+                    </button>
+                </div>
+
+                <!-- Caja centrada para descargar planilla -->
+                <div class="accion-centro">
+                    <div class="descarga-planilla">
+                        <h3>Descargar planilla como:</h3>
+                        <div class="botones-descarga">
+                            <button class="boton-excel" onclick="DescargarExcel()">Excel</button>
+                            <button class="boton-pdf" onclick="DescargarPdf()">PDF</button>
+                        </div>
                     </div>
                 </div>
+
             </div>
+
+
+
             
                 
         </div>
@@ -1152,6 +1172,7 @@ function cerrarPorcentaje() {
             }
         });
         
+
 
 // Función para actualizar el estado del alumno
 function actualizarEstado(estado, guardar = true) {
@@ -1359,6 +1380,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function comprobarEdicion() {
+    if (ActivarEditar) {
+        return false;  // Impide que el cambio de estado ocurra
+    }
+    return true;  // Permite el cambio de estado
+}
+
         </script>
 
         <!-- Modal1 para asignar notas a las materias de un docente!!!-->
@@ -1388,12 +1416,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         {# --- Modal de Pasar Lista, inicialmente oculto --- #}
-        <div id="spa-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;"></div>
+        <div id="spa-overlay" style="display:none; "></div>
         
         <div id="PasarAsistenciaModal" class="AsistenciaModal1" style="display: none;">
             <div id="alumno-container">
                 <div class="alumno-card">
+                    <div class="cerrar" id="cerrar" onclick= "cerrarPasarAsistenciaModal()">X</div>
                     <div class="fecha-actual" id="fecha-actual"></div>
+                    
                     <h2 class="AlumnoNombre">Nombre Apellido</h2>
                     <p class="AlumnoDni">DNI: 12345678</p>
                     <p id="estado">

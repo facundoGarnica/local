@@ -38,38 +38,26 @@
     color:#ffffff;
 }
 
-.botondeporcentaje {
-    display: block;
-    margin: 30px auto 0;
-    padding: 10px 20px;
-    background-color: #4e73df;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.botondeporcentaje:hover {
-    background-color: #4e73df;
-}
-.acciones {
+.contenedor-acciones {
     display: flex;
-    flex-direction: column;
-    /* Asegura que los elementos se apilen verticalmente */
-    align-items: center;
-    /* Centra el contenido horizontalmente */
-    gap: 20px;
-    /* Espacio entre los elementos */
-    margin-top: 30px;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.accion-izquierda {
+    flex: 0 0 auto;
+}
+.accion-centro {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+        min-width: 300px;
 }
 
 .botondeporcentaje {
-    display: block;
-    margin: 0 auto;
-    /* Alinea el botón al centro */
     padding: 10px 20px;
     background-color: #4e73df;
     color: white;
@@ -78,11 +66,12 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin: 0;
 }
+
 
 .botondeporcentaje:hover {
     background-color: #2e58a1;
-    /* Efecto hover */
 }
 
 .descarga-planilla {
@@ -93,49 +82,47 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #fff;
-    width: auto;
-    max-width: 300px;
+    max-width: 350px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+        margin-right: 10%;
 }
 
 .descarga-planilla h3 {
-    margin-bottom: 10px;
-    font-size: 16px;
+    margin-bottom: 20px;
+        font-size: 20px;
     color: #333;
 }
 
 .botones-descarga {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .boton-excel,
 .boton-pdf {
-    padding: 6px 12px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
+        transition: background-color 0.3s ease;
 }
 
 .boton-excel {
     background-color: #1d6f42;
-    transition: background-color 0.3s ease;
 }
 
 .boton-excel:hover {
     background-color: #155d37;
-    /* Efecto hover */
 }
 
 .boton-pdf {
     background-color: #d32f2f;
-    transition: background-color 0.3s ease;
 }
 
 .boton-pdf:hover {
     background-color: #9a1c1c;
-    /* Efecto hover */
 }
