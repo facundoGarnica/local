@@ -568,8 +568,26 @@ document.addEventListener('DOMContentLoaded', () => {
         
 
 function llenarTablaPorcentaje(cursoId) {
+    const curso = cursosData[cursoId];
+
+    // Asegurarse de que curso esté presente
+    if (!curso) {
+        console.error('Curso no encontrado');
+        return;
+    }
+
     const tbody = document.querySelector('#EstadisticasModal tbody');
     tbody.innerHTML = ''; // Limpia la tabla
+
+    const nombreCurso = curso.asignatura || 'Nombre no disponible';  // Manejar caso cuando 'asignatura' no existe
+    const tecnicatura = curso.tecnicatura || '---';  // Ahora puedes acceder directamente a 'tecnicatura'
+    const anio = curso.anio || '---';  // Añadido un valor por defecto para anio
+    const comision = curso.comision || '---';  // Añadido un valor por defecto para comision
+
+    // Asignar datos al encabezado
+    document.querySelector('.nombre-tecnicatura').textContent = tecnicatura;
+    document.querySelector('.anio-comision').textContent = `Año: ${anio}° Comisión: ${comision}`;
+    document.querySelector('.nombre-asignatura').textContent = nombreCurso;
 
     // Obtener la fecha actual
     const hoy = new Date();
@@ -581,16 +599,16 @@ function llenarTablaPorcentaje(cursoId) {
 
     // 🔄 Pedir datos actualizados al backend
     fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
         .then(data => {
             if (!data || data.length === 0) return;
 
-            // Usamos los primeros datos para llenar encabezados (asumimos todos son del mismo curso)
-            const cursoEjemplo = data[0];
-            document.querySelector('.nombre-tecnicatura').textContent = 'Tecnicatura'; // Si lo necesitás dinámico, agregalo al JSON
-            document.querySelector('.anio-comision').textContent = `Año: -- Comisión: --`; // Idem
-
-            document.querySelector('.nombre-asignatura').textContent = 'Asignatura'; // Idem
+            // Ya no sobrescribimos los valores de encabezado aquí
 
             data.forEach(cursada => {
                 const fila = document.createElement('tr');
@@ -614,6 +632,7 @@ function llenarTablaPorcentaje(cursoId) {
             console.error('Error al cargar estadísticas:', error);
         });
 }
+
 
 
 
