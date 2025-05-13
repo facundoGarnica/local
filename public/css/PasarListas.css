@@ -20,6 +20,26 @@
     gap: 1rem;
 }
 
+.curso-info {
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    /* Centra el contenido */
+}
+
+.curso-subtitulo {
+    font-size: 33px;
+    /* Aumentado */
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.curso-subtitulo span {
+    font-weight: 500;
+    color: #4a5568;
+}
 .curso-boton {
     padding: 0.75rem 1.5rem;
     background-color: #007bff;
@@ -42,7 +62,8 @@
     border: 1px solid #ccc; /* Borde fino gris */
     border-radius: 12px; /* Bordes redondeados */
     background-color: #f5f9ff; /* Fondo claro para destacar */
-    max-width: 600px; /* Ancho máximo para que no se haga muy grande */
+    max-width: 60%;
+        /* Ancho máximo para que no se haga muy grande */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para darle un toque elevado */
 }
 
@@ -65,9 +86,23 @@
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 10px; /* Ajuste para mayor compactibilidad */
+    margin-top: 10px;
 }
 
+.buscador-alumno .input-group input[type="text"],
+.buscador-alumno .input-group input {
+    padding: 10px 14px;
+    /* Más espacio interno */
+    font-size: 16px;
+    /* Letras más grandes */
+    border-radius: 8px;
+    /* Esquinas redondeadas */
+    border: 1px solid #cbd5e0;
+    /* Borde suave */
+    height: 42px;
+    /* Altura más cómoda */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
 .buscador-alumno .form-control {
     padding: 10px 15px;
     font-size: 16px;
@@ -78,14 +113,15 @@
 }
 
 .buscador-alumno .form-control:focus {
-    border-color: #2ebd59; /* Verde más fuerte al hacer foco */
+    border-color: #3d58aa;
+        /* Azul más oscuro para el foco */
     outline: none;
-    box-shadow: 0 0 8px rgba(46, 189, 89, 0.4); /* Sombra verde */
+    box-shadow: 0 0 8px rgba(78, 115, 223, 1);
     background-color: #fff; /* Blanco cuando el campo tiene foco */
 }
 
 .buscador-alumno .form-control:hover {
-    border-color: #2ebd59; /* Verde más fuerte al pasar el mouse */
+    border-color: #4e73df;
     background-color: #f1faf0; /* Fondo claro en hover */
 }
 
@@ -93,16 +129,11 @@
     color: #a3b0b6; /* Color suave para el texto del placeholder */
     font-style: italic;
 }
-
-/* Estilos para el menu de Cursos asignados (menu_curso)*/
-.fila-alumno:hover {
+.curso-tabla .fila-alumno:hover {
     background-color: #abb9c5;
 }
 
 /* Estilo general para los datos del alumno */
-.AlumnoNombre,
-.AlumnoApellido, /* Corrigiendo el nombre para mantener consistencia en la nomenclatura */
-.AlumnoDni,
 .AlumnoAsistencia {  /* Asegurándonos de que las clases tengan nombres consistentes */
     font-weight: 500; /* Peso de la fuente para una mejor legibilidad */
     font-size: 25px; /* Tamaño adecuado para destacar la información */
@@ -112,25 +143,9 @@
     letter-spacing: 0.5px; /* Ligera separación entre letras para mejorar la legibilidad */
 }
 
-/* Estilo para el nombre y apellido del alumno */
-.AlumnoNombre {
-    font-size: 28px; /* Un poco más grande para destacarse como el encabezado */
-    font-weight: bold; /* Hacemos que el nombre sea más prominente */
-    color: #1e1e1e; /* Un tono oscuro para darle un toque más serio y profesional */
-}
 
-/* Estilo para el apellido, puede compartir la misma base que el nombre */
-.AlumnoApellido {
-    font-size: 25px; /* Mantener un tamaño consistente */
-    font-weight: 500;
-    color: #555; /* Un tono más suave para el apellido */
-}
 
-/* Estilo para el DNI del alumno */
-.AlumnoDni {
-    font-size: 22px; /* Un tamaño ligeramente más pequeño para detalles */
-    color: #666; /* Un color más suave para el DNI */
-}
+
 
 /* Estilo para el estado de asistencia del alumno */
 .AlumnoAsistencia {
@@ -142,7 +157,7 @@
 
 .btn-pasar-lista {
     display: inline-block;
-    background-color: #2ebd59; /* Verde más vivo */
+    background-color: #4e73df;
     color: white;
     padding: 12px 24px;
     border-radius: 10px;
@@ -165,7 +180,7 @@
 
 
 .curso-container {
-    max-width: 800px;
+    max-width: 80%;
     margin: 40px auto;
     padding: 20px;
     background-color: #f5f9ff;
@@ -198,7 +213,7 @@
 }
 
 .curso-tabla th {
-    background-color: #2a4365;
+    background-color: #4e73df;
     color: white;
 }
 
@@ -233,10 +248,17 @@
     color: #2a4365;
     margin-bottom: 10px;
 }
+/* Estilo para el apellido, puede compartir la misma base que el nombre */
+.alumno-apellido {
+    font-size: 22px;
+    color: #2a4365;
+    margin-bottom: 10px;
+}
 
+/* Estilo para el DNI del alumno */
 .alumno-dni {
-    font-size: 18px;
-    color: #555;
+font-size: 22px;
+    color: #2a4365;
     margin-bottom: 10px;
 }
 
@@ -390,6 +412,15 @@
     opacity: 1;
     pointer-events: auto;
 }
+.spa-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
 
 /* Botón cerrar (opcionalmente estilizalo mejor) */
 .modal button {
@@ -413,20 +444,24 @@
     border-radius: 8px;
     font-weight: bold;
     text-align: center;
+    color: #333;
 }
 
-.fecha-actual {
-    background-color: #ffffff; /* Fondo blanco puro */
-    color: #1a202c; /* Negro grisáceo elegante */
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    border: 1px solid #cbd5e0; /* Gris azulado claro */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave */
-    display: inline-block;
-    margin-bottom: 12px;
+.contenedor-fecha {
+    margin-top: 14px;
 }
+.fecha-actual {
+    background-color: #ffffff;
+        color: #1a202c;
+        padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 16px;
+        /* Aumentado */
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+}
+
 
 /*css para mostrar la cantidad de presentes*/
 .total-presentes {
@@ -468,7 +503,8 @@
 }
 
 .alumnoeditar button {
-    background-color: #2a4365; /* Azul oscuro */
+    background-color: #4666c7;
+        /* Azul oscuro */
     color: white; /* Texto blanco */
     border: 1px solid #2a4365; /* Borde azul oscuro */
     border-radius: 4px; /* Bordes redondeados */
@@ -493,4 +529,20 @@
 .alumnoeditar button:active {
     background-color: #162d40; /* Azul más oscuro cuando se hace clic */
     border-color: #162d40; /* Borde que coincide con el fondo al hacer clic */
+}
+.cerrar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: black;
+    transition: color 0.3s ease;
+}
+
+.cerrar:hover {
+    color: red;
 }

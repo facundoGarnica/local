@@ -8,9 +8,99 @@
     {# Script para dirigir a la cursada seleccionada y poder asignar las notas #}
 
         
-
+    <!-- SheetJS (para Excel) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF (para PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <!-- html2canvas (para jsPDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     {# Script para dirigir a la cursada seleccionada y pasar Asistencia #}
         <script>
+           
+
+    function obtenerFechaActual() {
+        const hoy = new Date();
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const anio = String(hoy.getFullYear()).slice(-2); // Obtener solo los últimos dos dígitos del año
+        return `${dia}-${mes}-${anio}`;
+     }
+
+    // Función para descargar como Excel
+    function DescargarExcel() {
+        // Obtener el contenido HTML de la tabla
+        const tablaHTML = document.querySelector("#EstadisticasModal");
+    
+        // Eliminar la fecha de la tabla antes de exportarla
+        const fechaElement = document.querySelector('.Fechadehoy');
+        const fechaOriginal = fechaElement.textContent;  // Guardar la fecha original si quieres restaurarla después
+        fechaElement.textContent = '';  // Limpiar la fecha para que no se imprima en Excel
+    
+        // Convertir la tabla HTML a un libro de Excel
+        const wb = XLSX.utils.table_to_book(tablaHTML);
+    
+        // Restaurar la fecha original después de convertir la tabla
+        fechaElement.textContent = fechaOriginal;
+    
+        // Obtener la fecha actual para añadirla al nombre del archivo
+        const fechaActual = obtenerFechaActual();
+    
+        // Exportar el archivo Excel con la fecha actual en el nombre
+        XLSX.writeFile(wb, `estadisticas_curso_${fechaActual}.xlsx`);
+    }
+    
+    
+    // Función para descargar como PDF
+    function DescargarPdf() {
+        // Crear un nuevo documento PDF con jsPDF en orientación horizontal (landscape)
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'mm', 'a4'); // A4 horizontal
+        
+        // Obtener la fecha actual
+        const fechaActual = obtenerFechaActual();
+        
+        // Seleccionar la tabla que deseas exportar
+        const tabla = document.querySelector("#EstadisticasModal");
+        
+        // Configurar márgenes y escala
+        const margenIzquierdo = 10;
+        const margenSuperior = 10;
+        
+        // Usar html2canvas para capturar la tabla como imagen
+        html2canvas(tabla, {
+            scale: 1.2, // Reducir la escala para ajustar mejor la tabla al PDF
+        }).then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+        
+            // Calcular el ancho y alto de la imagen en mm
+            const imgWidth = doc.internal.pageSize.width - margenIzquierdo * 2;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+            // Ajustar la imagen al tamaño de la página
+            doc.addImage(imgData, "PNG", margenIzquierdo, margenSuperior, imgWidth, imgHeight);
+        
+            // Guardar el archivo PDF
+            doc.save(`estadisticas_curso_${fechaActual}.pdf`);
+        });
+    }
+    
+    
+    
+
+
+
+    let VistaAsistenciaActiva = false; // Variable para controlar que no se pueda pasar lista sin abrir el modal
+    
+    function ActivarEstadoAsistencia() {
+        VistaAsistenciaActiva = true; // Cambia el estado de VistaAsistenciaActiva
+        console.log("VistaAsistenciaActiva:", VistaAsistenciaActiva); // Muestra el estado actual en la consola
+    }
+    function DesactivarEstadoAsistencia() {
+        VistaAsistenciaActiva = false; // Cambia el estado de VistaAsistenciaActiva
+        console.log("VistaAsistenciaActiva:", VistaAsistenciaActiva); // Muestra el estado actual en la consola
+    }
+
          function showListaNueva(cursoId) {
         selectedCursoId = cursoId;
         console.log("Curso ID recibido:", cursoId);
@@ -22,10 +112,10 @@
         }
     
         const curso = cursosData[cursoId];
-    
+        
         if (curso) {
             // Actualiza el título y la información del curso
-            document.querySelector('.curso-titulo').textContent = curso.asignatura;
+           // document.querySelector('.curso-titulo').textContent = curso.asignatura;
             document.querySelector('.curso-info h2 span').textContent = curso.asignatura;
             document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio;
             document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision;
@@ -55,7 +145,7 @@
                     </td>
                     <td class="alumno-observacion">${ultimaAsistencia ? ultimaAsistencia.observacion : ''}</td>
                     <td class="alumnoeditar">
-                          <button onclick="CambiarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
+                          <button onclick="ActivarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
                           
                     </td>
                 `;
@@ -152,6 +242,57 @@
             })
             .catch(error => console.error('Error al cargar los datos del alumno:', error));
     }
+
+
+    function showCursoCursada(cursoId) {
+        // oculta tablas no relevantes
+        let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
+        tablesToHide.forEach(table => table.style.display = 'none');
+
+        // oculta cursos
+        let cursadaTables = document.querySelectorAll('.tabla_curso');
+        cursadaTables.forEach(table => table.style.display = 'none');
+
+        // muestra tabla cursada específica
+        let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+        if (cursadaTable) {
+            cursadaTable.style.display = '';
+        }
+
+        // ocultar search
+        let search = document.getElementById('searchs');
+        if (search) {
+            search.style.display = 'none';
+        }
+
+        // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
+        let backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.style.display = '';
+            backButton.onclick = function() {
+                hideCursoCursada(cursoId);
+            };
+        }
+    }
+    function hideCursoCursada(cursoId) {
+        // oculta tabla cursada específica
+        let cursadaTable = document.getElementById(`tablaCursoCursada_${cursoId}`);
+        if (cursadaTable) {
+            cursadaTable.style.display = 'none';
+        }
+
+        // muestra la tabla curso específica
+        let cursoTable = document.getElementById(`tablaTecnicaturas`);
+        if (cursoTable) {
+            cursoTable.style.display = '';
+        }
+
+        // oculta el botón regresar-volver
+        let backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.style.display = 'none';
+        }
+    }
         // Función para cerrar el modal
         function cerrarPasarAsistenciaModal() {
             if (!modalAbierto) {
@@ -179,13 +320,15 @@
         
             // Cambiar el estado del modal a cerrado
             modalAbierto = false;
+            DesactivarEstadoAsistencia();
+            DesactivarEstadoEditar();
         }
         document.getElementById('spa-overlay').addEventListener('click', cerrarPasarAsistenciaModal);
         
         // Evento para cerrar el modal cuando se presiona Escape
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && modalAbierto) {
-                cerrarPasarAsistenciaModal();
+                cerrarPasarAsistenciaModal();  
             }
         });
         
@@ -202,6 +345,7 @@
                     asignatura: "{{ curso.asignatura.nombre|e('js') }}",
                     anio: "{{ curso.comision.anio|e('js') }}",
                     comision: "{{ curso.comision.comision|e('js') }}",
+                    tecnicatura: "{{ curso.comision.tecnicatura.nombre|e('js') }}",
                     cursadas: [
                         {% for cursada in curso.cursadas %}
                             {
@@ -301,8 +445,12 @@
     let selectedCursoId = 1;  // Ejemplo de ID seleccionado, reemplaza con tu lógica
 
 
-    function CambiarEstadoEditar(){
+    function ActivarEstadoEditar(){
         ActivarEditar = true;  // Cambia el estado de ActivarEditar
+        console.log("ActivarEditar:", ActivarEditar);  // Muestra el estado actual en la consola
+    }
+    function DesactivarEstadoEditar(){
+        ActivarEditar = false;  // Cambia el estado de ActivarEditar
         console.log("ActivarEditar:", ActivarEditar);  // Muestra el estado actual en la consola
     }
     // Función para mostrar el alumno
@@ -352,25 +500,35 @@
             }
 
     // Función para avanzar al siguiente alumno
-                function avanzarSiEsPosible() {
-            if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
-                // Avanza al siguiente alumno
-                indiceActual++;
-                mostrarAlumno(indiceActual);
-            } else {
-                // Si es el último alumno, cierra el modal después de 1 segundo
-                setTimeout(() => {
-                    cerrarPasarAsistenciaModal();
-                }, 1000);
-            }
-        }
-    
-    function retrocederAlumno() {
-        if (indiceActual > 0) {
-            indiceActual--;
-            mostrarAlumno(indiceActual);
-        }
+  function avanzarSiEsPosible() {
+    if (!comprobarEdicion()) {
+        cerrarPasarAsistenciaModal();
+        return; // Si la edición está activada, no hacer nada
     }
+    
+    if (indiceActual < cursosData[selectedCursoId].cursadas.length - 1) {
+        // Avanza al siguiente alumno
+        indiceActual++;
+        mostrarAlumno(indiceActual);
+    } else {
+        // Si es el último alumno, cierra el modal después de 1 segundo
+        setTimeout(() => {
+            cerrarPasarAsistenciaModal();
+        }, 1000);
+    }
+}
+
+function retrocederAlumno() {
+    if (!comprobarEdicion()) {
+        cerrarPasarAsistenciaModal();
+        return; // Si la edición está activada, no hacer nada
+    }
+
+    if (indiceActual > 0) {
+        indiceActual--;
+        mostrarAlumno(indiceActual);
+    }
+}
     
 
     // Cargar el primer alumno al iniciar
@@ -409,62 +567,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
 
+function llenarTablaPorcentaje(cursoId) {
+    const tbody = document.querySelector('#EstadisticasModal tbody');
+    tbody.innerHTML = ''; // Limpia la tabla
 
+    // Obtener la fecha actual
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const anioFecha = hoy.getFullYear();
+    const fechaActual = `Fecha: ${dia}/${mes}/${anioFecha}`;
+    document.querySelector('.Fechadehoy').textContent = fechaActual;
 
-        //para la segunda tabla de asistencia
-        function showAsistencia2(cursoId) {
-            // oculta tablas no relevantes
-            let tablesToHide = document.querySelectorAll('.tabla_home, .tabla_comision, .tabla_cursada, .tabla_curso');
-            tablesToHide.forEach(table => table.style.display = 'none');
+    // 🔄 Pedir datos actualizados al backend
+    fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) return;
 
-            // oculta cursos
-            let cursadaTables = document.querySelectorAll('.tabla_curso_cursada');
-            cursadaTables.forEach(table => table.style.display = 'none');
+            // Usamos los primeros datos para llenar encabezados (asumimos todos son del mismo curso)
+            const cursoEjemplo = data[0];
+            document.querySelector('.nombre-tecnicatura').textContent = 'Tecnicatura'; // Si lo necesitás dinámico, agregalo al JSON
+            document.querySelector('.anio-comision').textContent = `Año: -- Comisión: --`; // Idem
 
-            // muestra tabla cursada específica
-            let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
-            if (cursadaTable) {
-                cursadaTable.style.display = '';
-            }
+            document.querySelector('.nombre-asignatura').textContent = 'Asignatura'; // Idem
 
-            // ocultar search
-            let search = document.getElementById('searchs');
-            if (search) {
-                search.style.display = 'none';
-            }
-
-            // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
-            let backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.style.display = '';
-                backButton.onclick = function() {
-                    hideAsistencia2(cursoId);
-                };
-            }
-        }
-        function hideAsistencia2(cursoId) {
-    // Oculta la tabla de asistencias detalladas
-    let cursadaTable = document.getElementById(`tablaAsistencia2_${cursoId}`);
-    if (cursadaTable) {
-        cursadaTable.style.display = 'none';
-    }
-    
-    // Muestra la tabla de asistencias general
-    let asistenciaTable = document.getElementById(`tablaAsistencia_${cursoId}`);
-    if (asistenciaTable) {
-        asistenciaTable.style.display = '';
-    }
-    // muestra el botón de regresar, la función hide... recibe id de comision, tecnicatura y asignatura para poder regresar al punto anterior
-            let backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.style.display = '';
-                backButton.onclick = function() {
-                    hideAsistencia(cursoId);
-                };
-            }
-
-    
+            data.forEach(cursada => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${cursada.nombre}</td>
+                    <td>${cursada.apellido}</td>
+                    <td>${cursada.dni}</td>
+                    <td>${cursada.estadisticas.presentes}</td>
+                    <td>${cursada.estadisticas.ausentes}</td>
+                    <td>${cursada.estadisticas.media_faltas}</td>
+                    <td>${cursada.estadisticas.justificadas}</td>
+                    <td>${cursada.estadisticas.total}</td>
+                    <td>${cursada.estadisticas.porcentaje_presente}%</td>
+                    <td>${cursada.estadisticas.porcentaje_ausente}%</td>
+                    <td>${cursada.estadisticas.porcentaje_justificada}%</td>
+                `;
+                tbody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar estadísticas:', error);
+        });
 }
+
+
+
+
 
 function abrirPorcentaje() {
     const modal = document.getElementById('modalporcentaje');
@@ -472,7 +625,12 @@ function abrirPorcentaje() {
 
     if (modal) modal.style.display = 'block';
     if (lista) lista.style.display = 'none';
+
+    if (selectedCursoId !== undefined) {
+        llenarTablaPorcentaje(selectedCursoId);
+    }
 }
+
 
 function cerrarPorcentaje() {
     const modal = document.getElementById('modalporcentaje');
@@ -556,8 +714,7 @@ function cerrarPorcentaje() {
                     <td>{{ cursada_docente.curso.comision }}</td>
                     <td>{{ cursada_docente.curso.comision.tecnicatura }}</td>
                     <td>
-                        <button onclick="showAsistencia({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
-                        <button onclick="showListaNueva({{ cursada_docente.curso.id }})" class="btn-primary">Lista nueva</button>
+                        <button onclick="showListaNueva({{ cursada_docente.curso.id }})" class="btn-primary">Asistencia</button>
                       
                         
                     </td>
@@ -648,38 +805,28 @@ function cerrarPorcentaje() {
 
 
 
-
-
-
-
-
-
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Declarar formattedToday fuera del bloque if
-            let formattedToday;
+       
         
-            // Verifica si 'today' ya está declarado
-            if (typeof formattedToday === 'undefined') {
-                const today = new Date();
-                const day = String(today.getDate()).padStart(2, '0');
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const year = today.getFullYear();
-                formattedToday = `${day}-${month}-${year}`;
-            
-                // Establecer la fecha generada en un elemento HTML
-                document.getElementById('fecha-tabla-asistencia').textContent = 'La fecha de hoy es: ' + formattedToday;
-                document.getElementById('hiddenFechaJavaScript').value = formattedToday;
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generar la fecha actual
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedToday = `${day}-${month}-${year}`; // Esta es la fecha formateada
         
             // Comparar la fecha y actualizar la tabla
-            const fechaActual = formattedToday;
+            const fechaActual = formattedToday;  // Usa formattedToday aquí
+        
             document.querySelectorAll('tbody').forEach(tbody => {
                 tbody.querySelectorAll('tr').forEach(row => {
                     const fechaAsistencia = row.querySelector('.fecha-asistencia');
+                    
                     if (fechaAsistencia) {
                         const asistenciaFecha = fechaAsistencia.textContent.trim();
+                        
+                        // Verificar si las fechas coinciden
                         if (asistenciaFecha !== fechaActual) {
                             row.style.display = 'none'; // Oculta las filas que no coinciden con la fecha actual
                         } else {
@@ -695,10 +842,14 @@ function cerrarPorcentaje() {
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     <div class="curso-container" id="ListaNueva"style="display: none;">
         <!-- Título del curso -->
-    <h1 class="curso-titulo">Nombre del Curso</h1>
+        <!-- <h1 class="curso-titulo">Nombre del Curso</h1> -->
     <div class="curso-info">
+
         <h2 class="curso-subtitulo">Asignatura: <span>Asignatura Nombre</span></h2>
         <h3 class="curso-subtitulo">Año: <span>--</span> | Comisión: <span>--</span></h3>
+        <div class="contenedor-fecha">
+                 <span class="fecha-actual">Fecha: 12/05/2025</span>
+            </div>
     </div>
 
         <!-- Contenedor de botón y fecha alineados -->
@@ -707,28 +858,18 @@ function cerrarPorcentaje() {
                 Ver asistencias
             </button>
 
-            <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal()">
+            <button class="btn-pasar-lista" onclick="abrirPasarAsistenciaModal(); ActivarEstadoAsistencia();">
                 📋 Pasar Lista
             </button>
-            
-            
-            
-            
-            </a>
-
-            <span class="fecha-actual">
-                Fecha: DD/MM/AAAA
-            </span>
-            
         </div>
 
         <!-- Buscar -->
         <div class="buscador-alumno">
             <label for="dni-buscar">Buscar alumno:</label>
             <div class="input-group">
-                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
                 <input type="text" id="nombre-buscar" class="form-control" placeholder="Por Nombre..." aria-label="Buscar por Nombre">
                 <input type="text" id="apellido-buscar" class="form-control" placeholder="Por Apellido..." aria-label="Buscar por Apellido">
+                <input type="text" id="dni-buscar" class="form-control" placeholder="Por DNI..." aria-label="Buscar por DNI">
             </div>
         </div>
 
@@ -751,15 +892,15 @@ function cerrarPorcentaje() {
                         <td class="alumno-apellido">Pérez</td>
                         <td class="alumno-dni">12345678</td>
                         <td class="alumno-asistencia">
-                            <span class="estado-asistencia presente">Presente</span>
+                            <span class="estado-asistencia presente"></span>
                         </td>
                     </tr>
                     <tr class="fila-alumno">
-                        <td class="alumno-nombre">Ana</td>
-                        <td class="alumno-apellido">García</td>
-                        <td class="alumno-dni">87654321</td>
+                        <td class="alumno-nombre"></td>
+                        <td class="alumno-apellido"></td>
+                        <td class="alumno-dni"></td>
                         <td class="alumno-asistencia">
-                            <span class="estado-asistencia ausente">Ausente</span>
+                            <span class="estado-asistencia ausente"></span>
                         </td>
                     </tr>
                 </tbody>
@@ -772,236 +913,80 @@ function cerrarPorcentaje() {
                 </tfoot>
             </table>
         </div>
+
+          <button class="btn-pasar-lista" onclick="hideListaNueva()">
+        Volver
+    </button>
     </div>
+  
+
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
 
-    <!-- Campo oculto para almacenar la fecha generada por JavaScript -->
-    <input type="hidden" id="hiddenFechaJavaScript">
-
-    {% for curso in cursos %}
-        <table id="tablaAsistencia_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
-            <thead>
-                <tr>
-                    <th colspan="4">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
-                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
-                </tr>
-                <tr>
-                    <th>Asignatura :<p id="fecha-tabla-asistencia">Hoy es:</p></th>
-                    <th colspan="4"> {{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
-                    <th colspan="1"><button onclick="showAsistencia2({{ curso.id }})" class="btn-primary">Ver Asistencias</button></th>
-                </tr>
-                <tr>
-                    <th>Curso</th>
-                    <th>Cursada</th>
-                    <th>Fecha</th>
-                    <th>Asistencia</th>
-                    <th>Observacion</th>
-                    <th>Editar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cursada in curso.cursadas %}
-                    {% for asistencia in cursada.getAsistencias %}
-                        {% set asistenciaFecha = asistencia.fecha|date('d-m-Y') %}
-                        <tr>
-                                <td>{{ curso.ciclolectivo }}</td>
-                                <td>{{ cursada.alumno }}</td>
-                                <td class="fecha-asistencia">{{ asistenciaFecha }}</td>
-                                <td>{{ asistencia.asistencia }}</td>
-                                <td>{{ asistencia.observacion }}</td>
-                                <td>
-                                    <button onclick="openModal3({{ curso.id }}, {{ cursada.id }}, {{ asistencia.id }})">Editar</button>
-                                </td>                         
-                        </tr>
-                    {% else %}                
-           
-           
-                    {% endfor %}
-                {% endfor %}
-                {% set currentDate = "now"|date("m-d-Y") %}
-                        {% for cursada in curso.cursadas %}
-                            {% set asistenciaParaHoy = null %}
-                            {% for asistencia in cursada.getAsistencias %}
-                                {% if asistencia.fecha|date('m-d-Y') == currentDate %}
-                                    {% set asistenciaParaHoy = asistencia %}
-                                {% endif %}
-                            {% endfor %}
-                            <tr>
-                                {% if asistenciaParaHoy is not null %}
-                                {% else %}
-                                    <td>{{ curso.ciclolectivo }}</td>
-                                    <td>{{ cursada.alumno }}</td>
-                                    <td>
-                                        <button onclick="openModal2({{ curso.id }}, {{ cursada.id }}, '{{ cursada.alumno.persona.apellido }}')">Asistencia</button>
-                                    </td>
-                                    <td colspan="3">No hay asistencias registradas para hoy</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-
-            </tbody>
-        </table>
-
+        <!-- TABLA DE PORCENTAJE /////// -->
         <div id="modalporcentaje" style="display: none;" >
             <table id="EstadisticasModal" class="tablillacursada" border="1">
                 <thead>
                     <tr>
-                        <th colspan="6">Tecnicatura en Informática - Cursadas de Curso -</th>
-                        <th colspan="2">Año: 2° Comision: A</th>
+                        <th colspan="6" class="nombre-tecnicatura">Tecnicatura en Informática - Cursadas de Curso -</th>
+                        <th colspan="2" class="anio-comision">Año: 2° Comision: A</th>
+                        <th colspan="2" class="Fechadehoy"></th>
                     </tr>
                     <tr>
-                        <th colspan="2">
+                        <th colspan="2" class="asignatura">
                             Asignatura:
                             <p id="fechatablilla" style="margin: 0;">Abril 2025</p>
                         </th>
-                        <th colspan="6">Programación II - Ciclo Lectivo 2025</th>
+                        <th colspan="6" class="nombre-asignatura">Programación II - Ciclo Lectivo 2025</th>
+                        <th colspan="6" class="titulo-porcentaje">Porcentaje de asistencia</th>
                     </tr>
                     <tr>
-                        <th>Alumnos</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Dni</th>
                         <th>Presente</th>
                         <th>Ausente</th>
                         <th>Media falta</th>
                         <th>Justificada</th>
                         <th>Total Asistencias</th>
-                        <th>Porcentaje de asistencia</th>
-                        <th>Porcentaje de asistencia justificada</th>
+                        <th>Presente</th>
+                        <th>Ausente</th>
+                        <th>justificada</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Juan Pérez</td>
-                        <td>18</td>
-                        <td>2</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>22</td>
-                        <td>88.64%</td>
-                        <td>93.18%</td>
-                    </tr>
-                    <tr>
-                        <td>María González</td>
-                        <td>20</td>
-                        <td>1</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>21</td>
-                        <td>95.24%</td>
-                        <td>95.24%</td>
-                    </tr>
-                    <tr>
-                        <td>Luis Fernández</td>
-                        <td>16</td>
-                        <td>4</td>
-                        <td>2</td>
-                        <td>2</td>
-                        <td>24</td>
-                        <td>75.00%</td>
-                        <td>83.33%</td>
-                    </tr>
-                    <tr>
-                        <td>Carla Martínez</td>
-                        <td>22</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>22</td>
-                        <td>100.00%</td>
-                        <td>100.00%</td>
-                    </tr>
+               
                 </tbody>
             </table>
             
-                <button class="botondeporcentaje" onclick= "cerrarPorcentaje()">
-                    Regresar a la lista
-                </button>
+                    <!-- Contenedor principal -->
+            <div class="contenedor-acciones">
+
+                <!-- Botón a la izquierda -->
+                <div class="accion-izquierda">
+                    <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
+                        Regresar a la lista
+                    </button>
+                </div>
+
+                <!-- Caja centrada para descargar planilla -->
+                <div class="accion-centro">
+                    <div class="descarga-planilla">
+                        <h3>Descargar planilla como:</h3>
+                        <div class="botones-descarga">
+                            <button class="boton-excel" onclick="DescargarExcel()">Excel</button>
+                            <button class="boton-pdf" onclick="DescargarPdf()">PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
             
-                <button class="botondeporcentaje">
-                    Descargar
-                </button>
+                
         </div>
-
-
-
-
-        <table id="tablaAsistencia2_{{ curso.id }}" class="tabla_curso_cursada" style="display: none;" border="1">
-            <thead>
-                <tr>
-                    <th colspan="6">{{ curso.comision.tecnicatura }} - Cursadas de Curso -</th>
-                    <th colspan="2"> Año: {{ curso.comision.anio }} Comision: {{ curso.comision.comision }}</th>
-                </tr>
-                <tr>
-                    <th colspan="2">Asignatura :<p id="fecha-tabla-asistencia"></p></th>
-                    <th colspan="6">{{ curso.asignatura.nombre }} {{ curso.ciclolectivo }}</th>
-                </tr>
-                <tr>
-                    <th>Cursada</th>
-                    <th>Asistencias</th>
-                    <th>Inasistencias</th>
-                    <th>Media falta</th>
-                    <th>Justificada</th>
-                    <th>Total</th>
-                    <th>Porcentaje de asistencia</th>
-                    <th>Porcentaje de asistencia con justificada</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cursada in curso.cursadas %}
-                    {% set total = 0 %}
-                    {% set asistencias = 0 %}
-                    {% set inasistencias = 0 %}
-                    {% set mediaFalta = 0 %}
-                    {% set justificada = 0 %}
-
-                    {% for asistencia in cursada.getAsistencias %}
-                        {% set total = total + 1 %}
-                        {% if asistencia.asistencia == 'presente' %}
-                            {% set asistencias = asistencias + 1 %}
-                        {% elseif asistencia.asistencia == 'ausente' %}
-                            {% set inasistencias = inasistencias + 1 %}
-                        {% elseif asistencia.asistencia == 'mediafalta' %}
-                            {% set mediaFalta = mediaFalta + 1 %}
-                        {% elseif asistencia.asistencia == 'justificada' %}
-                            {% set justificada = justificada + 1 %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if total > 0 %}
-                        {% set asistenciasTotales = asistencias + (mediaFalta * 0.5) %}
-                        {% set porcentajeAsistencia = (asistenciasTotales / total) * 100 %}
-                        {% set porcentajeJustificada = ((asistenciasTotales + justificada) / total) * 100 %}
-                    {% else %}
-                        {% set porcentajeAsistencia = 0 %}
-                        {% set porcentajeJustificada = 0 %}
-                    {% endif %}
-
-                    <tr>
-                        <td>{{ cursada.alumno }}</td>
-                        <td>{{ asistencias }}</td>
-                        <td>{{ inasistencias }}</td>
-                        <td>{{ mediaFalta }}</td>
-                        <td>{{ justificada }}</td>
-                        <td>{{ total }}</td>
-                        <td>{{ porcentajeAsistencia|number_format(2) }}%</td>
-                        <td>{{ porcentajeJustificada|number_format(2) }}%</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-
-
-
-
-
-
-
-    {% endfor %}
-
-
-
-
-   
-
+        <!-- TABLA DE PORCENTAJE /////// -->
 
 
 
@@ -1059,75 +1044,6 @@ function cerrarPorcentaje() {
 
 
         {# script asistencias #}
-        <script>
-            function openModal2(cursoId, cursadaId, estud) {
-                
-                
-                // Generar la URL con los IDs correctos
-                const url = "{{ path('nuevas_asistencias', { 'curso_id': '__cursoId__' }) }}"
-                    .replace('__cursoId__', cursoId);
-                // Realizar la solicitud fetch
-                fetch(url)
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('modalBody-1').innerHTML = html;
-                        document.getElementById('Modal1').style.display = 'block';
-                            //asistencia_asistencia    asistencia_fecha       asistencia_observacion     asistencia_cursada
-
-
-                        // Configurar la fecha actual en los campos de mes, día y año
-                        const today = new Date();
-                        const dayInput = document.querySelector('#asistencia_fecha_day');
-                        const monthInput = document.querySelector('#asistencia_fecha_month');
-                        const yearInput = document.querySelector('#asistencia_fecha_year');
-
-                        if (dayInput) {
-                            dayInput.value = today.getDate();
-                        }
-                        if (monthInput) {
-                            monthInput.value = today.getMonth() + 1;
-                        }
-                        if (yearInput) {
-                            yearInput.value = today.getFullYear();
-                        }
-
-                        const inputfecha = document.getElementById('asistencia_fecha');
-                        if (inputfecha) {
-                            inputfecha.style.display = 'none';
-                        }
-
-
-                        // Construir el texto de fecha y asignarlo al label
-                        const day = today.getDate();
-                        const month = today.getMonth() + 1;
-                        const year = today.getFullYear();
-                        const formattedDate = `Fecha: ${day}/${month}/${year}`; // Construir la cadena con la fecha
-
-                        const labelFecha = document.getElementById('label-fecha');
-                        if (labelFecha) {
-                            labelFecha.textContent = formattedDate; // Asignar el texto al label
-                            labelFecha.style.display = 'inline';
-                        }
-
-
-                        const cursadaInput = document.getElementById('asistencia_cursada');
-                        const labelCursada = document.querySelector('label[for="asistencia_cursada"]');
-                        if (labelCursada) {
-                            labelCursada.textContent = 'Estudiante: ' + estud;
-                             labelCursada.style.display = 'inline';
-                            //labelCursada.style.display = 'none';
-                        }
-                        if (cursadaInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input 
-                            cursadaInput.value = cursadaId;
-                            cursadaInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
-                            cursadaInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
-                        }
-
-                
-                    })  
-                    .catch(error => console.error('Error al cargar el formulario de edición:', error));
-            }
-        </script>
 
 
         <script>
@@ -1164,62 +1080,77 @@ function cerrarPorcentaje() {
 
            let asistenciasMarcadas = {};
 
-    document.addEventListener('keydown', function (event) {
-        switch (event.key) {
-            case 'ArrowLeft': // Flecha izquierda para retroceder al alumno anterior
-                document.getElementById('anterior').click();
-                break;
-            case 'ArrowRight': // Flecha derecha para avanzar al siguiente alumno
-                avanzarSiEsPosible();
-                break;
-            case 'F1': // F1 para marcar como "Presente"
-                event.preventDefault();
-                actualizarEstado('Presente', true);  // Actualiza el estado a 'Presente' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                        console.log('ActivarEditar:', ActivarEditar);  // Verifica el valor de ActivarEditar
+           document.addEventListener('keydown', function (event) {
+            // Solo continua si alguna de las dos variables está activada
+            if (!VistaAsistenciaActiva && !ActivarEditar) return;
+        
+            switch (event.key) {
+                case 'ArrowLeft': // Flecha izquierda para retroceder al alumno anterior
+                    document.getElementById('anterior').click();
+                    break;
+        
+                case 'ArrowRight': // Flecha derecha para avanzar al siguiente alumno
+                    avanzarSiEsPosible();
+                    break;
+        
+                case 'F1': // F1 para marcar como "Presente"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Presente', true);  // Actualiza el estado a 'Presente' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                                console.log('ActivarEditar:', ActivarEditar);  // Verifica el valor de ActivarEditar
+                            }
+                        }, 1000);
                     }
-                }, 1000);
-            break;
+                    break;
+        
+                case 'F2': // F2 para marcar como "Ausente"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Ausente', true);  // Actualiza el estado a 'Ausente' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                            }
+                        }, 1000);
+                    }
+                    break;
+        
+                case 'F3': // F3 para marcar como "Media falta"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Media falta', true);  // Actualiza el estado a 'Media falta' y guarda
+                        setTimeout(() => {
+                            if (!ActivarEditar) {  // Verifica si ActivarEditar es false
+                                avanzarSiEsPosible();  // Avanza al siguiente alumno
+                            } else {
+                                ActivarEditar = false;  // Cambia ActivarEditar a false
+                                cerrarPasarAsistenciaModal();  // Cierra el modal
+                            }
+                        }, 1000);
+                    }
+                    break;
+        
+                case 'F4': // F4 para marcar como "Justificada"
+                    event.preventDefault();
+                    if (VistaAsistenciaActiva || ActivarEditar) {  // Verifica si alguna está activa
+                        actualizarEstado('Justificada', false); // No guarda automáticamente
+                        document.getElementById('observacion').style.visibility = 'visible';
+                        document.getElementById('enviar').style.visibility = 'visible';
+                    }
+                    break;
+            }
+        });
+        
 
-            case 'F2': // F2 para marcar como "Ausente"
-                event.preventDefault();
-                actualizarEstado('Ausente', true);  // Actualiza el estado a 'Ausente' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                        
-                    }
-                }, 1000);
-            break;
-            case 'F3': // F3 para marcar como "Media falta"
-                event.preventDefault();
-                actualizarEstado('Media falta', true);  // Actualiza el estado a 'Media falta' y guarda
-                setTimeout(() => {
-                    if (!ActivarEditar) {  // Verifica si ActivarEditar es false
-                        avanzarSiEsPosible();  // Avanza al siguiente alumno
-                    } else {
-                        ActivarEditar = false;  // Cambia ActivarEditar a false
-                        cerrarPasarAsistenciaModal();  // Cierra el modal
-                       
-                    }
-                }, 1000);
-            break;
-            case 'F4': // F4 para marcar como "Justificada"
-                event.preventDefault();
-                actualizarEstado('Justificada', false); // No guarda automáticamente
-                document.getElementById('observacion').style.visibility = 'visible';
-                document.getElementById('enviar').style.visibility = 'visible';
-            break;
-                }
-    });
 
 // Función para actualizar el estado del alumno
 function actualizarEstado(estado, guardar = true) {
@@ -1320,7 +1251,7 @@ function guardarAsistencias() {
                             </td>
                             <td class="alumno-observacion">${alumno.observacion}</td>
                             <td class="alumnoeditar">
-                                <button onclick="CambiarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
+                                <button onclick="ActivarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
                             </td>
                         `;
 
@@ -1385,6 +1316,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Selecciona los campos de búsqueda
     const dniBuscar = document.getElementById('dni-buscar');
@@ -1424,6 +1357,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function comprobarEdicion() {
+    if (ActivarEditar) {
+        return false;  // Impide que el cambio de estado ocurra
+    }
+    return true;  // Permite el cambio de estado
+}
+
         </script>
 
         <!-- Modal1 para asignar notas a las materias de un docente!!!-->
@@ -1453,12 +1394,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         {# --- Modal de Pasar Lista, inicialmente oculto --- #}
-        <div id="spa-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;"></div>
+        <div id="spa-overlay" style="display:none; "></div>
         
         <div id="PasarAsistenciaModal" class="AsistenciaModal1" style="display: none;">
             <div id="alumno-container">
                 <div class="alumno-card">
+                    <div class="cerrar" id="cerrar" onclick= "cerrarPasarAsistenciaModal()">X</div>
                     <div class="fecha-actual" id="fecha-actual"></div>
+                    
                     <h2 class="AlumnoNombre">Nombre Apellido</h2>
                     <p class="AlumnoDni">DNI: 12345678</p>
                     <p id="estado">
