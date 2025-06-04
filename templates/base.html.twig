@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Instituto Local</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" href="{{asset('css/all.css')}}">
+			<link rel="stylesheet" href="{{asset('css/oter.css')}}">
+			<link rel="stylesheet" href="{{asset('css/container.css')}}">
+			<link rel="stylesheet" href="{{asset('css/styles.css')}}">
+			
+				
+		{% endblock %}
+	</head>
+	<body
+		id="page-top">
+		<!-- Page Wrapper -->
+		<div
+			id="wrapper">
+
+			<!-- Sidebar -->
+			<ul
+				class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" >
+
+				<!-- Sidebar - Brand -->
+				<a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ path('app_home')}}">
+					<div class="sidebar-brand-icon rotate-n-15">
+<img src="{{ asset('img/ISFT-12.jpg') }}" alt="Logo" width="60" class="logo-circular">
+					</div>
+					<div class="sidebar-brand-text mx-3">Instituto Local
+					</div>
+				</a>
+
+				<!-- Divider -->
+				<hr
+				class="sidebar-divider my-0">
+
+			
+				<!-- Divider -->
+				<hr
+				class="sidebar-divider">
+
+				<!-- Heading -->
+				<div class="sidebar-heading">
+					Menu
+				</div>
+
+
+				{% if is_granted ('ROLE_SUPER_ADMIN') or is_granted ('ROLE_ADMIN') %}
+				<!-- Nav Item - Charts -->
+				
+				<li class="nav-item">
+					<a class="nav-link" href="{{ path('app_vistaspreinscriptos')}}">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Preinscriptos</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{{ path('app_vistasestudiante')}}" >
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Estudiantes</span>
+					</a>
+				</li>
+				
+				<li class="nav-item">
+					<a class="nav-link" href="#" onclick="clearSessionCursos(); return false;">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Comisiones, Cursos y Cursadas</span>
+					</a>
+				</li>	
+				<li class="nav-item">
+					<a class="nav-link" href="{{ path('app_vistasmesas')}}" >
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Finales</span>
+					</a>
+				</li>
+				{% endif %}
+
+				
+				{% if is_granted ('ROLE_SUPER_ADMIN') or is_granted ('ROLE_DOCENTE') %}
+				<li class="nav-item">
+					<a class="nav-link" href="#" onclick="clearSessionDocentes(); return false;">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Docentes</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#" onclick="clearSessionPersonas(); return false;">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Recursos Humanos</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="clearSessionLink" href="#" onclick="clearSessionTecnicaturas(); return false;">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Tecnicaturas y Asignaturas</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{{ path('app_user_index')}}">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Usuarios</span>
+					</a>
+				</li>
+				{% endif %}
+
+		
+				<!-- Nav Item - Charts -->
+				{% if is_granted ('ROLE_SUPER_ADMIN')  %}
+				<!-- Nav Item - Pages Collapse Menu -->
+				<li class="nav-item">
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Carreras</span>
+					</a>
+					<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+						<div class="bg-white py-2 collapse-inner rounded">
+							<h6 class="collapse-header">Datos de carreras</h6>
+							<a class="collapse-item" href="{{ path('app_carreras_index')}}">Estudiante Por Carrera</a>
+							<a class="collapse-item" href="{{ path('app_tecnicatura_index')}}">Tecnicatura</a>
+							<a class="collapse-item" href="{{ path('app_asignatura_index')}}">Asignatura</a>
+							<a class="collapse-item" href="{{ path('app_comision_index')}}">Comisiones</a>
+							<a class="collapse-item" href="{{ path('app_correlativa_index')}}">Correlativas</a>
+							<a class="collapse-item" href="{{ path('app_cursada_index')}}">Cursadas</a>
+							<a class="collapse-item" href="{{ path('app_curso_index')}}">Curso</a>
+							<a class="collapse-item" href="{{ path('app_examen_alumno_index')}}">Examen Alumno</a>
+							<a class="collapse-item" href="{{ path('app_examen_final_index')}}">Examen Final</a>
+							<a class="collapse-item" href="{{ path('app_habilitante_index')}}">Habilitante</a>
+							<a class="collapse-item" href="{{ path('app_inscripcion_final_index')}}">Inscripción a Final</a>
+							<a class="collapse-item" href="{{ path('app_examen_alumno_new')}}">Ingreso de Examen Alumno</a>
+							<a class="collapse-item" href="{{ path('app_nota_index')}}">Nota Anual de Alumno</a>
+							<a class="collapse-item" href="{{ path('app_cursada_docente_index')}}">Cursadas Por Docentes</a>
+							<a class="collapse-item" href="{{ path('app_revista_index')}}">Revista</a>
+							<a class="collapse-item" href="{{ path('app_titulo_index')}}">Título</a>
+
+						</div>
+					</div>
+				</li>
+				{% endif %}
+				
+                <!-- Nav Item - Pages Collapse Menu -->
+				 {% if is_granted ('ROLE_SUPER_ADMIN')  %}
+				  <li class="nav-item">
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTree" aria-expanded="true" aria-controls="collapseTree">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Personas</span>
+					</a>
+					<div id="collapseTree" class="collapse" aria-labelledby="headingTree" data-parent="#accordionSidebar">
+						<div class="bg-white py-2 collapse-inner rounded">
+							<h6 class="collapse-header">Datos de Personas</h6>
+							<a class="collapse-item" href="{{ path('app_alumno_index')}}">Estudiantes</a>
+							<a class="collapse-item" href="{{ path('app_docente_index')}}">Docentes</a>
+							<a class="collapse-item" href="{{ path('app_persona_index')}}">Personas</a>
+						
+						</div>
+					</div>
+				 </li>
+				{% endif %}
+
+
+				<!-- Nav Item - Pages Collapse Menu -->
+				{% if is_granted ('ROLE_SUPER_ADMIN')  %}
+				<li class="nav-item">
+					<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+						<i class="fas fa-fw fa-folder"></i>
+						<span class="custin">Configuración</span>
+					</a>
+					<div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+						<div class="bg-white py-2 collapse-inner rounded">
+							<h6 class="collapse-header">Datos Institucionales</h6>
+							<a class="collapse-item" href="{{ path('app_instituto_index')}}">Instituto</a>
+							<a class="collapse-item" href="{{ path('app_telefono_index')}}">Teléfono</a>
+							<a class="collapse-item" href="{{ path('app_localidad_index') }}">Localidad</a>
+							<a class="collapse-item" href="{{ path('app_region_index')}}">Región</a>
+							<a class="collapse-item" href="{{ path('app_provincia_index') }}">Provincia</a>
+							<a class="collapse-item" href="{{ path('app_pais_index')}}">Nacionalidad</a>
+							<a class="collapse-item" href="{{ path('app_turno_index') }}">Turnos</a>
+							<a class="collapse-item" href="{{ path('app_modalidad_index') }}">Modalidad</a>					
+						</div>
+					</div>
+					
+				</li>
+				{% endif %}
+
+				<!-- Divider -->
+				<hr
+				class="sidebar-divider d-none d-md-block">
+
+				<!-- Sidebar Toggler (Sidebar) -->
+				<div class="text-center d-none d-md-inline">
+					<button class="button" id="sidebarToggle"></button>
+ 	</div>
+
+
+			</ul>
+			<!-- End of Sidebar -->
+
+			<!-- Content Wrapper -->
+			<div
+				id="content-wrapper" class="d-flex flex-column">
+
+				<!-- Main Content -->
+				<div
+					id="content">
+
+					<!-- Topbar -->
+					<nav
+						class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+						<!-- Sidebar Toggle (Topbar) -->
+						<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+							<i class="fa fa-bars"></i>
+						</button>
+				  <div class="super" style="position: absolute; left: 25%; top: 44%; transform: translateY(-50%); display: flex; align-items: center;">
+				     	<img class="super" src={{asset('img/logo.jpeg')}} alt="..."style="width: 65px; height: auto;" >
+				</div>
+               
+
+
+
+<!-- Campo de búsqueda de ciclo lectivo -->
+<form class="form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+    <div class="input-group">
+        <input id="ciclo-lectivo-input" type="text" class="form-control bg-light border-0 small" placeholder="Ciclo Lectivo - Cohorte..." aria-label="Search" aria-describedby="basic-addon2" value="" maxlength="4">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="button" onclick="filtrarPorCicloLectivo()">
+                <i class="fas fa-search fa-sm"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM completamente cargado y parseado");
+    
+    // Obtener el año actual
+    const currentYear = new Date().getFullYear();
+    console.log("Año actual:", currentYear);
+
+    // Establecer el valor del campo de ciclo lectivo con el año actual por defecto
+    const inputCiclo = document.getElementById('ciclo-lectivo-input');
+    console.log("Campo input encontrado:", inputCiclo);
+
+    if (inputCiclo) {
+        inputCiclo.value = currentYear;
+        console.log("Valor asignado al input:", inputCiclo.value);
+
+        // Solo permitir ingresar números y limitar a 4 dígitos
+        inputCiclo.addEventListener('input', function() {
+            // Eliminar cualquier carácter que no sea un número
+            this.value = this.value.replace(/\D/g, '');
+            // Limitar la longitud a 4 caracteres
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+            console.log("Valor actual del input:", this.value);
+        });
+    } else {
+        console.error("No se encontró el campo input ciclo lectivo.");
+    }
+
+    // Función para filtrar por ciclo lectivo y redirigir
+    window.filtrarPorCicloLectivo = function() {
+        const cicloLectivo = inputCiclo.value;
+        // Validar que el ciclo lectivo tenga 4 dígitos
+        if (cicloLectivo.length === 4) {
+            // Redirigir a la misma página con el ciclo lectivo como parámetro en la URL
+            window.location.href = `{{ path('app_vistascursada') }}?cicloLectivo=${cicloLectivo}`;
+        } else {
+            alert('Por favor, ingresa un ciclo lectivo válido de 4 dígitos.');
+        }
+    }
+});
+</script>
+
+
+						<!-- Topbar Navbar -->
+						<ul class="navbar-nav ml-auto" id="topbarToggle">
+
+							<!-- Nav Item - Search Dropdown (Visible Only XS) -->
+							<li class="nav-item dropdown no-arrow d-sm-none">
+								<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fas fa-search fa-fw"></i>
+								</a>
+								<!-- Dropdown - Messages -->
+								<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+									<form class="form-inline mr-auto w-100 navbar-search">
+										<div class="input-group">
+											<input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+											<div class="input-group-append">
+												<button class="btn btn-primary" type="button">
+													<i class="fas fa-search fa-sm"></i>
+												</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</li>
+
+
+
+							<div class="topbar-divider d-none d-sm-block"></div>
+
+							<!-- Nav Item - User Information -->
+							<li class="nav-item dropdown no-arrow">
+								{#<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ app.user.nombre }}</span>
+									<img class="img-profile rounded-circle" src={{asset("img/undraw_profile.svg")}}>
+								</a>#}
+
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+        {% if app.user and app.user.persona %}
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN') or is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
+                {{ app.user.persona.nombre }}
+            {% else %}
+                Invitado
+            {% endif %}
+        {% else %}
+            Invitado
+        {% endif %}
+    </span>
+    <img class="img-profile rounded-circle" src="{{ asset('img/undraw_profile.svg') }}">
+</a>
+
+
+								<!-- Dropdown - User Information -->
+								<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown" >
+									<a class="dropdown-item" href="#">
+										<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+										Profile
+									</a>
+									<a class="dropdown-item" href="#">
+										<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+										Configuracion
+									</a>
+									<a class="dropdown-item" href="#">
+										<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+										Activity Log
+									</a>
+									<div class="dropdown-divider" style="display: flex; justify-content: center !important; align-items: center;"></div>
+                                        <p style="display: flex !important ; justify-content: center !important; align-items: center !important;">
+									    <a class="buttonn" styles="margin: 0 auto !important; text-align: center !important; display: block;" href="{{ path('app_logout')}}">Salir</a>
+										</p>
+									 </div>
+							</li>
+
+						</ul>
+
+					</nav>
+					<!-- End of Topbar -->				
+					<!-- Begin Page Content -->
+					<div class="container_X"> {% block body %}   {% endblock %}
+						</div> 											 
+						</div>		
+						
+						
+	
+					<!-- End of Content Wrapper -->
+			</div>	
+				<!-- End of Page Wrapper -->
+				<!-- Scroll to Top Button-->
+				<a class="scroll-to-top rounded" href="#page-top">
+					<i class="fas fa-angle-up"></i>
+				</a>
+
+
+				{% block javascripts %}
+					<script>
+						function clearSessionTecnicaturas() {  //Al abrir la vista personalizada de TECNICATURAS limpia la sesiones anteriores. 
+							// URL a la que redirigir
+							var url = '{{ path('app_vistas') }}';
+							// Redirigir dos veces
+							window.location.href = url;
+							setTimeout(function() {
+								window.location.href = url;
+							}, 200);
+						}
+
+						function clearSessionCursos() {  
+							var url1 = '{{ path('app_vistascursada') }}';
+							// Redirigir dos veces
+							window.location.href = url1;
+							setTimeout(function() {
+								window.location.href = url1;
+							}, 200);
+						}
+
+						function clearSessionPersonas() {  
+							var url1 = '{{ path('app_vistaspersona') }}';
+							// Redirigir dos veces
+							window.location.href = url1;
+							setTimeout(function() {
+								window.location.href = url1;
+							}, 200);
+						}
+
+						function clearSessionDocentes() {  
+							var url1 = '{{ path('app_vistasdocente') }}';
+							// Redirigir dos veces
+							window.location.href = url1;
+							setTimeout(function() {
+								window.location.href = url1;
+							}, 200);
+						}
+
+
+
+
+						
+
+						
+						document.addEventListener("DOMContentLoaded", function() {
+							const navLinks = document.querySelectorAll('.nav-link[data-toggle="collapse"]');
+							navLinks.forEach(function(navLink) {
+								navLink.addEventListener('click', function(event) {
+									event.preventDefault();
+									const targetId = navLink.getAttribute('data-target');
+									const targetCollapse = document.querySelector(targetId);
+									if (targetCollapse) {
+										targetCollapse.classList.toggle('show');
+									}
+								});
+							});
+							const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+							const contentWrapper = document.getElementById('content-wrapper');
+							const sidebar = document.getElementById('accordionSidebar');
+							sidebarToggleTop.addEventListener('click', function(event) {
+								event.preventDefault();
+								sidebar.classList.toggle('toggled');
+								contentWrapper.classList.toggle('toggled');
+							});
+							const sidebarToggle = document.getElementById('sidebarToggle');
+							sidebarToggle.addEventListener('click', function(event) {
+								event.preventDefault();
+								sidebar.classList.toggle('toggled');
+							});
+						});
+
+						document.addEventListener("DOMContentLoaded", function() {
+							const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+							const userDropdown = document.getElementById('userDropdown');
+							userDropdown.addEventListener('click', function(event) {
+								event.preventDefault();
+								const dropdownMenu = this.nextElementSibling;
+								dropdownMenu.classList.toggle('show');
+							});
+						});
+
+					</script>
+				
+				{% endblock %}
+			</body>
+		</body>
+	</html>

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit ExamenFinal{% endblock %}
+
+{% block body %}
+    <h1>Editar Examen Final</h1>
+
+    {{ include('examen_final/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_examen_final_index') }}">Regresar</a>
+
+    {{ include('examen_final/_delete_form.html.twig') }}
+{% endblock %}

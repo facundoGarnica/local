@@ -1,0 +1,18 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-persona', 'action': path('editar_persona', {'personaid': personaId, 'id': persona.id})}}) }}
+    {{ form_row(form.nombre, {'label': 'Nombre'}) }} 
+    {{ form_row(form.apellido, {'label': 'Apellido'}) }} 
+    {{ form_row(form.fecha_nacimiento, {'label': 'Fecha de Nacimiento'}) }} 
+    {{ form_row(form.dni_pasaporte, {'label': 'DNI o Pasaporte'})  }} 
+    {{ form_row(form.genero, {'label': 'Género'}) }} 
+    {{ form_row(form.email, {'label': 'E-Mail'}) }} 
+    {{ form_row(form.telefono, {'label': 'Teléfono'}) }} 
+    {{ form_row(form.partido, {'label': 'Partido'}) }} 
+    {{ form_row(form.calle, {'label': 'Calle'}) }} 
+    {{ form_row(form.numero, {'label': 'Número'}) }} 
+    {{ form_row(form.piso, {'label': 'Piso'}) }} 
+    {{ form_row(form.departamento, {'label': 'Departamento'}) }} 
+    {{ form_row(form.pasillo, {'label': 'Pasillo'}) }} 
+    {{ form_row(form.pais, {'label': 'Nacionalidad'}) }} 
+    {{ form_row(form.localidad, {'label': 'Localidad'}) }} 
+    <button type="submit" id="guarda-modal-edit">Guardar</button>
+{{ form_end(form) }}  

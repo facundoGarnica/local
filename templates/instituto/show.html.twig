@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Instituto{% endblock %}
+
+{% block body %}
+    <h1> Mostrando Institutos</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ instituto.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ instituto.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Número</th>
+                <td>{{ instituto.numero }}</td>
+            </tr>
+            <tr>
+                <th>URL del Instituto</th>
+                <td>{{ instituto.urlInstituto }}</td>
+            </tr>
+            <tr>
+                <th>Tipo</th>
+                <td>{{ instituto.tipo }}</td>
+            </tr>
+            <tr>
+                <th>E-Mail</th>
+                <td>{{ instituto.email }}</td>
+            </tr>
+            <tr>
+                <th>Calle</th>
+                <td>{{ instituto.calle }}</td>
+            </tr>
+            <tr>
+                <th>Altura</th>
+                <td>{{ instituto.altura }}</td>
+            </tr>
+            <tr>
+                <th>Número de CUE</th>
+                <td>{{ instituto.numeroCue }}</td>
+            </tr>
+            <tr>
+                <th>Instituto</th>
+                <td>{{ instituto.instituto }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_instituto_index') }}">Regresar</a>
+
+    <a href="{{ path('app_instituto_edit', {'id': instituto.id}) }}">Editar</a>
+
+    {{ include('instituto/_delete_form.html.twig') }}
+{% endblock %}

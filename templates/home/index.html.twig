@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+
+
+<div class="example-wrapper">
+    <h1>Bienvenido al Sistema Local</h1>
+    {% if is_granted ('ROLE_SUPER_ADMIN') or is_granted ('ROLE_ADMIN') %}
+        <div class="gird_admin">
+            <p id="administrador_home"> Proyecto actualizado por el Grupo 3 al día 05/05/2025 </p>
+        </div>
+    {% endif %} 
+</div>
+{% endblock %}  

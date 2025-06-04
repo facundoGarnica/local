@@ -1,0 +1,913 @@
+.home-container {
+    padding: 2rem;
+    text-align: center;
+}
+
+.home-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.no-cursos {
+    color: #888;
+    font-style: italic;
+}
+
+.curso-lista {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.curso-info {
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    /* Centra el contenido */
+}
+
+.curso-subtitulo {
+    font-size: 33px;
+    /* Aumentado */
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.curso-subtitulo span {
+    font-weight: 500;
+    color: #4a5568;
+}
+.curso-boton {
+    padding: 0.75rem 1.5rem;
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.curso-boton:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para el buscador de alumnos */
+
+.buscador-alumno {
+    margin: 20px auto;
+    text-align: center;
+    padding: 10px 60px;
+        /* AÃ±adÃ­ relleno para darle espacio interno */
+        border: 1px solid #ccc;
+        /* Borde fino gris */
+        border-radius: 12px;
+        /* Bordes redondeados */
+        background-color: #f5f9ff;
+        /* Fondo claro para destacar */
+    max-width: 60%;
+        /* Ancho mÃ¡ximo para que no se haga muy grande */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para darle un toque elevado */
+}
+
+.buscador-alumno label {
+    font-size: 18px;
+        /* Ajustado el tamaÃ±o para que sea mÃ¡s pequeÃ±o */
+        color: #2a4365;
+        /* Color oscuro y elegante */
+        font-weight: 600;
+        /* Peso de fuente para mayor Ã©nfasis */
+        margin-bottom: 10px;
+        /* Menor espacio debajo para que estÃ© mÃ¡s cerca de los campos */
+        display: block;
+        /* Para que estÃ© encima de los campos de texto */
+        text-align: center;
+        /* Centrado para balance */
+        text-transform: uppercase;
+        /* Hace que el texto sea mÃ¡s formal en mayÃºsculas */
+        letter-spacing: 1px;
+        /* Espaciado entre letras moderado */
+        font-family: 'Arial', sans-serif;
+        /* Fuente limpia y profesional */
+        padding: 6px 12px;
+        /* Relleno para que no estÃ© tan pegado al borde */
+        width: fit-content;
+        /* Ajusta el ancho al contenido */
+        margin: 0 auto 10px;
+        /* Centrado y con un pequeÃ±o margen debajo */
+}
+
+.buscador-alumno .input-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.buscador-alumno .input-group input[type="text"],
+.buscador-alumno .input-group input {
+    padding: 10px 14px;
+    /* MÃ¡s espacio interno */
+    font-size: 16px;
+    /* Letras mÃ¡s grandes */
+    border-radius: 8px;
+    /* Esquinas redondeadas */
+    border: 1px solid #cbd5e0;
+    /* Borde suave */
+    height: 42px;
+    /* Altura mÃ¡s cÃ³moda */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.buscador-alumno .form-control {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 200px;
+    transition: all 0.3s ease;
+}
+
+.buscador-alumno .form-control:focus {
+    border-color: #3d58aa;
+        /* Azul mÃ¡s oscuro para el foco */
+    outline: none;
+    box-shadow: 0 0 8px rgba(78, 115, 223, 1);
+    background-color: #fff; /* Blanco cuando el campo tiene foco */
+}
+
+.buscador-alumno .form-control:hover {
+    border-color: #4e73df;
+    background-color: #f1faf0; /* Fondo claro en hover */
+}
+
+.buscador-alumno .form-control::placeholder {
+    color: #a3b0b6; /* Color suave para el texto del placeholder */
+    font-style: italic;
+}
+.curso-tabla .fila-alumno:hover {
+    background-color: #abb9c5;
+}
+
+/* Estilo general para los datos del alumno */
+.AlumnoAsistencia {
+    /* AsegurÃ¡ndonos de que las clases tengan nombres consistentes */
+    font-weight: 500;
+    /* Peso de la fuente para una mejor legibilidad */
+    font-size: 25px;
+    /* TamaÃ±o adecuado para destacar la informaciÃ³n */
+    line-height: 1.4;
+    /* Un pequeÃ±o ajuste de altura de lÃ­nea para mejorar la lectura */
+    color: #333;
+    /* Color gris oscuro para mejorar la visibilidad */
+    margin-bottom: 10px;
+    /* Espacio entre elementos para que no se vean tan apelotonados */
+    letter-spacing: 0.5px;
+    /* Ligera separaciÃ³n entre letras para mejorar la legibilidad */
+}
+
+
+
+
+
+/* Estilo para el estado de asistencia del alumno */
+.AlumnoAsistencia {
+    font-size: 20px; /* Reducido para no destacar tanto como el nombre */
+    font-weight: 400; /* Peso normal para el estado */
+    color: #4caf50; /* Verde para representar un estado positivo */
+    text-transform: capitalize;
+        /* Aseguramos que el texto estÃ© correctamente capitalizado */
+}
+
+.btn-pasar-lista {
+    display: inline-block;
+    background-color: #4e73df;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-pasar-lista:hover {
+    background-color: #27a84e;
+        /* Verde mÃ¡s oscuro para hover */
+        transform: translateY(-3px);
+        /* 1px mÃ¡s que antes */
+}
+
+.btn-pasar-lista:active {
+    background-color: #218c43;
+    transform: translateY(0);
+}
+
+
+.curso-container {
+    max-width: 80%;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f5f9ff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.curso-titulo {
+    text-align: center;
+    color: #2a4365;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.curso-vacio {
+    text-align: center;
+    color: #555;
+    font-size: 18px;
+}
+
+.curso-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.curso-tabla th, .curso-tabla td {
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+.curso-tabla th {
+    background-color: #4e73df;
+    color: white;
+}
+
+.curso-tabla tr:nth-child(even) {
+    background-color: #e8f0fe;
+}
+
+/* css para modificar template asistencia*/
+
+.asistencia-titulo {
+    text-align: center;
+    color: #2a4365;
+    font-size: 32px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.alumno-card {
+    border: 1px solid #cbd5e0;
+    background-color: #f5f9ff;
+    padding: 30px;
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 700px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.alumno-nombre {
+    font-size: 26px;
+    color: #2a4365;
+    margin-bottom: 10px;
+}
+/* Estilo para el apellido, puede compartir la misma base que el nombre */
+.alumno-apellido {
+    font-size: 22px;
+    color: #2a4365;
+    margin-bottom: 10px;
+}
+
+/* Estilo para el DNI del alumno */
+.alumno-dni {
+font-size: 22px;
+    color: #2a4365;
+    margin-bottom: 10px;
+}
+
+.estado-text {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    border: 1px solid transparent;
+}
+
+.estado-neutral {
+    background-color: #edf2f7;
+    color: #4a5568;
+    border-color: #cbd5e0;
+}
+
+.estado-presente {
+    background-color: #d4f5dd; /* verde claro */
+    color: #276749; /* verde oscuro para contraste */
+    border-color: #38a169;
+}
+
+.estado-ausente {
+    background-color: #ffe5e5; /* rojo claro */
+    color: #b22222; /* rojo oscuro */
+    border-color: #e53e3e;
+}
+.estado-mediafalta {
+    background-color: #fff3cd; /* amarillo claro */
+    color: #856404;
+        /* marrÃ³n oscuro para contraste */
+        border-color: #ffcc00;
+        /* amarillo mÃ¡s intenso */
+}
+
+.estado-justificada {
+    background-color: #ede9fe; /* lavanda claro */
+    color: #3e226b;
+        /* pÃºrpura profundo */
+    border-color: #8e66d0;
+}
+
+
+
+
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.botones button {
+    font-size: 16px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#presente {
+    background-color: #57a87d; /* verde claro */
+    color: white;
+    border: none;
+    padding: 10px 20px; /* espaciado interno */
+    cursor: pointer;
+    border-radius: 20px;
+        /* bordes mÃ¡s redondeados */
+        opacity: 0.9;
+        /* ligeramente mÃ¡s apagado */
+}
+
+#ausente {
+    background-color: #d96060; /* rojo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 20px;
+    opacity: 0.9;
+        /* ligeramente mÃ¡s apagado */
+}
+
+#mediafalta {
+    background-color: #facc58; /* amarillo */
+    color: #1f2937;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 20px;
+    opacity: 0.8;
+        /* ligeramente mÃ¡s apagado */
+}
+
+#justificada {
+    background-color: #468bcb; /* azul */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 20px;
+    opacity: 0.8;
+        /* ligeramente mÃ¡s apagado */
+}
+
+
+
+#anterior,
+#siguiente {
+    background-color: #cbd5e0;
+    color: #2a4365;
+}
+
+
+/* Css para el SPA (Modal a traer)*/
+
+/* Fondo oscuro de overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+}
+
+/* Contenedor del modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 70%;
+        /* MÃ¡s ancho en general */
+        max-width: 900px;
+        /* Aumentamos el lÃ­mite mÃ¡ximo */
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+
+/* Cuando el modal estÃ¡ activo */
+.modal.active,
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.spa-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* BotÃ³n cerrar (opcionalmente estilizalo mejor) */
+.modal button {
+    float: right;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal button:hover {
+    background: #c82333;
+}
+
+.estado-asistencia {
+    display: inline-block;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+.contenedor-fecha {
+    margin-top: 14px;
+}
+.fecha-actual {
+    background-color: #ffffff;
+        color: #1a202c;
+        padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 16px;
+        /* Aumentado */
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+}
+
+
+/*css para mostrar la cantidad de presentes*/
+.total-presentes {
+    background-color: #e9f7ef; /* Verde suave */
+    color: #155724; /* Verde oscuro para el texto */
+    border: 2px solid #c3e6cb; /* Borde verde claro */
+    border-radius: 10px;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+#confirmacion {
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+#confirmacion.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+#PasarAsistenciaModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+        /* mÃ¡s que el overlay */
+        width: 1000px;
+        /* Aumenta el ancho del modal segÃºn lo necesites */
+        max-width: 80%;
+        /* Esto asegura que no se haga mÃ¡s grande que el 80% del ancho de la pantalla */
+}
+
+.alumnoeditar button {
+    background-color: #4666c7;
+        /* Azul oscuro */
+    color: white; /* Texto blanco */
+    border: 1px solid #2a4365; /* Borde azul oscuro */
+    border-radius: 4px; /* Bordes redondeados */
+    padding: 6px 12px;
+        /* Espaciado dentro del botÃ³n */
+        font-size: 14px;
+        /* TamaÃ±o de texto */
+    cursor: pointer; /* Cambiar a cursor tipo mano */
+    transition: all 0.3s ease;
+        /* TransiciÃ³n suave para el hover */
+    text-align: center; /* Centrar texto */
+    display: inline-block;
+        /* Para que el botÃ³n se ajuste al contenido */
+}
+
+.alumnoeditar button:hover {
+    background-color: #1e3549;
+        /* Azul mÃ¡s oscuro al pasar el ratÃ³n */
+    border-color: #1e3549; /* Borde del mismo color en hover */
+}
+
+.alumnoeditar button:focus {
+    outline: none; /* Eliminar el borde predeterminado al hacer clic */
+    box-shadow: 0 0 0 3px rgba(42, 67, 101, 0.6); /* Sombra azul oscura al enfocar */
+}
+
+.alumnoeditar button:active {
+    background-color: #162d40;
+        /* Azul mÃ¡s oscuro cuando se hace clic */
+    border-color: #162d40; /* Borde que coincide con el fondo al hacer clic */
+}
+.cerrar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: black;
+    transition: color 0.3s ease;
+}
+
+.cerrar:hover {
+    color: red;
+}
+
+/*(Css para modalidad.)*/   
+
+.contenedor-radios {
+    display: flex;
+    flex-direction: row;  
+    gap: 10px;
+    padding: 16px;
+    
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.radio-opcion input[type="radio"] {
+    accent-color: #4e73df; /* Azul  */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    vertical-align: middle; 
+    margin: 0;
+}
+
+.ModalidadAsistencia {
+    border: 1px solid #d1dbe8;
+    border-radius: 12px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;       
+    justify-content: center;   
+    margin: 0 auto;
+    max-width: 500px;
+
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.7s ease, padding 0.7s ease, border-width 0.7s ease;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+}
+
+.ModalidadAsistencia.abierto {
+    
+    max-height: 500px; /* Ajustá según el contenido real */
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-width: 1px;
+}
+
+
+
+
+
+.radio-opcion {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2a4365;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f5f9ff;
+    border: 1px solid #cbd5e0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.radio-opcion:hover {
+    background-color: #e8f0fe;
+}
+
+.radio-opcion input[type="radio"] {
+    accent-color: #4e73df; 
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+.titulo-modalidad {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2a4365;
+    margin-bottom: 12px;
+    text-align: center;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.campo-observaciones {
+    margin-top: 20px;
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10;
+}
+
+.observacion-input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f9ff;
+    color: #2a4365;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-button {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 130px;
+    text-align: left;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    display: none;
+  }
+
+  .dropdown-content div {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .dropdown-content div:hover {
+    background-color: #f1f1f1;
+  }
+/*Css para Calendario*/
+.CalendarioClases {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    border: 1px solid #d1dbe8;
+    border-radius: 12px;
+    background-color: #ffffff;
+    max-width: 600px;
+    width: 90%;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.CalendarioClases-header {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+}
+
+.CalendarioClases-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2a4365;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.CalendarioClases-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contenedor-radios {
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    justify-content: center;
+}
+
+.radio-opcion {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2a4365;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f5f9ff;
+    border: 1px solid #cbd5e0;
+    border-radius: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.radio-opcion:hover {
+    background-color: #e8f0fe;
+}
+
+.radio-opcion input[type="radio"] {
+    accent-color: #4e73df;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.campo-observaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+}
+
+.label-observacion {
+    font-size: 16px;
+    color: #2a4365;
+    font-weight: 600;
+}
+
+.observacion-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f5f9ff;
+    color: #2a4365;
+}
+
+.acciones-modalidad {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-crear-modalidad {
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-crear-modalidad:hover {
+    background-color: #2b59c3;
+}
+
+.acciones-cierre {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#closeCalendarBtn {
+    background-color: #f56565;
+    /* rojo más suave */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#closeCalendarBtn:hover {
+    background-color: #e53e3e;
+}
+
+
+/* Mensaje de éxito */
+.mensaje-exito {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: none;
+    /* oculto al inicio */
+}
+
+.btn-ir-clase {
+    margin-left: 15px;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.btn-ir-clase:hover {
+    background-color: #218838;
+}
+
+/* Fondo oscuro con desenfoque */

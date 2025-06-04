@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nota index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Notas</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Primer Parcial</th>
+                <th>Primer Recuperatorio</th>
+                <th>Segundo Parcial</th>
+                <th>Segundo Recuperatorio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for notum in notas %}
+            <tr>
+                <td>{{ notum.id }}</td>
+                <td>{{ notum.parcial }}</td>
+                <td>{{ notum.recuperatorio1 }}</td>
+                <td>{{ notum.parcial2 }}</td>
+                <td>{{ notum.recuperatorio2 }}</td>
+                <td>
+                    <a href="{{ path('app_nota_show', {'id': notum.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_nota_edit', {'id': notum.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_nota_new') }}">Crear Nueva Nota</a>
+{% endblock %}

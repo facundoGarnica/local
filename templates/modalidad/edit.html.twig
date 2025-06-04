@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Modalidad{% endblock %}
+
+{% block body %}
+    <h1>Editar Modalidad</h1>
+
+    {{ include('modalidad/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_modalidad_index') }}">Regresar</a>
+
+    {{ include('modalidad/_delete_form.html.twig') }}
+{% endblock %}

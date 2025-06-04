@@ -1,0 +1,8 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-carreras', 'action': path('crear_carreras' )}}) }}
+    {{ form_row(form.estudiante_id, {'label': 'Estudiante'}) }} 
+    {{ form_row(form.tecnicatura_id, {'label': 'Tecnicatura'}) }} 
+    {{ form_row(form.estado, {'label': 'Estado'}) }} 
+    {{ form_row(form.inicio, {'label': 'Fecha de Inicio'}) }}
+    {{ form_row(form.fin, {'label': 'Fecha de Finalización'}) }} 
+    <button type="submit"class:"button">Guardar</button>
+{{ form_end(form) }}

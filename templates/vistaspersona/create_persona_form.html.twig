@@ -1,0 +1,27 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-persona', 'action': path('crear_persona' )}}) }}
+    {{ form_row(form.nombre, {'label': 'Nombre'}) }} 
+    {{ form_row(form.apellido, {'label': 'Apellido'}) }} 
+    {{ form_row(form.fecha_nacimiento, {'label': 'Fecha de Nacimiento'}) }} 
+    {{ form_row(form.dni_pasaporte, {'label': 'DNI o Pasaporte'}) }} 
+    {{ form_row(form.genero, {'label': 'Género'}) }}
+  <div class="form-group">
+        {{ form_label(form.email, 'E-Mail', {'label_attr': {'class': 'home-label'}}) }}
+        {{ form_widget(form.email, {'attr': {'class': 'home-input'}}) }}
+        {% if form.email.vars.errors|length > 0 %}
+            <div class="form-error-message">
+                {{ form_errors(form.email) }}
+            </div>
+        {% endif %}
+    </div>
+    {{ form_row(form.telefono, {'label': 'Teléfono'}) }} 
+    {{ form_row(form.partido, {'label': 'Partido'}) }} 
+    {{ form_row(form.calle, {'label': 'Calle'}) }} 
+    {{ form_row(form.numero, {'label': 'Número'}) }} 
+    {{ form_row(form.piso, {'label': 'Piso'}) }} 
+    {{ form_row(form.departamento, {'label': 'Departamento'}) }} 
+    {{ form_row(form.pasillo, {'label': 'Pasillo'}) }} 
+    {{ form_row(form.pais, {'label': 'Nacionalidad'}) }} 
+    {{ form_row(form.localidad, {'label': 'Localidad'}) }} 
+    <button type="submit">Guardar</button>
+{{ form_end(form) }}
+

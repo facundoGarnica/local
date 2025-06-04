@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Nota{% endblock %}
+
+{% block body %}
+    <h1>Crear Nueva Nota</h1>
+
+    {{ include('nota/_form.html.twig') }}
+
+    <a href="{{ path('app_nota_index') }}">Regresar</a>
+{% endblock %}

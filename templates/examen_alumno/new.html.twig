@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ExamenAlumno{% endblock %}
+
+{% block body %}
+    <h1>Crear Nuevo Examen de Alumno</h1>
+
+    {{ include('examen_alumno/_form.html.twig') }}
+
+    <a href="{{ path('app_examen_alumno_index') }}">Regresar</a>
+{% endblock %}

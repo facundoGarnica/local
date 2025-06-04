@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-asistencia'}, 'action': path('nuevas_asistencias', { 'curso_id': cursoId2 }) }) }}
+        {{ form_row(form.fecha, {'label': 'Fecha'}) }}
+        {{ form_row(form.asistencia, {'label': 'Asistencia'}) }}
+        {{ form_row(form.observacion, {'label': 'Observación'}) }}
+        {{ form_row(form.cursada, {'label': 'Cursada'}) }}
+    <button type="submit"class:"button">Guardar</button>
+{{ form_end(form) }}

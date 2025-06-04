@@ -1,0 +1,31 @@
+<table class="tabla_home" border="1">
+    <thead>
+        <tr>
+            <th>Asignatura</th>
+            <th>Año</th>
+            <th>Ciclo</th>
+            <th>Comisión</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for curso in cursos %}
+            <tr>
+                <td>{{ curso.asignatura.nombre }}</td>
+                <td>{{ curso.asignatura.anio }}</td>
+                <td>{{ curso.comision.ciclolectivo }}</td>
+                <td>{{ curso.comision }}</td>
+                <td>     
+                    {#crear cursada para el alumno del curso seleccionado#}
+                    <button class:"button" onclick="inscribirCurso('{{ curso.comision.tecnicatura.id }}', '{{ curso.comision.id }}', '{{ curso.id }}', '{{ id }}')" class="btn-primary">Inscribirse</button>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No hay cursos disponibles</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+

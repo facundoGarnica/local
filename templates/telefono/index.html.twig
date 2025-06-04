@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Telefono index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Teléfonos</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for telefono in telefonos %}
+            <tr>
+                <td>{{ telefono.id }}</td>
+                <td>{{ telefono.numero }}</td>
+                <td>
+                    <a href="{{ path('app_telefono_show', {'id': telefono.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_telefono_edit', {'id': telefono.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_telefono_new') }}">Crear Nuevo Teléfono</a>
+{% endblock %}

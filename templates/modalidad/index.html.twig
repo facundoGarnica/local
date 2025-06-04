@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modalidad index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Modalidades</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for modalidad in modalidads %}
+            <tr>
+                <td>{{ modalidad.id }}</td>
+                <td>{{ modalidad.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_modalidad_show', {'id': modalidad.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_modalidad_edit', {'id': modalidad.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_modalidad_new') }}">Crear Nueva Modalidad</a>
+{% endblock %}

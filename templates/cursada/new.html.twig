@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Cursada{% endblock %}
+
+{% block body %}
+    <h1>Crear Nueva Cursada</h1>
+
+    {{ include('cursada/_form.html.twig') }}
+
+    <a href="{{ path('app_cursada_index') }}">Regresar</a>
+{% endblock %}

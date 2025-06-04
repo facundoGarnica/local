@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Region{% endblock %}
+
+{% block body %}
+    <h1>Nómina de Regiones</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ region.id }}</td>
+            </tr>
+            <tr>
+                <th>Número</th>
+                <td>{{ region.numero }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_region_index') }}"> Regresar</a>
+
+    <a href="{{ path('app_region_edit', {'id': region.id}) }}">Editar</a>
+
+    {{ include('region/_delete_form.html.twig') }}
+{% endblock %}

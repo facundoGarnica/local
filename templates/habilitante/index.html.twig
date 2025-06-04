@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Habilitante index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Habilitantes</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Año de Egreso</th>
+                <th>Promedio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for habilitante in habilitantes %}
+            <tr>
+                <td>{{ habilitante.id }}</td>
+                <td>{{ habilitante.anioEgreso }}</td>
+                <td>{{ habilitante.promedio }}</td>
+                <td>
+                    <a href="{{ path('app_habilitante_show', {'id': habilitante.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_habilitante_edit', {'id': habilitante.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_habilitante_new') }}">Crear Nueva Habilitante</a>
+{% endblock %}

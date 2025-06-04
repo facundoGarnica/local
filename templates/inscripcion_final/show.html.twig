@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}InscripcionFinal{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Inscripciones a Finales</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ inscripcion_final.id }}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{ inscripcion_final.fecha ? inscripcion_final.fecha|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_inscripcion_final_index') }}">Regresar</a>
+
+    <a href="{{ path('app_inscripcion_final_edit', {'id': inscripcion_final.id}) }}">Editar</a>
+
+    {{ include('inscripcion_final/_delete_form.html.twig') }}
+{% endblock %}

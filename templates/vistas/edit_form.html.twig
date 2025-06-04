@@ -1,0 +1,10 @@
+{# edit_form.html.twig #}
+{{ form_start(form, {'attr': {'id': 'form-edit-asignatura', 'action': path('editar_asignatura', {'id': asignatura.id})}}) }}
+    {{ form_row(form.nombre, {'label': 'Nombre'}) }}
+    {{ form_row(form.anio, {'label': 'Año'}, {'attr': {'readonly': 'readonly'}}) }} {# Hacer el campo solo lectura #}
+    {{ form_row(form.programa, {'label': 'Programa'}) }}
+    {{ form_row(form.tecnicatura, {'label': 'Tecnicatura'}, {'attr': {'readonly': 'readonly'}}) }} {# Hacer el campo solo lectura #}
+    {{ form_row(form.cant_mod, {'label': 'Cantidad de Módulos'}) }}
+    {{ form_row(form.duracion, {'label': 'Duración'}) }}
+    <button type="submit" id="guarda-modal-edit"class="button">Guardar</button>
+{{ form_end(form) }} 

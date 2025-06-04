@@ -1,0 +1,11 @@
+{# templates/vistas/create_form.html.twig #}
+
+{{ form_start(form, {'attr': {'id': 'form-crea-asignatura', 'action': path('crear_asignatura' )}}) }}
+        {{ form_row(form.nombre, {'label': 'Nombre'}) }}
+        {{ form_row(form.anio, {'label': 'Año'}) }}
+        {{ form_row(form.programa, {'label': 'Programa'}) }}
+        {{ form_row(form.tecnicatura, {'label': 'Tecnicatura'}) }}
+        {{ form_row(form.cant_mod, {'label': 'Cantidad de Módulos'}) }}
+        {{ form_row(form.duracion, {'label': 'Duración'}) }}
+    <button type="submit" class="button">Guardar</button>
+{{ form_end(form) }}

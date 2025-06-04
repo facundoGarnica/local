@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Provincia index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Provincias</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for provincium in provincias %}
+            <tr>
+                <td>{{ provincium.id }}</td>
+                <td>{{ provincium.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_provincia_show', {'id': provincium.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_provincia_edit', {'id': provincium.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_provincia_new') }}">Incorporar Nueva Provincia</a>
+{% endblock %}

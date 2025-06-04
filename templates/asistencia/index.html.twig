@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Asistencia index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Asistencias</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Asistencia</th>
+                <th>Observación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for asistencium in asistencias %}
+            <tr>
+                <td>{{ asistencium.id }}</td>
+                <td>{{ asistencium.fecha ? asistencium.fecha|date('Y-m-d') : '' }}</td>
+                <td>{{ asistencium.asistencia }}</td>
+                <td>{{ asistencium.observacion }}</td>
+                <td>
+                    <a href="{{ path('app_asistencia_show', {'id': asistencium.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_asistencia_edit', {'id': asistencium.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_asistencia_new') }}">Crear Nueva Asistencia</a>
+{% endblock %}

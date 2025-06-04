@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comision index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Comisiones</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Año</th>
+                <th>Comisión</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for comision in comisions %}
+            <tr>
+                <td>{{ comision.id }}</td>
+                <td>{{ comision.anio }}</td>
+                <td>{{ comision.comision }}</td>
+                 <td>{{ comision.estado }}</td>
+                <td>
+                    <a href="{{ path('app_comision_show', {'id': comision.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_comision_edit', {'id': comision.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_comision_new') }}">Crear Nueva Comisión</a>
+{% endblock %}

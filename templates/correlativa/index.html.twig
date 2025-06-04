@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Correlativa index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Correlativas</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for correlativa in correlativas %}
+            <tr>
+                <td>{{ correlativa.id }}</td>
+                <td>
+                    <a href="{{ path('app_correlativa_show', {'id': correlativa.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_correlativa_edit', {'id': correlativa.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_correlativa_new') }}">Crear Nueva Correlativa</a>
+{% endblock %}

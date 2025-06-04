@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Correlativa{% endblock %}
+
+{% block body %}
+    <h1>Editar Correlativa</h1>
+
+    {{ include('correlativa/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_correlativa_index') }}">Regresar</a>
+
+    {{ include('correlativa/_delete_form.html.twig') }}
+{% endblock %}

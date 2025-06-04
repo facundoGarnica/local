@@ -1,0 +1,312 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mesas de Finales!{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# showtable para mostrar tablas #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Evaluar si `comId` está definido y no es nulo
+            {% if alumnoId is defined and alumnoId is not null %}
+                // Llamar a showCursada con los IDs de cursada y tecnicatura
+                showTable('tablaalumno');
+            {% else %}
+            {% endif %}
+
+            {% if docenteId is defined and docenteId is not null %}
+                showTable('tablaDocentes');
+            {% else %}
+            {% endif %}
+
+            {% if carrerasId is defined and carrerasId is not null %}
+                showTable('tablacarrera');
+            {% else %}
+            {% endif %}
+        });
+
+        function showTable(tableId) {
+            const tables = document.querySelectorAll('.tabla_home');
+            tables.forEach(table => {
+                if (table.id === tableId) {
+                    table.style.display = '';
+                } else {
+                    table.style.display = 'none';
+                }
+            });
+            
+            const backButton = document.getElementById('backButton');
+            if (tableId === 'tablaPrincipal') {
+                backButton.style.display = 'none';
+            } else {
+                backButton.style.display = '';
+            }
+        }
+    </script>
+
+
+    {#Busquedas en la tabla Inscriptos#}    
+    <script>
+        function filterFecha() {
+            let searchFecha = document.getElementById("searchFecha").value.toLowerCase();
+            let table = document.getElementById("tablaInscriptos");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let fecha = cells[0].textContent.toLowerCase();
+                    if (fecha.includes(searchFecha)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterEstudiante() {
+            let searchEstudiante = document.getElementById("searchEstudiante").value.toLowerCase();
+            let table = document.getElementById("tablaInscriptos");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let estudiante = cells[1].textContent.toLowerCase();
+                    if (estudiante.includes(searchEstudiante)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterTecnicatura() {
+            let searchTecnicatura = document.getElementById("searchTecnicatura").value.toLowerCase();
+            let table = document.getElementById("tablaInscriptos");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let tecnicatura = cells[2].textContent.toLowerCase();
+                    if (tecnicatura.includes(searchTecnicatura)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function filterAsignatura() {
+            let searchAsignatura = document.getElementById("searchAsignatura").value.toLowerCase();
+            let table = document.getElementById("tablaInscriptos");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let asignatura = cells[2].textContent.toLowerCase();
+                    if (asignatura.includes(searchAsignatura)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script> 
+
+    <script>
+        function openModal(action, asignaturaId = null, tecnicaturaId = null) {
+            let url = '';
+            //!!!!!!!!!Crear modal mesa de final
+            if (action === 'mesa') {
+                url = "{{ path('nueva_mesa', ) }}"
+                    ;
+                fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalMesa').innerHTML = html;
+                    document.getElementById('MesaModal').style.display = 'block';
+                })
+                .catch(error => console.error('Error al cargar el contenido del modal:', error));    
+            }     
+
+            //!!!!!!Crear modtal nota final
+            if (action === 'notaFinal') {
+                url = "{{ path('nueva_notaFinal', ) }}"
+                    ;
+                fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalMesa').innerHTML = html;
+                    document.getElementById('MesaModal').style.display = 'block';
+                })
+                .catch(error => console.error('Error al cargar el contenido del modal:', error));    
+            }     
+        }
+
+        function closeMesaModal() {
+            document.getElementById('MesaModal').style.display = 'none';
+            document.getElementById('modalMesa').innerHTML = '';
+        }
+
+
+    </script>
+
+
+{% endblock %}
+
+{% block body %}
+
+    <div id="body-vistas">
+        <h1 id="vistas">Mesas de Finales</h1>
+        <table class="tabla_home" id="tablaPrincipal" border="1">
+            <thead>
+                <tr>
+                    <th>Inscriptos a Finales</th>
+                    <th>Fechas de Finales</th>
+                    <th>Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <button class:"button" onclick="showTable('tablaInscriptos')">Ver</button>
+                    </td>
+                    <td>
+                        <button class:"button" onclick="showTable('tablaMesas')">Ver</button>
+                        <button onclick="openModal('mesa')"class:"button">Establecer fecha</button>
+                    </td>
+                    <td>
+                        <buttonclass:"button" onclick="showTable('tablaNotasFinales')">Ver</button>
+                        <button onclick="openModal('notaFinal')" class:"button">Cargar Nota</button>
+                    </td>
+
+
+                </tr>
+
+            </tbody>
+        </table>
+
+        {# Botón de regreso #}
+        <button id="backButton" class="btn-primary" onclick="showTable('tablaPrincipal')" style="display: none;">Regresar</button>
+
+
+        {# Inscriptos Vistas #}
+        <table id="tablaInscriptos" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="4">Inscriptos</th>
+                </tr>
+                <tr>
+                    <th colspan="4">
+                        <input type="text" id="searchFecha" onkeyup="filterFecha()" placeholder="Buscar Fecha...">
+                        <input type="text" id="searchEstudiante" onkeyup="filterEstudiante()" placeholder="Buscar Estudiante...">
+                        <input type="text" id="searchTecnicatura" onkeyup="filterTecnicatura()" placeholder="Buscar Tecnicatura...">
+                        <input type="text" id="searchAsignatura" onkeyup="filterAsignatura()" placeholder="Buscar Asignatura...">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Estudiante</th>
+                    <th>Tecnicatura</th>
+                    <th>Asignatura</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inscripcion_final in inscripcion_finals %}
+                    <tr>
+                        <td>{{ inscripcion_final.fecha ? inscripcion_final.fecha|date('Y-m-d') : '' }}</td>
+                        <td>{{ inscripcion_final.getAlumnoId() }}</td>
+                        <td>{{ inscripcion_final.getAsignaturaId().tecnicatura }}</td>
+                        <td>{{ inscripcion_final.getAsignaturaId() }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">No se encontraron registros</td>
+                    </tr>
+                {% endfor %}>
+            </tbody>
+        </table>       
+
+        {# Mesas Vistas #}
+        <table id="tablaMesas" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="6">Mesas de Finales</th>
+                </tr>
+                <tr>
+                    <th>Asignatura</th>
+                    <th>Fecha</th>
+                    <th>Presidente</th>
+                    <th>Primer Vocal</th>
+                    <th>Segundo Vocal</th>
+                    <th>Tecnicatura</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for examen_final in examen_finals %}
+                <tr>
+                    <td>{{ examen_final.getAsignaturaId() }}</td>
+                    <td>{{ examen_final.fecha ? examen_final.fecha|date('Y-m-d') : '' }}</td>
+                    <td>{{ examen_final.getPresidenteId()}}</td>
+                    <td>{{ examen_final.getVocal1Id() }}</td>
+                    <td>{{ examen_final.getVocal2Id() }}</td>
+                    <td>{{ examen_final.getAsignaturaId().tecnicatura }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+        {# Notas Finales Vistas #}
+        <table id="tablaNotasFinales" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="6">Nota de los Finales</th>
+                </tr>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Nota</th>
+                    <th>Tomo</th>
+                    <th>Folio</th>
+                    <th>Tecnicatura</th>
+                    <th>Asignatura</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for examen_alumno in examen_alumnos %}
+                <tr>
+                    <td>{{ examen_alumno.getAlumnoId }}</td>
+                    <td>{{ examen_alumno.nota }}</td>
+                    <td>{{ examen_alumno.tomo }}</td>
+                    <td>{{ examen_alumno.folio }}</td>
+                    <td>{{ examen_alumno.getExamenFinalId().getAsignaturaId().tecnicatura }}</td>
+                    <td>{{ examen_alumno.getExamenFinalId().getAsignaturaId() }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>    
+
+    <!-- Modal  Mesas Final -->
+    <div id="MesaModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeMesaModal()">&times;</span>
+            <div id="modalMesa" class="submodal"></div>
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}

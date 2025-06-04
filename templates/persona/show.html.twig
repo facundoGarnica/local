@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Persona{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Personas</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ persona.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ persona.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ persona.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Fecha De Nacimiento</th>
+                <td>{{ persona.fechaNacimiento ? persona.fechaNacimiento|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Dni/Pasaporte</th>
+                <td>{{ persona.dniPasaporte }}</td>
+            </tr>
+            <tr>
+                <th>Género</th>
+                <td>{{ persona.genero }}</td>
+            </tr>
+            <tr>
+                <th>E-;ail</th>
+                <td>{{ persona.email }}</td>
+            </tr>
+            <tr>
+                <th>Teléfono</th>
+                <td>{{ persona.telefono }}</td>
+            </tr>
+            <tr>
+                <th>Partido</th>
+                <td>{{ persona.partido }}</td>
+            </tr>
+            <tr>
+                <th>Calle</th>
+                <td>{{ persona.calle }}</td>
+            </tr>
+            <tr>
+                <th>Número</th>
+                <td>{{ persona.numero }}</td>
+            </tr>
+            <tr>
+                <th>Piso</th>
+                <td>{{ persona.piso }}</td>
+            </tr>
+            <tr>
+                <th>Departamento</th>
+                <td>{{ persona.departamento }}</td>
+            </tr>
+            <tr>
+                <th>Pasillo</th>
+                <td>{{ persona.pasillo }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_persona_index') }}">Regresar</a>
+
+    <a href="{{ path('app_persona_edit', {'id': persona.id}) }}">Editar</a>
+
+    {{ include('persona/_delete_form.html.twig') }}
+{% endblock %}

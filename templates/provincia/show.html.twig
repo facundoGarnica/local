@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Provincia{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Provincias</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ provincium.id }}</td>
+            </tr>
+            <tr>
+                <th>Descripción</th>
+                <td>{{ provincium.descripcion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_provincia_index') }}">Regresar</a>
+
+    <a href="{{ path('app_provincia_edit', {'id': provincium.id}) }}">Editar</a>
+
+    {{ include('provincia/_delete_form.html.twig') }}
+{% endblock %}

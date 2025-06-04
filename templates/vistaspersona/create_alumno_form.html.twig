@@ -1,0 +1,7 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-alumno', 'action': path('crear_alumno' )}}) }}
+    {{ form_row(form.titulo_sec, {'label': 'Título de Secundaria'}) }} 
+    {{ form_row(form.escuela_sec, {'label': 'Escuela Secundaria'}) }} 
+    {{ form_row(form.anio_egreso, {'label': 'Año de Egreso'}) }} 
+    {{ form_row(form.persona, {'label': 'Persona'}) }} 
+    <button type="submit"class:"button">Guardar</button>
+{{ form_end(form) }}

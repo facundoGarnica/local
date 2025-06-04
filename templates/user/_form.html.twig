@@ -1,0 +1,47 @@
+{% block body %}
+    {{ form_start(form) }}
+    
+    {% for field in form %}
+        <div class="form-group">
+            {{ form_label(field, null, {'label_attr': {'class': 'home-label'}}) }}
+            {{ form_widget(field, {'attr': {'class': 'home-input' ~ (field.vars.valid ? '' : ' is-invalid')}}) }}
+            {% if field.vars.errors|length > 0 %}
+                <div class="form-error-message">
+                    {{ form_errors(field) }}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+    <button class="btn">{{ button_label|default('Save') }}</button>
+
+    <style>
+        /* Estilo para los mensajes de error del formulario */
+        .form-error-message,
+        .invalid-feedback {
+            color: rgb(214, 46, 46);
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Estilo para los inputs con error */
+        input.is-invalid,
+        select.is-invalid,
+        textarea.is-invalid {
+            border: 2px solid red;
+            background-color: #ffe6e6;
+        }
+
+        /* Estilo para todos los inputs personalizados */
+        .home-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 80%;
+            box-sizing: border-box;
+        }
+    </style>
+
+    {{ form_end(form) }}
+{% endblock %}

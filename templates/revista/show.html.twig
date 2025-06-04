@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Revista{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Revistas</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ revistum.id }}</td>
+            </tr>
+            <tr>
+                <th>Descripción</th>
+                <td>{{ revistum.descripcion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_revista_index') }}">Regresar</a>
+
+    <a href="{{ path('app_revista_edit', {'id': revistum.id}) }}">Editar</a>
+
+    {{ include('revista/_delete_form.html.twig') }}
+{% endblock %}

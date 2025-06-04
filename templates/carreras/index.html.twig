@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carreras index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Carreras</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Estado</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for carrera in carreras %}
+            <tr>
+                <td>{{ carrera.id }}</td>
+                <td>{{ carrera.estado ? 'Yes' : 'No' }}</td>
+                <td>{{ carrera.inicio ? carrera.inicio|date('Y-m-d') : '' }}</td>
+                <td>{{ carrera.fin ? carrera.fin|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_carreras_show', {'id': carrera.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_carreras_edit', {'id': carrera.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_carreras_new') }}">Crear Nueva Carrera</a>
+{% endblock %}

@@ -1,0 +1,84 @@
+security:
+    enable_authenticator_manager: true
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        #users_in_memory: { memory: null }
+        database_users:
+              entity:
+                  class: App\Entity\User
+                  property: email 
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: database_users                # users_in_memory
+            custom_authenticator: App\Security\LoginForAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                target: app_login  #descomentamos y le asignamos ua ruta para el inicio
+                #
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    
+    access_control:   # tengo que terminar de agregar rutas de acuerdo al usuario.....
+         - { path: ^/alumno, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/asignatura, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/comision, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/correlativa, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/cursada, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/cursadadocente, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/docente, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/habilitante, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/vistasdocente, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_DOCENTE] }
+         - { path: ^/home, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_DOCENTE, ROLE_ESTUDIANTE] }
+         - { path: ^/vistasestudiante, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ESTUDIANTE] }
+         - { path: ^/instituto, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/localidad, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/modalidad, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/pais, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/persona, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/provincia, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/region, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/revista, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/security, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/tecnicatura, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/telefono, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/titulo, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/turno, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/user, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN] }
+         - { path: ^/examen/alumno, roles: ROLE_SUPER_ADMIN }    
+         - { path: ^/exmanen/final, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/nota, roles: ROLE_SUPER_ADMIN } 
+         - { path: ^/inscripcion/final, roles: ROLE_SUPER_ADMIN }
+         - { path: ^/vistas, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN] }
+         - { path: ^/vistascursada, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN] }
+         
+
+         # Bloquear acceso general para rutas no especificadas sino el acceso es total a cualquier usuario registrado
+         #- { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+
+when@test:
+    security:
+        password_hashers:
+            # By default, password hashers are resource intensive and take time. This is
+            # important to generate secure password hashes. In tests however, secure hashes
+            # are not important, waste resources and increase test times. The following
+            # reduces the work factor to the lowest possible values.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

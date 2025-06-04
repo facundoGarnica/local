@@ -1,0 +1,12 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-comision', 'action': path('editar_comision', {'comision_id': comision.id, 'tecnicatura_id': tecId})}}) }}
+    {{ form_row(form.anio, {'label': 'Año'})  }} 
+    {{ form_row(form.comision, {'label': 'Comisión'}) }}
+    {{ form_row(form.turno, {'label': 'Turno'}) }} 
+    {{ form_row(form.tecnicatura, {'label': 'Tecnicatura'}) }}
+    {{ form_row(form.ciclo_lectivo, {'label': 'Ciclo Lectivo'})}}
+
+    
+    <button type="submit" id="guarda-modal-edit"class="button">Guardar</button>
+
+{{ form_end(form) }} 
+

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit InscripcionFinal{% endblock %}
+
+{% block body %}
+    <h1>Editar Inscripción a Final</h1>
+
+    {{ include('inscripcion_final/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_inscripcion_final_index') }}">Regresar</a>
+
+    {{ include('inscripcion_final/_delete_form.html.twig') }}
+{% endblock %}

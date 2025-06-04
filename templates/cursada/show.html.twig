@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cursada{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Cursadas</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ cursada.id }}</td>
+            </tr>
+            <tr>
+                <th>Condición</th>
+                <td>{{ cursada.condicion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_cursada_index') }}">Regresar</a>
+
+    <a href="{{ path('app_cursada_edit', {'id': cursada.id}) }}">Editar</a>
+
+    {{ include('cursada/_delete_form.html.twig') }}
+{% endblock %}

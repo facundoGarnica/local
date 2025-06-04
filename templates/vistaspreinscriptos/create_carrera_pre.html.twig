@@ -1,0 +1,13 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-carreras-preinscriptos'}, 'action': path('crear_carrera_Pre', {'id': id, 'dni': dni} )}) }}
+
+    {{ form_row(form.estudiante_id) }} 
+    {{ form_row(form.tecnicatura_id) }} 
+    {{ form_row(form.estado) }} 
+    {{ form_row(form.inicio) }}
+    {{ form_row(form.fin) }} 
+    <button type="submit" id="guardar-carrera">Siguiente</button>
+{{ form_end(form) }}
+
+
+
+

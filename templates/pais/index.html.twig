@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pais index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Nacionalidades</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pai in pais %}
+            <tr>
+                <td>{{ pai.id }}</td>
+                <td>{{ pai.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_pais_show', {'id': pai.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_pais_edit', {'id': pai.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_pais_new') }}">Introducir Nueva Nacionalidad</a>
+{% endblock %}

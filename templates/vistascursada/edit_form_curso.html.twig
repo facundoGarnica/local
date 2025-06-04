@@ -1,0 +1,9 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-comision', 'action': path('editar_curso', {'curso_id': curso.id})}}) }}
+        
+        {{ form_row(form.CUPOF, {'label': 'CUPOF'})}}
+        {{ form_row(form.asignatura, {'label': 'Asignatura'})}}
+        {{ form_row(form.comision, {'label': 'Comisión'})}}
+
+    <button type="submit" id="guarda-modal-edit"class="button">Guardar</button>
+
+{{ form_end(form) }} 

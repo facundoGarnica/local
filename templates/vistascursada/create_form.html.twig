@@ -1,0 +1,15 @@
+Creando Comisión Nueva 
+
+{# templates/vistas/create_form.html.twig #} 
+
+{{ form_start(form, {'attr': {'id': 'form-crea-comision', 'action': path('crear_comision' )}}) }}
+        {{ form_row(form.anio, {'label': 'Año'})}} 
+        {{ form_row(form.comision, {'label': 'Comisión'})}}
+        {{ form_row(form.turno, {'label': 'Turno'}) }}
+        {{ form_row(form.tecnicatura, {'label': 'Tecnicatura'})}}
+        {{ form_row(form.ciclo_lectivo, {'label': 'Ciclo Lectivo'})}}
+       {{ form_row(form.estado, {'label': 'Estado'}) }}
+
+
+    <button type="submit"class="button">Guardar</button>
+{{ form_end(form) }}

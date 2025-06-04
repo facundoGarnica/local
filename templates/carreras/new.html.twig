@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Carreras{% endblock %}
+
+{% block body %}
+    <h1>Crear Nueva Carrera</h1>
+
+    {{ include('carreras/_form.html.twig') }}
+
+    <a href="{{ path('app_carreras_index') }}">Regresar</a>
+{% endblock %}

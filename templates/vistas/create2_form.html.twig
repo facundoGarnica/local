@@ -1,0 +1,10 @@
+{# templates/vistas/create_form.html.twig #}
+
+{{ form_start(form, {'attr': {'id': 'form-crea-tecnicatura', 'action': path('crear_tecnicatura' )}}) }}
+        {{ form_row(form.nombre, {'label': 'Nombre'}) }}
+        {{ form_row(form.duracion, {'label': 'Duración'}) }}
+        {{ form_row(form.cantidad_asignaturas, {'label': 'Cantidad de Asignaturas'}) }}
+        {{ form_row(form.numero_resolucion, {'label': 'Número de Resolución'}) }}
+    <button type="submit"class="button">Guardar</button>
+{{ form_end(form) }}
+

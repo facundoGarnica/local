@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Instituto index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Institutos</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Número</th>
+                <th>URL del Instituto</th>
+                <th>Tipo</th>
+                <th>E-Mail</th>
+                <th>Calle</th>
+                <th>Altura</th>
+                <th>Número de CUE</th>
+                <th>Instituto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for instituto in institutos %}
+            <tr>
+                <td>{{ instituto.id }}</td>
+                <td>{{ instituto.nombre }}</td>
+                <td>{{ instituto.numero }}</td>
+                <td>{{ instituto.urlInstituto }}</td>
+                <td>{{ instituto.tipo }}</td>
+                <td>{{ instituto.email }}</td>
+                <td>{{ instituto.calle }}</td>
+                <td>{{ instituto.altura }}</td>
+                <td>{{ instituto.numeroCue }}</td>
+                <td>{{ instituto.instituto }}</td>
+                <td>
+                    <a href="{{ path('app_instituto_show', {'id': instituto.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_instituto_edit', {'id': instituto.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_instituto_new') }}">Crear Nuevo Instituto</a>
+{% endblock %}

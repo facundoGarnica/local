@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ExamenFinal index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Exámenes Finales</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for examen_final in examen_finals %}
+            <tr>
+                <td>{{ examen_final.id }}</td>
+                <td>{{ examen_final.fecha ? examen_final.fecha|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_examen_final_show', {'id': examen_final.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_examen_final_edit', {'id': examen_final.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_examen_final_new') }}">Crear Nuevo Examen Final</a>
+{% endblock %}

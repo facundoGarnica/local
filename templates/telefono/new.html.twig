@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Telefono{% endblock %}
+
+{% block body %}
+    <h1>Crear Nuevo Teléfono</h1>
+
+    {{ include('telefono/_form.html.twig') }}
+
+    <a href="{{ path('app_telefono_index') }}">Regresar</a>
+{% endblock %}

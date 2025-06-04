@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Cursada{% endblock %}
+
+{% block body %}
+    <h1>Editar Cursada</h1>
+
+    {{ include('cursada/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_cursada_index') }}">Regresar</a>
+
+    {{ include('cursada/_delete_form.html.twig') }}
+{% endblock %}

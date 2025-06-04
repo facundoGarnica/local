@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Docente index{% endblock %}
+
+{% block body %}
+    <h1>Nómina de Docentes</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Foja</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for docente in docentes %}
+            <tr>
+                <td>{{ docente.id }}</td>
+                <td>    </td>
+                <td>    </td>
+                <td>{{ docente.foja}}</td>
+                <td>
+                    <a href="{{ path('app_docente_show', {'id': docente.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_docente_edit', {'id': docente.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_docente_new') }}">Crear Nuevo Docente</a>
+{% endblock %}

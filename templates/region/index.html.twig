@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Region index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Regiones</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for region in regions %}
+            <tr>
+                <td>{{ region.id }}</td>
+                <td>{{ region.numero }}</td>
+                <td>
+                    <a href="{{ path('app_region_show', {'id': region.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_region_edit', {'id': region.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_region_new') }}">Crear Nueva Región</a>
+{% endblock %}

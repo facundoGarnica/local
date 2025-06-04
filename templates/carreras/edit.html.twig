@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Carreras{% endblock %}
+
+{% block body %}
+    <h1>Editar Carrera</h1>
+
+    {{ include('carreras/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_carreras_index') }}">Regresar</a>
+
+    {{ include('carreras/_delete_form.html.twig') }}
+{% endblock %}

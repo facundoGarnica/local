@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Habilitante{% endblock %}
+
+{% block body %}
+    <h1>Editar Habilitante</h1>
+
+    {{ include('habilitante/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_habilitante_index') }}">Regresar</a>
+
+    {{ include('habilitante/_delete_form.html.twig') }}
+{% endblock %}

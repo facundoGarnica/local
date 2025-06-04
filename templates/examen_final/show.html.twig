@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ExamenFinal{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Exámenes Finales</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ examen_final.id }}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{ examen_final.fecha ? examen_final.fecha|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_examen_final_index') }}">Regresar</a>
+
+    <a href="{{ path('app_examen_final_edit', {'id': examen_final.id}) }}">Editar</a>
+
+    {{ include('examen_final/_delete_form.html.twig') }}
+{% endblock %}

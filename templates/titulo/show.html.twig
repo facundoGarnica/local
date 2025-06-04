@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Titulo{% endblock %}
+
+{% block body %}
+    <h1>Mostrar Títulos</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ titulo.id }}</td>
+            </tr>
+            <tr>
+                <th>Descripción</th>
+                <td>{{ titulo.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Institución</th>
+                <td>{{ titulo.institucion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_titulo_index') }}">Regresar</a>
+
+    <a href="{{ path('app_titulo_edit', {'id': titulo.id}) }}">Editar</a>
+
+    {{ include('titulo/_delete_form.html.twig') }}
+{% endblock %}

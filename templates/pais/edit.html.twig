@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Pais{% endblock %}
+
+{% block body %}
+    <h1>Editar Nacionalidad</h1>
+
+    {{ include('pais/_form.html.twig', {'button_label': 'Actualizar'}) }}
+
+    <a href="{{ path('app_pais_index') }}">Regresar</a>
+
+    {{ include('pais/_delete_form.html.twig') }}
+{% endblock %}

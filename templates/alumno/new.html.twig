@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crear Nuevo Alumno{% endblock %}
+
+{% block body %}
+    <h1>Crear Nuevo Estudiante</h1>
+
+    {{ include('alumno/_form.html.twig') }}
+    
+    <a href="{{ path('app_alumno_index') }}">Regresar</a>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Curso{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Cursos</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ curso.id }}</td>
+            </tr>
+            <tr>
+                <th>Ciclo Lectivo</th>
+                <td>{{ curso.cicloLectivo }}</td>
+            </tr>
+            <tr>
+                <th>Horario</th>
+                <td>{{ curso.horario }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_curso_index') }}">Regresar</a>
+
+    <a href="{{ path('app_curso_edit', {'id': curso.id}) }}">Editar</a>
+
+    {{ include('curso/_delete_form.html.twig') }}
+{% endblock %}

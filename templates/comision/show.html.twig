@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comision{% endblock %}
+
+{% block body %}
+    <h1>Mostrando Comisiones</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td>{{ comision.id }}</td>
+            </tr>
+            <tr>
+                <th>Año</th>
+                <td>{{ comision.anio }}</td>
+            </tr>
+            <tr>
+                <th>Comisión</th>
+                <td>{{ comision.comision }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ comision.estado }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_comision_index') }}">Regresar</a>
+
+    <a href="{{ path('app_comision_edit', {'id': comision.id}) }}">Editar</a>
+
+    {{ include('comision/_delete_form.html.twig') }}
+{% endblock %}

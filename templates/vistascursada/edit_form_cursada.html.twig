@@ -1,0 +1,10 @@
+{{ form_start(form, {'attr': {'id': 'form-edit-cursada', 'action': path('editar_cursada', {'cursada_id': cursada.id})}}) }}
+        {{ form_row(form.condicion, {'label': 'Condición'}) }}
+        {{ form_row(form.alumno, {'label': 'Alumno'}) }}
+        {{ form_row(form.modalidad, {'label': 'Modalidad'}) }}
+        {{ form_row(form.nota_id, {'label': 'Nota'})  }}
+        {{ form_row(form.curso, {'label': 'Curso'}) }} 
+
+    <button type="submit" id="guarda-modal-edit"class="button">Guardar</button>
+
+{{ form_end(form) }} 

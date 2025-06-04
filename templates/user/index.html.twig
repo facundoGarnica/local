@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuarios{% endblock %}
+
+{% block body %}
+    <h1>Listado de Usuarios</h1>
+
+    <table class="tabla_home" border="1">
+        <thead>
+            <tr>
+                <th>E-Mail</th>
+                <th>Roles</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.rolesCollection is defined %}
+                        {{ user.rolesCollection|map(role => role.nombre)|join(', ') }}
+                    {% else %}
+                        {# Si no existe rolesCollection, mostramos roles como array de strings #}
+                        {{ user.roles ? user.roles|join(', ') : '-' }}
+                    {% endif %}
+                </td>
+                <td>{{ user.persona ? user.persona.nombre : '-' }}</td>
+                <td>{{ user.persona ? user.persona.apellido : '-' }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="button" href="{{ path('app_user_new') }}">Crear Nuevo Usuario</a>
+{% endblock %}

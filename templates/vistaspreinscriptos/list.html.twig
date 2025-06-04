@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Archivos Generados{% endblock %}
+
+{% block body %}
+    <h1>Archivos Generados</h1>
+    <ul>
+        {% for file in files %}
+            <li>
+                <a href="{{ path('app_vistaspreinscriptos_download', { 'filename': file }) }}">{{ file }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+{# este modelo se creo para test, mapea el dbs region y trae todo en archivos csv,
+! no se utiliza en el sistema !, solo TEST, no borrar#}

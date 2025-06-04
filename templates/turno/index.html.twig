@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Turno index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Turnos</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for turno in turnos %}
+            <tr>
+                <td>{{ turno.id }}</td>
+                <td>{{ turno.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_turno_show', {'id': turno.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_turno_edit', {'id': turno.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_turno_new') }}">Crear Nuevo Turno</a>
+{% endblock %}

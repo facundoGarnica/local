@@ -1,0 +1,19 @@
+{{ form_start(form, {'attr': {'id': 'form-crea-persona'}, 'action': path('crear_persona_pre', { 'dni': dni, 'id': id } )}) }}
+    {{ form_row(form.nombre) }} 
+    {{ form_row(form.apellido) }} 
+    {{ form_row(form.fecha_nacimiento) }} 
+    {{ form_row(form.dni_pasaporte) }} 
+    {{ form_row(form.genero) }} 
+    {{ form_row(form.email) }} 
+    {{ form_row(form.telefono) }} 
+    {{ form_row(form.partido) }} 
+    {{ form_row(form.calle) }} 
+    {{ form_row(form.numero) }} 
+    {{ form_row(form.piso) }} 
+    {{ form_row(form.departamento) }} 
+    {{ form_row(form.pasillo) }} 
+    {{ form_row(form.pais) }} 
+    {{ form_row(form.localidad) }} 
+    <button type="submit" id="siguientePer">Siguiente</button>
+{{ form_end(form) }}
+

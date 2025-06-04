@@ -1,0 +1,687 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carga de Recursos Humanos{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {#sesiones, crear y editar personas/docentes/alumnos#}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Evaluar si `comId` está definido y no es nulo
+            {% if alumnoId is defined and alumnoId is not null %}
+                // Llamar a showCursada con los IDs de cursada y tecnicatura
+                showTable('tablaalumno');
+            {% else %}
+            {% endif %}
+
+            {% if docenteId is defined and docenteId is not null %}
+                showTable('tablaDocentes');
+            {% else %}
+            {% endif %}
+
+            {% if carrerasId is defined and carrerasId is not null %}
+                showTable('tablacarrera');
+            {% else %}
+            {% endif %}
+        });
+
+
+        function showTable(tableId) {
+            const tables = document.querySelectorAll('.tabla_home');
+            tables.forEach(table => {
+                if (table.id === tableId) {
+                    table.style.display = '';
+                } else {
+                    table.style.display = 'none';
+                }
+            });
+            
+            const backButton = document.getElementById('backButton');
+            if (tableId === 'tablaTecnicaturas') {
+                backButton.style.display = 'none';
+            } else {
+                backButton.style.display = '';
+            }
+        }
+
+        function openModal1() {
+            const url = "{{ path('crear_persona') }}";
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+                    
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+
+        function openModal2() {
+            const url = "{{ path('crear_docente') }}";
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-3').innerHTML = html;
+                    document.getElementById('Modal3').style.display = 'block';
+
+                    
+                    const personaInput = document.getElementById('docente_persona');
+                    
+                    if (personaInput) {
+                        // Crear una nueva opción en blanco
+                        const blankOption = document.createElement('option');
+                        blankOption.value = '';
+                        blankOption.text = '';
+
+                        // Insertar la opción en blanco al inicio del select
+                        personaInput.insertBefore(blankOption, personaInput.firstChild);
+                        // Seleccionar la opción en blanco por defecto
+                        personaInput.value = '';
+                    }
+                    
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+
+        function openModal3() {
+            const url = "{{ path('crear_alumno') }}";
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-2').innerHTML = html;
+                    document.getElementById('Modal2').style.display = 'block';
+
+                    const personaInput = document.getElementById('alumno_persona');
+                    
+                    if (personaInput) {
+                        // Crear una nueva opción en blanco
+                        const blankOption = document.createElement('option');
+                        blankOption.value = '';
+                        blankOption.text = '';
+
+                        // Insertar la opción en blanco al inicio del select
+                        personaInput.insertBefore(blankOption, personaInput.firstChild);
+                        // Seleccionar la opción en blanco por defecto
+                        personaInput.value = '';
+                    }
+                })
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+       {# Modal para crear Carreas Alumnos-x-tecnicatura #} 
+       function openModal8() {
+            const url = "{{ path('crear_carreras') }}";
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-4').innerHTML = html;
+                    document.getElementById('Modal4').style.display = 'block';
+                    
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+        function closeModal1() { 
+            document.getElementById('Modal1').style.display = 'none';
+            document.getElementById('modalBody-1').innerHTML = '';
+        }
+        function closeModal2() { 
+            document.getElementById('Modal2').style.display = 'none';
+            document.getElementById('modalBody-2').innerHTML = '';
+        }
+        function closeModal3() { 
+            document.getElementById('Modal3').style.display = 'none';
+            document.getElementById('modalBody-3').innerHTML = '';
+        }
+        function closeModal4() { 
+            document.getElementById('Modal4').style.display = 'none';
+            document.getElementById('modalBody-4').innerHTML = '';
+        }
+
+        
+        function openModal4(AluId) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('editar_alumno', { 'id': '__id__' }) }}"
+                .replace('__id__', AluId);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+
+                    const alumnoInput = document.getElementById('alumno_persona');                 
+                    // Ocultar label de persona
+                    const labelalumno = document.querySelector('label[for="alumno_persona"]');
+                    if (labelalumno) {
+                        labelalumno.style.display = 'none';
+                    }
+                    if (alumnoInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input                       
+                        alumnoInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                        alumnoInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                    }
+
+
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+        function openModal5(DocId) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('editar_docente', { 'id': '__id__' }) }}"
+                .replace('__id__', DocId);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+
+                    const docenteInput = document.getElementById('docente_persona');                 
+                    // Ocultar label de persona
+                    const labelpersona = document.querySelector('label[for="docente_persona"]');
+                    if (labelpersona) {
+                        labelpersona.style.display = 'none';
+                    }
+                    if (docenteInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input                       
+                        docenteInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                        docenteInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                    }
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+        
+        function openModal6(PerId) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('editar_persona', { 'id': '__id__' }) }}"
+                .replace('__id__', PerId);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+
+
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+
+        function openModal7(CarrId) {
+            // Generar la URL con los IDs correctos
+            const url = "{{ path('editar_carreras', { 'id': '__id__' }) }}"
+                .replace('__id__', CarrId);
+            // Realizar la solicitud fetch
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('modalBody-1').innerHTML = html;
+                    document.getElementById('Modal1').style.display = 'block';
+
+                    const estudianteInput = document.getElementById('carreras_estudiante_id');                 
+                    const labelestudiante = document.querySelector('label[for="carreras_estudiante_id"]');
+                    if (labelestudiante) {
+                        labelestudiante.style.display = 'none';
+                    }
+                    if (estudianteInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input                       
+                        estudianteInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                        estudianteInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                    }
+
+                    const tecnicaturaInput = document.getElementById('carreras_tecnicatura_id');                 
+                    const labeltecnicatura = document.querySelector('label[for="carreras_tecnicatura_id"]');
+                    if (labeltecnicatura) {
+                        labeltecnicatura.style.display = 'none';
+                    }
+                    if (tecnicaturaInput) {  //aqui evaluo la tec id de la posicion donde estoy y guardo en el input                       
+                        tecnicaturaInput.setAttribute('readonly', true); // Hacerlo solo lectura -suele no dar resultado al ser opciones desplegadas-
+                        tecnicaturaInput.style.display = 'none'; //ocultar el campo evitando que se edite por el usuario
+                    }
+
+
+                })  
+                .catch(error => console.error('Error al cargar el formulario de edición:', error));
+        }
+
+
+    </script>
+
+    {#Busquedas en la tabla personas#}    
+    <script>
+        function filterNombre() {
+            let searchNombre = document.getElementById("searchNombre").value.toLowerCase();
+            let table = document.getElementById("tablapersonas");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let nombre = cells[0].textContent.toLowerCase();
+                    if (nombre.includes(searchNombre)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterApellido() {
+            let searchApellido = document.getElementById("searchApellido").value.toLowerCase();
+            let table = document.getElementById("tablapersonas");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let apellido = cells[1].textContent.toLowerCase();
+                    if (apellido.includes(searchApellido)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterDNI() {
+            let searchDNI = document.getElementById("searchDNI").value.toLowerCase();
+            let table = document.getElementById("tablapersonas");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let dniPasaporte = cells[2].textContent.toLowerCase();
+                    if (dniPasaporte.includes(searchDNI)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script> 
+    
+    {#Busquedas en la tabla Docentes#}    
+    <script>
+        function filterDocenteaqui() {
+            let searchDocente = document.getElementById("searchDocente").value.toLowerCase();
+            let table = document.getElementById("tablaDocentes");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let docente = cells[0].textContent.toLowerCase();
+                    if (docente.includes(searchDocente)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+    </script>    
+
+    {#Busquedas en la tabla Alumnos#}    
+    <script>
+        function filterAlumnoaqui() {
+            let searchAlumno = document.getElementById("searchAlumno").value.toLowerCase();
+            let table = document.getElementById("tablaalumno");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let alumno = cells[0].textContent.toLowerCase();
+                    if (alumno.includes(searchAlumno)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+    </script>   
+
+    {#Busquedas en la tabla Carrera/s#}    
+    <script>
+        function filterAlumno2aqui() {
+            let searchAlumno = document.getElementById("searchAlumno2").value.toLowerCase();
+            let table = document.getElementById("tablacarrera");
+            let rows = table.getElementsByTagName("tr");
+            for (let i = 2; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                if (cells.length > 0) {
+                    let alumno = cells[0].textContent.toLowerCase();
+                    if (alumno.includes(searchAlumno)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>  
+
+    {#Filtros modales Estudiante y Docente#}
+    <script>
+            function filterEstudiante() {
+                let searchNombre = document.getElementById("searchEstudiante").value.toLowerCase();
+                let dropdown = document.getElementById("alumno_persona"); 
+                let options = dropdown.getElementsByTagName("option");
+                
+                for (let i = 0; i < options.length; i++) {
+                    let optionText = options[i].textContent.toLowerCase();
+                    if (optionText.includes(searchNombre)) {
+                        options[i].style.display = ""; 
+                    } else {
+                        options[i].style.display = "none"; 
+                    }
+                }
+            }
+
+            function filterDocente() {
+                let searchNombre = document.getElementById("searchDocente").value.toLowerCase();
+                let dropdown = document.getElementById("docente_persona"); 
+                let options = dropdown.getElementsByTagName("option");
+                
+                for (let i = 0; i < options.length; i++) {
+                    let optionText = options[i].textContent.toLowerCase();
+                    if (optionText.includes(searchNombre)) {
+                        options[i].style.display = ""; 
+                    } else {
+                        options[i].style.display = "none"; 
+                    }
+                }
+            }
+
+            function filterCestudiantes() {
+                let searchNombre = document.getElementById("searchCarrerasEstudiantes").value.toLowerCase();
+                let dropdown = document.getElementById("carreras_estudiante_id"); 
+                let options = dropdown.getElementsByTagName("option");
+                
+                for (let i = 0; i < options.length; i++) {
+                    let optionText = options[i].textContent.toLowerCase();
+                    if (optionText.includes(searchNombre)) {
+                        options[i].style.display = ""; 
+                    } else {
+                        options[i].style.display = "none"; 
+                    }
+                }
+            }
+
+            function filterCtecnicaturas() {
+                let searchNombre = document.getElementById("searchCarrerasTecnicaturas").value.toLowerCase();
+                let dropdown = document.getElementById("carreras_tecnicatura_id"); 
+                let options = dropdown.getElementsByTagName("option");
+                
+                for (let i = 0; i < options.length; i++) {
+                    let optionText = options[i].textContent.toLowerCase();
+                    if (optionText.includes(searchNombre)) {
+                        options[i].style.display = ""; 
+                    } else {
+                        options[i].style.display = "none"; 
+                    }
+                }
+            }
+
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div id="body-vistas">
+        <h1 id="vistas">Recursos Humanos</h1>
+        <table class="tabla_home" id="tablaTecnicaturas" border="1">
+            <thead>
+                <tr>
+                    <th>Personas</th>
+                    <th>Docentes</th>
+                    <th>Estudiantes</th>
+                    <th>CarreraXEstudiante</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <button class:"button" onclick="showTable('tablapersonas')">Ver</button>
+                        <button onclick="openModal1()" class:"button">Crear</button>
+                    </td>
+                    <td>
+                        <button class:"button" onclick="showTable('tablaDocentes')">Ver</button>
+                        <button onclick="openModal2()" class="btn-primary">Crear</button>
+                    </td>
+                    <td>
+                        <buttonclass:"button" onclick="showTable('tablaalumno')">Ver</buttonclass:>
+                        <button onclick="openModal3()"class:"button">Crear</button>
+                    </td>
+                    <td>
+                        <button class:"button" onclick="showTable('tablacarrera')">Ver</button>
+                        <button onclick="openModal8()" class:"button">Crear</button>
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+
+        {# Botón de regreso #}
+        <button id="backButton" class:"button" onclick="showTable('tablaTecnicaturas')" style="display: none;">Regresar</button>
+
+
+        {# Personas Vistas #}
+        <table id="tablapersonas" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="4">
+                        <input type="text" id="searchNombre" onkeyup="filterNombre()" placeholder="Buscar por Nombre">
+                        <input type="text" id="searchApellido" onkeyup="filterApellido()" placeholder="Buscar por Apellido">
+                        <input type="text" id="searchDNI" onkeyup="filterDNI()" placeholder="Buscar por DNI">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Dni/Pasaporte</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for persona in personas %}
+                <tr>
+                    <td>{{ persona.nombre }}</td>
+                    <td>{{ persona.apellido }}</td>
+                    <td>{{ persona.dniPasaporte }}</td>
+                    <td>
+                        <button class:"button" onclick="openModal6({{ persona.id }})" >Editar</button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="15">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>       
+
+        {# Docentes Vistas #}
+        <table id="tablaDocentes" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="3">
+                        Buscar Docente por Nombre, Apellido o DNI
+                        <input type="text" id="searchDocente" onkeyup="filterDocenteaqui()" placeholder="Buscar Docente...">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Docente</th>
+                    <th>Foja</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for docente in docentes %}
+                <tr>
+                    <td>{{ docente }}</td>
+                    <td>{{ docente.foja}}</td>
+                    <td>
+                        <button class:"button" onclick="openModal5({{ docente.id }})" >Editar</button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+        {# Estudiantes Vistas #}
+        <table id="tablaalumno" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="5">
+                        Buscar Estudiante por Nombre, Apellido o DNI
+                        <input type="text" id="searchAlumno" onkeyup="filterAlumnoaqui()" placeholder="Buscar Estudiante...">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Título Secundaria</th>
+                    <th>Escuela Secundaria</th>
+                    <th>Año de Egreso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for alumno in alumnos %}
+                <tr>
+                    <td>{{ alumno }}</td>
+                    <td>{{ alumno.tituloSec }}</td>
+                    <td>{{ alumno.escuelaSec }}</td>
+                    <td>{{ alumno.anioEgreso }}</td>
+                    <td>
+                        <button class:"button" onclick="openModal4({{ alumno.id }})" >Editar</button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {# Carrera/s Vistas #}
+        <table id="tablacarrera" class="tabla_home" style="display: none;" border="1">
+            <thead>
+                <tr>
+                    <th colspan="6">
+                        Buscar Estudiante por Nombre, Apellido o DNI
+                        <input type="text" id="searchAlumno2" onkeyup="filterAlumno2aqui()" placeholder="Buscar Estudiante...">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Carrera</th>
+                    <th>Estado</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for carrera in carreras %}
+                <tr>
+                    <td>{{ carrera.getestudianteId() }}</td>
+                    <td>{{ carrera.gettecnicaturaId().nombre }}</td>
+                    <td>{{ carrera.estado ? 'Yes' : 'No' }}</td>
+                    <td>{{ carrera.inicio ? carrera.inicio|date('Y-m-d') : '' }}</td>
+                    <td>{{ carrera.fin ? carrera.fin|date('Y-m-d') : '' }}</td>    
+                    <td>
+                        <button class:"button" onclick="openModal7({{ carrera.id }})" >Editar</button>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No se encontraron registros</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+        <!-- Modal1 Crear persona y editar varios!!!-->
+        <div id="Modal1" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-content1">
+                    <span class="close" onclick="closeModal1()">&times;</span>
+                    <div id="modalBody-1" class="submodal"></div>
+                </div>
+            </div>    
+        </div>
+
+
+        
+        <!-- Modal2 para crear Estudiantes!!!-->
+        <div id="Modal2" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div id="modal-cursadas">
+                    <div id="searchsEs" class="search-container">
+                        <h6><label for="searchEstudiante">Buscar Persona:</label><h\6>
+                        <input type="text" id="searchEstudiante" onkeyup="filterEstudiante()" placeholder="Buscar persona...">
+                    </div>
+                    <div class="modal-content2">
+                        <span class="close" onclick="closeModal2()">&times;</span>
+                        <div id="modalBody-2" class="submodal"></div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <!-- Modal3 para crear Docentes!!!-->
+        <div id="Modal3" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div id="modal-cursadas">
+                    <div id="searchsEs" class="search-container">
+                        <h6><label for="searchDocente">Buscar Persona:</label><\h6>
+                        <input type="text" id="searchDocente" onkeyup="filterDocente()" placeholder="Buscar persona...">
+                    </div>
+                    <div class="modal-content3">
+                        <span class="close" onclick="closeModal3()">&times;</span>
+                        <div id="modalBody-3" class="submodal"></div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <!-- Modal4 para crear Carreras!!!-->
+        <div id="Modal4" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div id="modal-cursadas">
+                    <div id="searchsEs" class="search-container">
+                        <h6><label for="searchCarrerasEstudiantes">Buscar Estudiante:</label><\h6>
+                        <h6><input type="text" id="searchCarrerasEstudiantes" onkeyup="filterCestudiantes()" placeholder="Buscar estudiante..."><\h6>
+                        <h6><label for="searchCarrerasEstudiantes">Buscar Tecnicatura:</label><\h6>
+                        <h6><input type="text" id="searchCarrerasTecnicaturas" onkeyup="filterCtecnicaturas()" placeholder="Buscar tecnicatura..."><\h6>
+                    </div>
+                    <div class="modal-content4">
+                        <span class="close" onclick="closeModal4()">&times;</span>
+                        <div id="modalBody-4" class="submodal"></div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <button id="backButton" style="display: none;" class="btn-primary">Regresar</button>
+    </div>
+{% endblock %}

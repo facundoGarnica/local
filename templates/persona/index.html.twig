@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Persona index{% endblock %}
+
+{% block body %}
+    <h1>Listado de Personas</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Dni/Pasaporte</th>
+                <th>Género</th>
+                <th>E-Mail</th>
+                <th>Teléfono</th>
+                <th>Partido</th>
+                <th>Calle</th>
+                <th>Número</th>
+                <th>Piso</th>
+                <th>Departamento</th>
+                <th>Pasillo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for persona in personas %}
+            <tr>
+                <td>{{ persona.id }}</td>
+                <td>{{ persona.nombre }}</td>
+                <td>{{ persona.apellido }}</td>
+                <td>{{ persona.fechaNacimiento ? persona.fechaNacimiento|date('Y-m-d') : '' }}</td>
+                <td>{{ persona.dniPasaporte }}</td>
+                <td>{{ persona.genero }}</td>
+                <td>{{ persona.email }}</td>
+                <td>{{ persona.telefono }}</td>
+                <td>{{ persona.partido }}</td>
+                <td>{{ persona.calle }}</td>
+                <td>{{ persona.numero }}</td>
+                <td>{{ persona.piso }}</td>
+                <td>{{ persona.departamento }}</td>
+                <td>{{ persona.pasillo }}</td>
+                <td>
+                    <a href="{{ path('app_persona_show', {'id': persona.id}) }}">Mostrar</a>
+                    <a href="{{ path('app_persona_edit', {'id': persona.id}) }}">Editar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">No se encontraron registros</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_persona_new') }}">Crear Nueva Persona</a>
+{% endblock %}
