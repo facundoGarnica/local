@@ -21,6 +21,33 @@ class CalendarioClaseRepository extends ServiceEntityRepository
         parent::__construct($registry, CalendarioClase::class);
     }
 
+   public function findByFechaAndCurso(\DateTimeInterface $fecha, int $cursoId): ?CalendarioClase
+{
+    $fechaInicio = (clone $fecha)->setTime(0, 0, 0);
+    $fechaFin = (clone $fechaInicio)->modify('+1 day');
+
+    $qb = $this->createQueryBuilder('c')
+        ->andWhere('c.Curso = :cursoId')
+        ->andWhere('c.Fecha >= :fechaInicio')
+        ->andWhere('c.Fecha < :fechaFin')
+        ->setParameter('cursoId', $cursoId)
+        ->setParameter('fechaInicio', $fechaInicio)
+        ->setParameter('fechaFin', $fechaFin)
+        ->setMaxResults(1);
+
+    $resultado = $qb->getQuery()->getOneOrNullResult();
+
+    if ($resultado) {
+        error_log('Fecha en base encontrada: ' . $resultado->getFecha()->format('Y-m-d H:i:s'));
+    } else {
+        error_log('No se encontró calendario para fecha entre ' . $fechaInicio->format('Y-m-d H:i:s') . ' y ' . $fechaFin->format('Y-m-d H:i:s'));
+    }
+
+    return $resultado;
+}
+
+
+
 //    /**
 //     * @return CalendarioClase[] Returns an array of CalendarioClase objects
 //     */

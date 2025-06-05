@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CalendarioClase index{% endblock %}
+
+{% block body %}
+    <h1>CalendarioClase index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha</th>
+                <th>Observacion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for calendario_clase in calendario_clases %}
+            <tr>
+                <td>{{ calendario_clase.id }}</td>
+                <td>{{ calendario_clase.Fecha ? calendario_clase.Fecha|date('Y-m-d') : '' }}</td>
+                <td>{{ calendario_clase.Observacion }}</td>
+                <td>
+                    <a href="{{ path('app_calendario_clase_show', {'id': calendario_clase.id}) }}">show</a>
+                    <a href="{{ path('app_calendario_clase_edit', {'id': calendario_clase.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_calendario_clase_new') }}">Create new</a>
+{% endblock %}

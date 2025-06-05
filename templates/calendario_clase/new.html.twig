@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New CalendarioClase{% endblock %}
+
+{% block body %}
+    <h1>Create new CalendarioClase</h1>
+
+    {{ include('calendario_clase/_form.html.twig') }}
+
+    <a href="{{ path('app_calendario_clase_index') }}">back to list</a>
+{% endblock %}

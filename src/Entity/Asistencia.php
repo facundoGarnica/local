@@ -26,7 +26,7 @@ class Asistencia
     private ?Cursada $cursada = null;
 
     #[ORM\ManyToOne(inversedBy: 'asistencias')]
-    private ?CalendarioClase $CalendarioClase = null;
+    private ?CalendarioClase $calendarioClase = null;
 
     public function getId(): ?int
     {
@@ -74,13 +74,12 @@ class Asistencia
 
     public function getCalendarioClase(): ?CalendarioClase
     {
-        return $this->CalendarioClase;
+        return $this->calendarioClase;
     }
 
-    public function setCalendarioClase(?CalendarioClase $CalendarioClase): static
+    public function setCalendarioClase(?CalendarioClase $calendarioClase): static
     {
-        $this->CalendarioClase = $CalendarioClase;
-
+        $this->calendarioClase = $calendarioClase;
         return $this;
     }
 }

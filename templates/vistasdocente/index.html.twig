@@ -865,6 +865,9 @@
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     
     <div class="curso-container" id="ListaNueva"style="display: none;">
+
+
+
     <!-- HTML DE MODALIDAD -->
     <!-- Botón que muestra/oculta el bloque -->
         <div class="alumnoeditar" style="text-align: center; margin-bottom: 10px;">
@@ -1251,89 +1254,94 @@
 }
 
 function guardarAsistencias() {
+    const urlCalendario = `/local/public/index.php/api/calendario-clase-del-dia/${selectedCursoId}`;
     const urlGuardar = "{{ path('guardar_asistencia') }}";
 
-    // Asegurate de que asistenciasMarcadas incluya la fecha usando la función segura
-    const fechaHoy = obtenerFechaLocal();
-    const datosAEnviar = Object.values(asistenciasMarcadas).map(asistencia => ({
-        ...asistencia,
-        fecha: fechaHoy // ✅ Forzamos la fecha correcta aquí
-    }));
+    // Paso 1: Obtener el CalendarioClase correspondiente al curso y día
+    fetch(urlCalendario)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se encontró CalendarioClase para este curso hoy');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const calendarioClaseId = data.id;
 
-    fetch(urlGuardar, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(datosAEnviar),
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log('Datos guardados correctamente');
+            // Paso 2: Preparar los datos de asistencias con el ID del CalendarioClase
+            // Adaptamos la estructura para que tenga las claves que espera el backend
+            const datosAEnviar = Object.values(asistenciasMarcadas).map(asistencia => ({
+                cursada_id: asistencia.cursada_id, // o asistencia.id, según cómo tengas
+                calendarioClase_id: calendarioClaseId,
+                estado: asistencia.estado,          // que sea 'presente', 'ausente', etc.
+                observacion: asistencia.observacion || null
+            }));
 
-            fetch(`/local/public/index.php/actualizar-lista-alumnos/${selectedCursoId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error al obtener los datos actualizados');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Depuración de fechas
-                    console.log("📅 Fecha del backend:", data.fecha_backend);
-                    console.log("📅 Fecha del frontend:", fechaHoy);
+            // Paso 3: Enviar las asistencias al backend
+            return fetch(urlGuardar, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosAEnviar),
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text); });
+            }
+            console.log('✅ Asistencias guardadas correctamente');
 
-                    cursosData[selectedCursoId].cursadas = data.data.map(cursada => ({
-                        id: cursada.id,
-                        alumno: {
-                            id: cursada.id,
-                            nombre: cursada.nombre,
-                            apellido: cursada.apellido,
-                            dni: cursada.dni,
-                        },
-                        asistencias: [
-                            {
-                                asistencia: cursada.asistencia,
-                                observacion: cursada.observacion,
-                            },
-                        ],
-                    }));
+            // Paso 4: Actualizar la lista de alumnos para reflejar cambios
+            return fetch(`/local/public/index.php/actualizar-lista-alumnos/${selectedCursoId}`);
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al obtener los datos actualizados');
+            return response.json();
+        })
+        .then(data => {
+            console.log("📅 Fecha del backend:", data.fecha_backend);
 
-                    const tbody = document.querySelector('.curso-tabla tbody');
-                    tbody.innerHTML = '';
+            cursosData[selectedCursoId].cursadas = data.data.map(cursada => ({
+                id: cursada.id,
+                alumno: {
+                    id: cursada.id,
+                    nombre: cursada.nombre,
+                    apellido: cursada.apellido,
+                    dni: cursada.dni,
+                },
+                asistencias: [{
+                    asistencia: cursada.asistencia,
+                    observacion: cursada.observacion,
+                }],
+            }));
 
-                    data.data.forEach(alumno => {
-                        const row = document.createElement('tr');
-                        row.classList.add('fila-alumno');
+            const tbody = document.querySelector('.curso-tabla tbody');
+            tbody.innerHTML = '';
 
-                        row.innerHTML = `
-                            <td class="alumno-nombre">${alumno.nombre}</td>
-                            <td class="alumno-apellido">${alumno.apellido}</td>
-                            <td class="alumno-dni">${alumno.dni}</td>
-                            <td class="alumno-asistencia">
-                                <span class="estado-asistencia ${alumno.asistencia.toLowerCase()}">
-                                    ${alumno.asistencia}
-                                </span>
-                            </td>
-                            <td class="alumno-observacion">${alumno.observacion}</td>
-                            <td class="alumnoeditar">
-                                <button onclick="ActivarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
-                            </td>
-                        `;
+            data.data.forEach(alumno => {
+                const row = document.createElement('tr');
+                row.classList.add('fila-alumno');
+                row.innerHTML = `
+                    <td class="alumno-nombre">${alumno.nombre}</td>
+                    <td class="alumno-apellido">${alumno.apellido}</td>
+                    <td class="alumno-dni">${alumno.dni}</td>
+                    <td class="alumno-asistencia">
+                        <span class="estado-asistencia ${alumno.asistencia?.toLowerCase() || ''}">
+                            ${alumno.asistencia || ''}
+                        </span>
+                    </td>
+                    <td class="alumno-observacion">${alumno.observacion || ''}</td>
+                    <td class="alumnoeditar">
+                        <button onclick="ActivarEstadoEditar();editarAsistencia(${selectedCursoId}, ${alumno.id})">Editar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
 
-                        tbody.appendChild(row);
-                    });
-
-                    console.log('Tabla actualizada con los datos más recientes.');
-                    actualizarContadorPresentes();
-                })
-                .catch(error => console.error('Error al actualizar cursosData:', error));
-        } else {
-            response.text().then(text => console.error("Error al guardar:", text));
-        }
-    })
-    .catch(error => console.error('Error en la petición:', error));
+            actualizarContadorPresentes();
+        })
+        .catch(error => console.error("❌ Error en el flujo de guardar asistencias:", error));
 }
+
 
 
 
@@ -1490,6 +1498,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+document.getElementById('guardarModalidadBtn').addEventListener('click', () => {
+  // Obtener modalidad seleccionada y convertir a id
+  const modalidadTexto = document.querySelector('input[name="modalidad"]:checked').value;
+  const modalidadId = modalidadTexto === 'presencial' ? 1 : 2;
+
+  // Obtener observacion (puede ser vacía)
+  const observacion = document.getElementById('observacion-Modalidad').value.trim();
+
+  // Variable que ya tenés con el curso seleccionado
+  const cursoId = selectedCursoId;
+
+  // Armar el cuerpo para enviar
+  const data = {
+    modalidad: modalidadId,
+    curso: cursoId,
+    observacion: observacion || null,
+    fecha: new Date().toISOString().split('T')[0] // fecha actual en formato YYYY-MM-DD
+  };
+
+// Enviar la solicitud POST a Symfony
+  fetch('/local/public/index.php/newcalendario', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'  // para que Symfony detecte que es AJAX
+    },
+    body: JSON.stringify(data),
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Error en la respuesta');
+    return response.json();
+  })
+  .then(json => {
+    console.log('Guardado con éxito:', json);
+    // acá podés mostrar un mensaje al usuario, limpiar campos o actualizar UI
+  })
+  .catch(err => {
+    console.error('Error al guardar:', err);
+    // mostrar mensaje de error en UI si querés
+  });
+});
+
+//
 
         </script>
 

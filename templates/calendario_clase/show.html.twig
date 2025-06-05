@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CalendarioClase{% endblock %}
+
+{% block body %}
+    <h1>CalendarioClase</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ calendario_clase.id }}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{ calendario_clase.Fecha ? calendario_clase.Fecha|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Observacion</th>
+                <td>{{ calendario_clase.Observacion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_calendario_clase_index') }}">back to list</a>
+
+    <a href="{{ path('app_calendario_clase_edit', {'id': calendario_clase.id}) }}">edit</a>
+
+    {{ include('calendario_clase/_delete_form.html.twig') }}
+{% endblock %}

@@ -25,12 +25,13 @@ class CalendarioClase
     #[ORM\ManyToOne(inversedBy: 'calendarioClases')]
     private ?Curso $Curso = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $Observacion = null;
 
     #[ORM\OneToMany(mappedBy: 'CalendarioClase', targetEntity: Asistencia::class)]
     private Collection $asistencias;
 
+    
     public function __construct()
     {
         $this->asistencias = new ArrayCollection();
@@ -82,7 +83,7 @@ class CalendarioClase
         return $this->Observacion;
     }
 
-    public function setObservacion(string $Observacion): static
+    public function setObservacion(?string $Observacion): static
     {
         $this->Observacion = $Observacion;
 
