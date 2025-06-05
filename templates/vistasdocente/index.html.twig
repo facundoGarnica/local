@@ -100,78 +100,64 @@
         console.log("VistaAsistenciaActiva:", VistaAsistenciaActiva); 
     }
 
-    function showListaNueva(cursoId) {
+function showListaNueva(cursoId) {
     selectedCursoId = cursoId;
-    console.log("Curso ID recibido:", cursoId);
 
-    // Oculta la lista de profesores y asignaturas
     const listaProfesores = document.getElementById('tablaTecnicaturas');
-    if (listaProfesores) {
-        listaProfesores.style.display = 'none';
-    }
+    if (listaProfesores) listaProfesores.style.display = 'none';
 
-    const curso = cursosData[cursoId];
+    // Pedir datos actualizados al backend
+    fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Error al obtener datos actualizados');
+            return response.json();
+        })
+        .then(data => {
+            // Actualizar encabezados
+            const curso = cursosData[cursoId];
+            document.querySelector('.curso-info h2 span').textContent = curso.asignatura || '';
+            document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio || '';
+            document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision || '';
 
-    if (curso) {
-        // Actualiza el título y la información del curso
-        document.querySelector('.curso-info h2 span').textContent = curso.asignatura;
-        document.querySelector('.curso-info h3 span:nth-child(1)').textContent = curso.anio;
-        document.querySelector('.curso-info h3 span:nth-child(2)').textContent = curso.comision;
+            const tbody = document.querySelector('.curso-tabla tbody');
+            tbody.innerHTML = '';
 
-        const tbody = document.querySelector('.curso-tabla tbody');
-        tbody.innerHTML = ''; // Limpia la tabla antes de agregar nuevas filas
+            let presentes = 0;
 
-        let presentes = 0;
+            data.data.forEach(cursada => {
+                const row = document.createElement('tr');
+                row.classList.add('fila-alumno');
 
-        // Obtener la fecha de hoy en formato YYYY-MM-DD
-        const hoy = new Date().toISOString().split('T')[0];
+                row.innerHTML = `
+                    <td class="alumno-nombre">${cursada.nombre}</td>
+                    <td class="alumno-apellido">${cursada.apellido}</td>
+                    <td class="alumno-dni">${cursada.dni}</td>
+                    <td class="alumno-asistencia">
+                        <span class="estado-asistencia ${cursada.asistencia ? cursada.asistencia.toLowerCase() : 'no-marcado'}">
+                            ${cursada.asistencia || 'No marcado'}
+                        </span>
+                    </td>
+                    <td class="alumno-observacion">${cursada.observacion || ''}</td>
+                    <td class="alumnoeditar">
+                        <button onclick="ActivarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
+                    </td>
+                `;
 
-        curso.cursadas.forEach(cursada => {
-            const alumno = cursada.alumno;
+                tbody.appendChild(row);
 
-            // Buscar si hay asistencia para hoy
-            const asistenciaDeHoy = cursada.asistencias.find(asistencia => {
-                const fecha = new Date(asistencia.fecha).toISOString().split('T')[0];
-                return fecha === hoy;
+                if (cursada.asistencia && cursada.asistencia.toLowerCase() === 'presente') presentes++;
             });
 
-            const row = document.createElement('tr');
-            row.classList.add('fila-alumno');
+            const totalPresentes = document.querySelector('.total-presentes');
+            if (totalPresentes) totalPresentes.textContent = `Alumnos presentes: ${presentes}`;
 
-            row.innerHTML = `
-                <td class="alumno-nombre">${alumno.nombre}</td>
-                <td class="alumno-apellido">${alumno.apellido}</td>
-                <td class="alumno-dni">${alumno.dni}</td>
-                <td class="alumno-asistencia">
-                    <span class="estado-asistencia ${asistenciaDeHoy ? asistenciaDeHoy.asistencia.toLowerCase() : 'no-marcado'}">
-                        ${asistenciaDeHoy ? asistenciaDeHoy.asistencia : 'No marcado'}
-                    </span>
-                </td>
-                <td class="alumno-observacion">${asistenciaDeHoy ? asistenciaDeHoy.observacion : ''}</td>
-                <td class="alumnoeditar">
-                    <button onclick="ActivarEstadoEditar();editarAsistencia(${cursoId}, ${cursada.id})">Editar</button>
-                </td>
-            `;
-
-            tbody.appendChild(row);
-
-            if (asistenciaDeHoy && asistenciaDeHoy.asistencia.toLowerCase() === 'presente') {
-                presentes++;
-            }
+            document.getElementById('ListaNueva').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error al cargar la lista de alumnos:', error);
         });
-
-        // Actualiza el total de presentes
-        const totalPresentes = document.querySelector('.total-presentes');
-        if (totalPresentes) {
-            totalPresentes.textContent = `Alumnos presentes: ${presentes}`;
-        }
-
-        // Muestra la tabla
-        document.getElementById('ListaNueva').style.display = 'block';
-    } else {
-        console.error("No se encontró el curso con ID:", cursoId);
-    }
 }
+
 
         let modalAbierto = false;
 

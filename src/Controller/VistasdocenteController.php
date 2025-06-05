@@ -228,176 +228,181 @@ public function guardarAsistencia(Request $request, EntityManagerInterface $em)
 
 
         
-    #[Route('/actualizar-lista-alumnos/{curso_id}', name: 'actualizar_lista_alumnos', methods: ['GET'])]
-    public function actualizarListaAlumnos(
-        int $curso_id,
-        CursoRepository $cursoRepository,
-        CursadaRepository $cursadaRepository
-    ): JsonResponse {
-        // Establecer la zona horaria de Buenos Aires para evitar desfases
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
+#[Route('/actualizar-lista-alumnos/{curso_id}', name: 'actualizar_lista_alumnos', methods: ['GET'])]
+public function actualizarListaAlumnos(
+    int $curso_id,
+    CursoRepository $cursoRepository,
+    CursadaRepository $cursadaRepository,
+    CalendarioClaseRepository $calendarioClaseRepository
+): JsonResponse {
+    date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-        $curso = $cursoRepository->find($curso_id);
+    $curso = $cursoRepository->find($curso_id);
+    if (!$curso) {
+        return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+    }
 
-        if (!$curso) {
-            return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+    $hoy = new \DateTime();
+    $hoy->setTime(0, 0, 0);
+
+    // Usar tu método específico para buscar calendarioClase hoy
+    $calendarioClaseHoy = $calendarioClaseRepository->findByFechaAndCurso($hoy, $curso_id);
+    $calendarioClaseHoyId = $calendarioClaseHoy ? $calendarioClaseHoy->getId() : null;
+
+    $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    $data = [];
+
+    foreach ($cursadas as $cursada) {
+        $alumno = $cursada->getAlumno();
+        $persona = $alumno ? $alumno->getPersona() : null;
+        $asistencias = $cursada->getAsistencias();
+
+        $asistenciaHoy = null;
+        foreach ($asistencias as $a) {
+            if ($a->getCalendarioClase() && $a->getCalendarioClase()->getId() === $calendarioClaseHoyId) {
+                $asistenciaHoy = $a;
+                break;
+            }
         }
 
-        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+        // Estadísticas igual que antes...
 
-        $data = [];
-        $hoy = new \DateTime();
-        $hoyFormato = $hoy->format('Y-m-d');
+        $presentes = 0;
+        $ausentes = 0;
+        $mediaFaltas = 0;
+        $justificadas = 0;
 
-        foreach ($cursadas as $cursada) {
-            $alumno = $cursada->getAlumno();
-            $asistencias = $cursada->getAsistencias();
-
-            $asistenciaHoy = null;
-
-            foreach ($asistencias as $a) {
-                if ($a->getFecha()->format('Y-m-d') === $hoyFormato) {
-                    $asistenciaHoy = $a;
-                    break;
-                }
+        foreach ($asistencias as $a) {
+            $estado = strtolower($a->getAsistencia());
+            if ($estado === 'presente') {
+                $presentes++;
+            } elseif ($estado === 'ausente') {
+                $ausentes++;
+            } elseif ($estado === 'media falta') {
+                $mediaFaltas++;
+            } elseif ($estado === 'justificada') {
+                $justificadas++;
             }
+        }
 
-            // Estadísticas
-            $presentes = 0;
-            $ausentes = 0;
-            $mediaFaltas = 0;
-            $justificadas = 0;
+        $total = $presentes + $ausentes + $mediaFaltas + $justificadas;
+        $porcentajePresente = $total > 0 ? (($presentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+        $porcentajeAusente = $total > 0 ? (($ausentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+        $porcentajeJustificada = $total > 0 ? ($justificadas / $total) * 100 : 0;
 
-            foreach ($asistencias as $a) {
-                $estado = strtolower($a->getAsistencia());
-                if ($estado === 'presente') {
-                    $presentes++;
-                } elseif ($estado === 'ausente') {
-                    $ausentes++;
-                } elseif ($estado === 'media falta') {
-                    $mediaFaltas++;
-                } elseif ($estado === 'justificada') {
-                    $justificadas++;
-                }
+        $data[] = [
+            'id' => $cursada->getId(),
+            'nombre' => $persona ? $persona->getNombre() : 'Sin nombre',
+            'apellido' => $persona ? $persona->getApellido() : 'Sin apellido',
+            'dni' => $persona ? $persona->getDniPasaporte() : 'Sin DNI',
+            'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
+            'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
+            'fecha_asistencia' => $asistenciaHoy && $asistenciaHoy->getCalendarioClase()
+                ? $asistenciaHoy->getCalendarioClase()->getFecha()->format('Y-m-d')
+                : null,
+            'estadisticas' => [
+                'presentes' => $presentes,
+                'ausentes' => $ausentes,
+                'media_faltas' => $mediaFaltas,
+                'justificadas' => $justificadas,
+                'total' => $total,
+                'porcentaje_presente' => round($porcentajePresente, 2),
+                'porcentaje_ausente' => round($porcentajeAusente, 2),
+                'porcentaje_justificada' => round($porcentajeJustificada, 2),
+            ],
+        ];
+    }
+
+    return new JsonResponse([
+        'fechaHoy' => $hoy->format('Y-m-d'),
+        'data' => $data,
+    ]);
+}
+
+
+#[Route('/estadisticas/{curso_id}', name: 'estadisticas', methods: ['GET'])]
+public function actualizarestadisticas(
+    int $curso_id,
+    CursoRepository $cursoRepository,
+    CursadaRepository $cursadaRepository
+): JsonResponse {
+    date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+    $curso = $cursoRepository->find($curso_id);
+
+    if (!$curso) {
+        return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+    }
+
+    $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+
+    $data = [];
+    $hoy = new \DateTime();
+    $hoyFormato = $hoy->format('Y-m-d');
+
+    foreach ($cursadas as $cursada) {
+        $alumno = $cursada->getAlumno();
+        $asistencias = $cursada->getAsistencias();
+
+        $asistenciaHoy = null;
+
+        foreach ($asistencias as $a) {
+            $fechaAsistencia = $a->getCalendarioClase() ? $a->getCalendarioClase()->getFecha()->format('Y-m-d') : null;
+            if ($fechaAsistencia === $hoyFormato) {
+                $asistenciaHoy = $a;
+                break;
             }
+        }
 
-            $total = $presentes + $ausentes + $mediaFaltas + $justificadas;
-            $porcentajePresente = $total > 0 ? (($presentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
-            $porcentajeAusente = $total > 0 ? (($ausentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
-            $porcentajeJustificada = $total > 0 ? ($justificadas / $total) * 100 : 0;
+        $presentes = 0;
+        $ausentes = 0;
+        $mediaFaltas = 0;
+        $justificadas = 0;
 
-            $data[] = [
-                'id' => $cursada->getId(),
-                'nombre' => $alumno->getNombre(),
-                'apellido' => $alumno->getApellido(),
-                'dni' => $alumno->getDniPasaporte(),
-                'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
-                'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
-            'fecha_asistencia' => ($asistenciaHoy && $asistenciaHoy->getCalendarioClase()) 
+        foreach ($asistencias as $a) {
+            $estado = strtolower($a->getAsistencia());
+            if ($estado === 'presente') {
+                $presentes++;
+            } elseif ($estado === 'ausente') {
+                $ausentes++;
+            } elseif ($estado === 'media falta') {
+                $mediaFaltas++;
+            } elseif ($estado === 'justificada') {
+                $justificadas++;
+            }
+        }
+
+        $total = $presentes + $ausentes + $mediaFaltas + $justificadas;
+        $porcentajePresente = $total > 0 ? (($presentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+        $porcentajeAusente = $total > 0 ? (($ausentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+        $porcentajeJustificada = $total > 0 ? ($justificadas / $total) * 100 : 0;
+
+        $data[] = [
+            'id' => $cursada->getId(),
+            'nombre' => $alumno->getNombre(),
+            'apellido' => $alumno->getApellido(),
+            'dni' => $alumno->getDniPasaporte(),
+            'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
+            'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
+            'fecha_asistencia' => $asistenciaHoy && $asistenciaHoy->getCalendarioClase() 
                 ? $asistenciaHoy->getCalendarioClase()->getFecha()->format('Y-m-d') 
                 : null,
-
-                'estadisticas' => [
-                    'presentes' => $presentes,
-                    'ausentes' => $ausentes,
-                    'media_faltas' => $mediaFaltas,
-                    'justificadas' => $justificadas,
-                    'total' => $total,
-                    'porcentaje_presente' => round($porcentajePresente, 2),
-                    'porcentaje_ausente' => round($porcentajeAusente, 2),
-                    'porcentaje_justificada' => round($porcentajeJustificada, 2),
-                ],
-            ];
-        }
-
-        return new JsonResponse([
-            'fecha_backend' => $hoyFormato,
-            'data' => $data,
-        ]);
+            'estadisticas' => [
+                'presentes' => $presentes,
+                'ausentes' => $ausentes,
+                'media_faltas' => $mediaFaltas,
+                'justificadas' => $justificadas,
+                'total' => $total,
+                'porcentaje_presente' => round($porcentajePresente, 2),
+                'porcentaje_ausente' => round($porcentajeAusente, 2),
+                'porcentaje_justificada' => round($porcentajeJustificada, 2),
+            ],
+        ];
     }
 
+    return new JsonResponse($data);
+}
 
-        #[Route('/estadisticas/{curso_id}', name: 'estadisticas', methods: ['GET'])]
-    public function actualizarestadisticas(
-        int $curso_id,
-        CursoRepository $cursoRepository,
-        CursadaRepository $cursadaRepository
-    ): JsonResponse {
-        // Establecer la zona horaria de Buenos Aires para evitar desfases
-        date_default_timezone_set('America/Argentina/Buenos_Aires');
-
-        $curso = $cursoRepository->find($curso_id);
-
-        if (!$curso) {
-            return new JsonResponse(['error' => 'Curso no encontrado'], 404);
-        }
-
-        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
-
-        $data = [];
-        $hoy = new \DateTime();
-        $hoyFormato = $hoy->format('Y-m-d');
-
-        foreach ($cursadas as $cursada) {
-            $alumno = $cursada->getAlumno();
-            $asistencias = $cursada->getAsistencias();
-
-            $asistenciaHoy = null;
-
-            foreach ($asistencias as $a) {
-                if ($a->getFecha()->format('Y-m-d') === $hoyFormato) {
-                    $asistenciaHoy = $a;
-                    break;
-                }
-            }
-
-            // Estadísticas
-            $presentes = 0;
-            $ausentes = 0;
-            $mediaFaltas = 0;
-            $justificadas = 0;
-
-            foreach ($asistencias as $a) {
-                $estado = strtolower($a->getAsistencia());
-                if ($estado === 'presente') {
-                    $presentes++;
-                } elseif ($estado === 'ausente') {
-                    $ausentes++;
-                } elseif ($estado === 'media falta') {
-                    $mediaFaltas++;
-                } elseif ($estado === 'justificada') {
-                    $justificadas++;
-                }
-            }
-
-            $total = $presentes + $ausentes + $mediaFaltas + $justificadas;
-            $porcentajePresente = $total > 0 ? (($presentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
-            $porcentajeAusente = $total > 0 ? (($ausentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
-            $porcentajeJustificada = $total > 0 ? ($justificadas / $total) * 100 : 0;
-
-            $data[] = [
-                'id' => $cursada->getId(),
-                'nombre' => $alumno->getNombre(),
-                'apellido' => $alumno->getApellido(),
-                'dni' => $alumno->getDniPasaporte(),
-                'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
-                'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
-                'fecha_asistencia' => $asistenciaHoy ? $asistenciaHoy->getFecha()->format('Y-m-d') : null,
-                'estadisticas' => [
-                    'presentes' => $presentes,
-                    'ausentes' => $ausentes,
-                    'media_faltas' => $mediaFaltas,
-                    'justificadas' => $justificadas,
-                    'total' => $total,
-                    'porcentaje_presente' => round($porcentajePresente, 2),
-                    'porcentaje_ausente' => round($porcentajeAusente, 2),
-                    'porcentaje_justificada' => round($porcentajeJustificada, 2),
-                ],
-            ];
-        }
-
-        return new JsonResponse($data);
-    }
                 
     #[Route('/newcalendario', name: 'newcalendario', methods: ['POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): JsonResponse
