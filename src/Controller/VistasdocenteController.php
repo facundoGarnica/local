@@ -319,40 +319,44 @@ public function actualizarListaAlumnos(
     ]);
 }
 
-
-#[Route('/estadisticas/{curso_id}', name: 'estadisticas', methods: ['GET'])]
-public function actualizarestadisticas(
+#[Route('/actualizaralumnos/{curso_id}', name: 'actualizaralumnos', methods: ['GET'])]
+public function actualizarAlumnos(
     int $curso_id,
     CursoRepository $cursoRepository,
-    CursadaRepository $cursadaRepository
+    CursadaRepository $cursadaRepository,
+    CalendarioClaseRepository $calendarioClaseRepository
 ): JsonResponse {
     date_default_timezone_set('America/Argentina/Buenos_Aires');
 
     $curso = $cursoRepository->find($curso_id);
-
     if (!$curso) {
         return new JsonResponse(['error' => 'Curso no encontrado'], 404);
     }
 
-    $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
-
-    $data = [];
     $hoy = new \DateTime();
-    $hoyFormato = $hoy->format('Y-m-d');
+    $hoy->setTime(0, 0, 0);
+
+    // Usar tu método específico para buscar calendarioClase hoy
+    $calendarioClaseHoy = $calendarioClaseRepository->findByFechaAndCurso($hoy, $curso_id);
+    $calendarioClaseHoyId = $calendarioClaseHoy ? $calendarioClaseHoy->getId() : null;
+
+    $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+    $data = [];
 
     foreach ($cursadas as $cursada) {
         $alumno = $cursada->getAlumno();
+        $persona = $alumno ? $alumno->getPersona() : null;
         $asistencias = $cursada->getAsistencias();
 
         $asistenciaHoy = null;
-
         foreach ($asistencias as $a) {
-            $fechaAsistencia = $a->getCalendarioClase() ? $a->getCalendarioClase()->getFecha()->format('Y-m-d') : null;
-            if ($fechaAsistencia === $hoyFormato) {
+            if ($a->getCalendarioClase() && $a->getCalendarioClase()->getId() === $calendarioClaseHoyId) {
                 $asistenciaHoy = $a;
                 break;
             }
         }
+
+        // Estadísticas igual que antes...
 
         $presentes = 0;
         $ausentes = 0;
@@ -379,13 +383,13 @@ public function actualizarestadisticas(
 
         $data[] = [
             'id' => $cursada->getId(),
-            'nombre' => $alumno->getNombre(),
-            'apellido' => $alumno->getApellido(),
-            'dni' => $alumno->getDniPasaporte(),
+            'nombre' => $persona ? $persona->getNombre() : 'Sin nombre',
+            'apellido' => $persona ? $persona->getApellido() : 'Sin apellido',
+            'dni' => $persona ? $persona->getDniPasaporte() : 'Sin DNI',
             'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
             'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
-            'fecha_asistencia' => $asistenciaHoy && $asistenciaHoy->getCalendarioClase() 
-                ? $asistenciaHoy->getCalendarioClase()->getFecha()->format('Y-m-d') 
+            'fecha_asistencia' => $asistenciaHoy && $asistenciaHoy->getCalendarioClase()
+                ? $asistenciaHoy->getCalendarioClase()->getFecha()->format('Y-m-d')
                 : null,
             'estadisticas' => [
                 'presentes' => $presentes,
@@ -400,102 +404,204 @@ public function actualizarestadisticas(
         ];
     }
 
-    return new JsonResponse($data);
+    return new JsonResponse([
+        'fechaHoy' => $hoy->format('Y-m-d'),
+        'data' => $data,
+    ]);
 }
+    #[Route('/estadisticas/{curso_id}', name: 'estadisticas', methods: ['GET'])]
+    public function actualizarestadisticas(
+        int $curso_id,
+        CursoRepository $cursoRepository,
+        CursadaRepository $cursadaRepository
+    ): JsonResponse {
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+        $curso = $cursoRepository->find($curso_id);
+
+        if (!$curso) {
+            return new JsonResponse(['error' => 'Curso no encontrado'], 404);
+        }
+
+        $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
+
+        $data = [];
+        $hoy = new \DateTime();
+        $hoyFormato = $hoy->format('Y-m-d');
+
+        foreach ($cursadas as $cursada) {
+            $alumno = $cursada->getAlumno();
+            $asistencias = $cursada->getAsistencias();
+
+            $asistenciaHoy = null;
+
+            foreach ($asistencias as $a) {
+                $fechaAsistencia = $a->getCalendarioClase() ? $a->getCalendarioClase()->getFecha()->format('Y-m-d') : null;
+                if ($fechaAsistencia === $hoyFormato) {
+                    $asistenciaHoy = $a;
+                    break;
+                }
+            }
+
+            $presentes = 0;
+            $ausentes = 0;
+            $mediaFaltas = 0;
+            $justificadas = 0;
+
+            foreach ($asistencias as $a) {
+                $estado = strtolower($a->getAsistencia());
+                if ($estado === 'presente') {
+                    $presentes++;
+                } elseif ($estado === 'ausente') {
+                    $ausentes++;
+                } elseif ($estado === 'media falta') {
+                    $mediaFaltas++;
+                } elseif ($estado === 'justificada') {
+                    $justificadas++;
+                }
+            }
+
+            $total = $presentes + $ausentes + $mediaFaltas + $justificadas;
+            $porcentajePresente = $total > 0 ? (($presentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+            $porcentajeAusente = $total > 0 ? (($ausentes + $mediaFaltas * 0.5) / $total) * 100 : 0;
+            $porcentajeJustificada = $total > 0 ? ($justificadas / $total) * 100 : 0;
+
+            $data[] = [
+                'id' => $cursada->getId(),
+                'nombre' => $alumno->getNombre(),
+                'apellido' => $alumno->getApellido(),
+                'dni' => $alumno->getDniPasaporte(),
+                'asistencia' => $asistenciaHoy ? $asistenciaHoy->getAsistencia() : 'No marcado',
+                'observacion' => $asistenciaHoy ? $asistenciaHoy->getObservacion() : '',
+                'fecha_asistencia' => $asistenciaHoy && $asistenciaHoy->getCalendarioClase() 
+                    ? $asistenciaHoy->getCalendarioClase()->getFecha()->format('Y-m-d') 
+                    : null,
+                'estadisticas' => [
+                    'presentes' => $presentes,
+                    'ausentes' => $ausentes,
+                    'media_faltas' => $mediaFaltas,
+                    'justificadas' => $justificadas,
+                    'total' => $total,
+                    'porcentaje_presente' => round($porcentajePresente, 2),
+                    'porcentaje_ausente' => round($porcentajeAusente, 2),
+                    'porcentaje_justificada' => round($porcentajeJustificada, 2),
+                ],
+            ];
+        }
+
+        return new JsonResponse($data);
+    }
 
                 
     #[Route('/newcalendario', name: 'newcalendario', methods: ['POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return $this->json(['error' => 'No se recibió un JSON válido'], 400);
+        }
+
+        if (!isset($data['modalidad'], $data['curso'], $data['fecha'])) {
+            return $this->json(['error' => 'Faltan datos requeridos'], 400);
+        }
+
+        try {
+            $fecha = new \DateTime($data['fecha']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Fecha no válida'], 400);
+        }
+
+        // Verificar si ya existe un calendario para ese curso y fecha
+        $calendarioExistente = $entityManager
+            ->getRepository(\App\Entity\CalendarioClase::class)
+            ->findByFechaAndCurso($fecha, (int)$data['curso']);
+
+        if ($calendarioExistente) {
+            $calendarioClase = $calendarioExistente;
+        } else {
+            $calendarioClase = new CalendarioClase();
+        }
+
+        // Buscar modalidad
+        $modalidad = $entityManager->getRepository(\App\Entity\Modalidad::class)->find($data['modalidad']);
+        if (!$modalidad) {
+            return $this->json(['error' => 'Modalidad no válida'], 400);
+        }
+
+        // Buscar curso
+        $curso = $entityManager->getRepository(\App\Entity\Curso::class)->find($data['curso']);
+        if (!$curso) {
+            return $this->json(['error' => 'Curso no válido'], 400);
+        }
+
+        // Asignar datos al objeto
+        $calendarioClase->setModalidad($modalidad);
+        $calendarioClase->setCurso($curso);
+        $calendarioClase->setFecha($fecha);
+        $calendarioClase->setObservacion($data['observacion'] ?? '');
+
+        $entityManager->persist($calendarioClase);
+        $entityManager->flush();
+
+        return $this->json([
+            'success' => true,
+            'id' => $calendarioClase->getId(),
+            'message' => $calendarioExistente ? 'Calendario actualizado' : 'Calendario creado',
+        ]);
+    }
+
+
+
+
+    #[Route('/api/calendario-clase-del-dia/{cursoId}', name: 'api_calendario_clase_del_dia', methods: ['GET'])]
+    public function getCalendarioClaseDelDia(int $cursoId, CalendarioClaseRepository $repo): JsonResponse
+    {
+        $zona = new \DateTimeZone('America/Argentina/Buenos_Aires');
+        $fechaHoy = new \DateTime('today', $zona);
+
+        error_log('Fecha hoy en getCalendarioClaseDelDia: ' . $fechaHoy->format('Y-m-d H:i:s'));
+
+        $calendario = $repo->findByFechaAndCurso($fechaHoy, $cursoId);
+
+        if (!$calendario) {
+            return $this->json(['error' => 'No se encontró calendario para hoy'], 404);
+        }
+
+        return $this->json([
+            'id' => $calendario->getId(),
+            'fecha' => $calendario->getFecha()->format('Y-m-d')
+        ]);
+    }
+#[Route('/api/calendario-fechas/{cursoId}', name: 'api_calendario_fechas', methods: ['GET'])]
+public function getFechasCalendario(int $cursoId, CalendarioClaseRepository $repo): JsonResponse
 {
-    $data = json_decode($request->getContent(), true);
+    $fechas = $repo->findFechasByCurso($cursoId);
 
-    if (!$data) {
-        return $this->json(['error' => 'No se recibió un JSON válido'], 400);
-    }
+    // Convertir las fechas a string
+    $fechasFormateadas = array_map(function($item) {
+        return [
+            'id' => $item['id'],
+            'fecha' => $item['Fecha']->format('Y-m-d'),
+        ];
+    }, $fechas);
 
-    if (!isset($data['modalidad'], $data['curso'], $data['fecha'])) {
-        return $this->json(['error' => 'Faltan datos requeridos'], 400);
-    }
-
-    // Zona horaria Argentina
-    $zona = new \DateTimeZone('America/Argentina/Buenos_Aires');
-
-    try {
-        // Crear objeto DateTime sin zona horaria y luego asignar zona horaria correcta
-        $fecha = new \DateTime($data['fecha']);
-        $fecha->setTimezone($zona);
-        $fecha->setTime(0, 0, 0);
-    } catch (\Exception $e) {
-        return $this->json(['error' => 'Fecha no válida'], 400);
-    }
-
-    // Verificar si ya existe un calendario para ese curso y fecha
-    $calendarioExistente = $entityManager
-        ->getRepository(\App\Entity\CalendarioClase::class)
-        ->findByFechaAndCurso($fecha, (int)$data['curso']);
-
-    if ($calendarioExistente) {
-        $calendarioClase = $calendarioExistente;
-    } else {
-        $calendarioClase = new CalendarioClase();
-    }
-
-    // Buscar modalidad
-    $modalidad = $entityManager->getRepository(\App\Entity\Modalidad::class)->find($data['modalidad']);
-    if (!$modalidad) {
-        return $this->json(['error' => 'Modalidad no válida'], 400);
-    }
-
-    // Buscar curso
-    $curso = $entityManager->getRepository(\App\Entity\Curso::class)->find($data['curso']);
-    if (!$curso) {
-        return $this->json(['error' => 'Curso no válido'], 400);
-    }
-
-    // Asignar datos al objeto
-    $calendarioClase->setModalidad($modalidad);
-    $calendarioClase->setCurso($curso);
-    $calendarioClase->setFecha($fecha);
-    $calendarioClase->setObservacion($data['observacion'] ?? '');
-
-    $entityManager->persist($calendarioClase);
-    $entityManager->flush();
-
-    return $this->json([
-        'success' => true,
-        'id' => $calendarioClase->getId(),
-        'message' => $calendarioExistente ? 'Calendario actualizado' : 'Calendario creado',
-    ]);
+    return $this->json($fechasFormateadas);
 }
 
+    #[Route('/lista/{curso_id}', name: 'app_lista')]
+    public function listaAsistencia(int $curso_id, CursoRepository $cursoRepository): Response
+    {
+        $curso = $cursoRepository->find($curso_id);
 
+        if (!$curso) {
+            throw $this->createNotFoundException('Curso no encontrado');
+        }
 
-#[Route('/api/calendario-clase-del-dia/{cursoId}', name: 'api_calendario_clase_del_dia', methods: ['GET'])]
-public function getCalendarioClaseDelDia(int $cursoId, CalendarioClaseRepository $repo): JsonResponse
-{
-    $zona = new \DateTimeZone('America/Argentina/Buenos_Aires');
-    $fechaHoy = new \DateTime('today', $zona);
-
-    error_log('Fecha hoy en getCalendarioClaseDelDia: ' . $fechaHoy->format('Y-m-d H:i:s'));
-
-    $calendario = $repo->findByFechaAndCurso($fechaHoy, $cursoId);
-
-    if (!$calendario) {
-        return $this->json(['error' => 'No se encontró calendario para hoy'], 404);
+        return $this->render('vistasdocente/lista.html.twig', [
+            'curso' => $curso,
+        ]);
     }
-
-    return $this->json([
-        'id' => $calendario->getId(),
-        'fecha' => $calendario->getFecha()->format('Y-m-d')
-    ]);
-}
-
-
-
 
 
 }
-
-
-    
-

@@ -45,6 +45,16 @@ class CalendarioClaseRepository extends ServiceEntityRepository
 
     return $resultado;
 }
+public function findFechasByCurso(int $cursoId): array
+{
+    return $this->createQueryBuilder('c')
+        ->select('c.id, c.Fecha')
+        ->andWhere('c.Curso = :cursoId')
+        ->setParameter('cursoId', $cursoId)
+        ->orderBy('c.Fecha', 'ASC')
+        ->getQuery()
+        ->getArrayResult();
+}
 
 
 

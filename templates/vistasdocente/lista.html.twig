@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Asistencia{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">	
+	{% endblock %}
+{% block body %}
+    <h1>Lista de Asistencia</h1>
+    <!-- TABLA DE PORCENTAJE /////// -->
+<div id="modalporcentaje">
+   <table id="EstadisticasModal" class="tablillacursada" border="1">
+    <thead>
+        <tr>
+            <th colspan="2" class="nombre-tecnicatura">Tecnicatura en Informática - Cursadas</th>
+            <th colspan="5" class="anio-comision">Práctica Profesionalizante III - Comisión 3-01</th>
+        </tr>
+        <tr>
+            <th colspan="2" class="asignatura">
+                Asignatura:
+                <p id="fechatablilla" style="margin: 0;">Junio 2025</p>
+            </th>
+            <th colspan="5" class="nombre-asignatura">Por Asistencia por Clase</th>
+        </tr>
+        <tr id="fechas-header">
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <!-- Aquí se agregarán dinámicamente los th con fechas -->
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aquí se llenarán las filas de alumnos -->
+    </tbody>
+</table>
+<a href="{{ path('app_vistasdocente') }}" class="botondeporcentaje">
+    Regresar a la lista
+</a>
+
+<script>
+const cursoId = {{ curso.id }};
+const theadRow = document.querySelector('#fechas-header');
+const tbody = document.querySelector('#EstadisticasModal tbody');
+
+// Opciones para select
+const opciones = {
+    'P': 'Presente',
+    'A': 'Ausente',
+    'M': 'Media falta',
+    'J': 'Justificada'
+};
+
+function crearSelect(valorSeleccionado) {
+    const select = document.createElement('select');
+    for (const [valor, texto] of Object.entries(opciones)) {
+        const option = document.createElement('option');
+        option.value = valor;
+        option.textContent = texto;
+        if (valor === valorSeleccionado) option.selected = true;
+        select.appendChild(option);
+    }
+    return select;
+}
+
+async function cargarDatos() {
+    try {
+        // 1) Traer todas las fechas del calendario
+        const resFechas = await fetch(`/local/public/index.php/api/calendario-fechas/${cursoId}`);
+        if (!resFechas.ok) throw new Error('Error al obtener fechas');
+        const fechas = await resFechas.json();
+
+        // Limpiar columnas de fechas en el thead (dejamos solo Nombre y Apellido)
+        while (theadRow.children.length > 2) {
+            theadRow.removeChild(theadRow.lastChild);
+        }
+
+        // Agregar th con las fechas
+        fechas.forEach(fechaObj => {
+            const th = document.createElement('th');
+            // Mostrar solo el día (por ej: 25) o formatear como quieras
+            const dia = new Date(fechaObj.fecha).getDate();
+            th.textContent = dia;
+            theadRow.appendChild(th);
+        });
+
+        // 2) Traer alumnos y asistencias
+        const resAlumnos = await fetch(`/local/public/index.php/actualizaralumnos/${cursoId}`);
+        if (!resAlumnos.ok) throw new Error('Error al obtener alumnos');
+        const data = await resAlumnos.json();
+
+        tbody.innerHTML = ''; // Limpiar tabla
+
+        // Por cada alumno
+        data.data.forEach(alumno => {
+            const tr = document.createElement('tr');
+
+            // Nombre y apellido
+            tr.innerHTML = `<td>${alumno.nombre}</td><td>${alumno.apellido}</td>`;
+
+            // Por cada fecha, crear celda con select
+            fechas.forEach(fechaObj => {
+                const td = document.createElement('td');
+
+                // Aquí deberías buscar la asistencia de ese alumno para esa fecha,
+                // por ejemplo suponiendo que "alumno.asistencias" es un array con objetos {fecha: 'YYYY-MM-DD', asistencia: 'P'|'A'|...}
+
+                let asistenciaValor = ''; // default sin selección
+
+                if (alumno.asistencias) {
+                    const asistenciaParaFecha = alumno.asistencias.find(a => a.fecha === fechaObj.fecha);
+                    if (asistenciaParaFecha) {
+                        asistenciaValor = asistenciaParaFecha.asistencia;
+                    }
+                }
+
+                const select = crearSelect(asistenciaValor);
+                td.appendChild(select);
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+    }
+}
+
+// Ejecutar al cargar la página
+cargarDatos();
+</script>
+
+
+{% endblock %}

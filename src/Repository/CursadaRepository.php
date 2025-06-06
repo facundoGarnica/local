@@ -39,6 +39,7 @@ class CursadaRepository extends ServiceEntityRepository
         }
     }
 
+
 //    /**
 //     * @return Cursada[] Returns an array of Cursada objects
 //     */

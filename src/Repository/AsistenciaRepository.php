@@ -38,7 +38,19 @@ class AsistenciaRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
+public function findAsistenciasPorCurso(int $cursoId): array
+{
+    return $this->createQueryBuilder('a')
+        ->join('a.cursada', 'cursada')
+        ->join('cursada.alumno', 'alumno')
+        ->join('a.calendarioClase', 'calendario')
+        ->where('cursada.curso = :cursoId')
+        ->setParameter('cursoId', $cursoId)
+        ->orderBy('alumno.apellido', 'ASC')
+        ->addOrderBy('calendario.Fecha', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
 //    /**
 //     * @return Asistencia[] Returns an array of Asistencia objects
 //     */

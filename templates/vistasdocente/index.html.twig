@@ -102,6 +102,13 @@
 
 function showListaNueva(cursoId) {
     selectedCursoId = cursoId;
+console.log("Curso seleccionado:", selectedCursoId);
+
+// Actualizar el link con el cursoId correcto
+    const linkLista = document.getElementById('linkListaPorDia');
+    if (linkLista) {
+        linkLista.href = `/local/public/index.php/lista/${cursoId}`;
+    }
 
     const listaProfesores = document.getElementById('tablaTecnicaturas');
     if (listaProfesores) listaProfesores.style.display = 'none';
@@ -1004,6 +1011,10 @@ function showListaNueva(cursoId) {
                     <button class="botondeporcentaje" onclick="cerrarPorcentaje()">
                         Regresar a la lista
                     </button>
+<a id="linkListaPorDia" href="#" class="botondeporcentaje">Lista por día</a>
+
+
+
                 </div>
 
                 <!-- Caja centrada para descargar planilla -->
