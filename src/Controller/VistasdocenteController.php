@@ -245,10 +245,11 @@ public function actualizarListaAlumnos(
     $hoy = new \DateTime();
     $hoy->setTime(0, 0, 0);
 
-    // Usar tu método específico para buscar calendarioClase hoy
+    // Buscar el calendario de clase de hoy
     $calendarioClaseHoy = $calendarioClaseRepository->findByFechaAndCurso($hoy, $curso_id);
     $calendarioClaseHoyId = $calendarioClaseHoy ? $calendarioClaseHoy->getId() : null;
 
+    // Recopilar las cursadas y sus asistencias
     $cursadas = $cursadaRepository->findBy(['curso' => $curso]);
     $data = [];
 
@@ -265,8 +266,7 @@ public function actualizarListaAlumnos(
             }
         }
 
-        // Estadísticas igual que antes...
-
+        // Contadores de asistencia
         $presentes = 0;
         $ausentes = 0;
         $mediaFaltas = 0;
@@ -313,11 +313,27 @@ public function actualizarListaAlumnos(
         ];
     }
 
+    // Obtener los docentes del curso a través de CursadaDocente
+    $docentes = [];
+    foreach ($curso->getCursadaDocentes() as $cursadaDocente) {
+        $docente = $cursadaDocente->getDocente();
+        if ($docente && $docente->getPersona()) {
+            $persona = $docente->getPersona();
+            $docentes[] = [
+                'nombre' => $persona->getNombre(),
+                'apellido' => $persona->getApellido(),
+                'dni' => $persona->getDniPasaporte(),
+            ];
+        }
+    }
+
     return new JsonResponse([
         'fechaHoy' => $hoy->format('Y-m-d'),
         'data' => $data,
+        'docentes' => $docentes,
     ]);
 }
+
 
 #[Route('/actualizaralumnos/{curso_id}', name: 'actualizaralumnos', methods: ['GET'])]
 public function actualizarAlumnos(
@@ -409,6 +425,7 @@ public function actualizarAlumnos(
         'data' => $data,
     ]);
 }
+
     #[Route('/estadisticas/{curso_id}', name: 'estadisticas', methods: ['GET'])]
     public function actualizarestadisticas(
         int $curso_id,

@@ -126,3 +126,32 @@
 .boton-pdf:hover {
     background-color: #9a1c1c;
 }
+#linkListaPorDia {
+    color: white !important;
+    text-decoration: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #4e73df;
+    /* para que tenga fondo igual que botón */
+    padding: 10px 20px;
+    border-radius: 6px;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+#linkListaPorDia:hover {
+    background-color: #2e58a1 !important;
+}
+
+#linkListaPorDia:visited,
+#linkListaPorDia:focus,
+#linkListaPorDia:active {
+    color: white !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #2e58a1 !important;
+    text-decoration: none !important;
+}

@@ -206,5 +206,15 @@ class Curso
 
           return $this;
       }
-    
+        public function getNombresDocentes(): string
+    {
+        $nombres = [];
+        foreach ($this->cursadaDocentes as $cursadaDocente) {
+            $nombreDocente = (string) $cursadaDocente;
+            if ($nombreDocente) {
+                $nombres[] = $nombreDocente;
+            }
+        }
+        return implode(', ', $nombres);
+    }
 }

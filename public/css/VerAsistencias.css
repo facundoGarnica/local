@@ -1,0 +1,91 @@
+.tablillacursada {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 14px;
+}
+
+.tablillacursada th,
+.tablillacursada td {
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+.tablillacursada thead th {
+    background-color: #4e73df;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tablillacursada tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tablillacursada tbody tr:hover {
+    background-color: #e6f0ff;
+}
+
+#fechatablilla {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.contenedor-acciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.accion-izquierda {
+    flex: 0 0 auto;
+}
+
+.accion-centro {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 300px;
+}
+
+/* ===== Estilos para celdas modificadas ===== */
+
+.tablillacursada td.modificado {
+    font-weight: bold !important;
+    background-color: #e7e1bb !important; 
+    color: #a96b42 !important;
+}
+
+.tablillacursada select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #4e73df;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333;
+    outline: none;
+    box-shadow: 0 0 5px rgba(78, 115, 223, 0.3);
+    transition: border-color 0.2s ease-in-out;
+
+    /* 👉 Agregado para evitar que agrande la celda */
+    width: 100%;
+    max-width: 70px;
+    box-sizing: border-box;
+}
+
+.tablillacursada th,
+.tablillacursada td {
+    padding: 8px; /* En lugar de 12px */
+    border: 1px solid #ccc;
+}
+
+.tablillacursada select:focus {
+    border-color:rgb(81, 81, 229);
+}
+

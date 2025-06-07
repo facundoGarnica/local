@@ -1,113 +1,140 @@
-{% extends 'base.html.twig' %}
+{% extends 'base.html.twig'%}
 
 {% block title %}Lista de Asistencia{% endblock %}
+
 {% block stylesheets %}
 {{ parent() }}
-	<link rel="stylesheet" href="{{ asset('css/estadistica_asistencia.css') }}">	
-	{% endblock %}
+<link rel="stylesheet" href="{{ asset('css/VerAsistencias.css') }}">
+{% endblock %}
+
 {% block body %}
-    <h1>Lista de Asistencia</h1>
-    <!-- TABLA DE PORCENTAJE /////// -->
-<div id="modalporcentaje">
-   <table id="EstadisticasModal" class="tablillacursada" border="1">
+<h1>Lista de Asistencia</h1>
+
+<table id="EstadisticasModal" class="tablillacursada" border="1">
     <thead>
         <tr>
-            <th colspan="2" class="nombre-tecnicatura">Tecnicatura en Informática - Cursadas</th>
-            <th colspan="5" class="anio-comision">Práctica Profesionalizante III - Comisión 3-01</th>
+            <th colspan="7" class="nombre-tecnicatura">{{ curso.asignatura.tecnicatura.nombre }}</th>
         </tr>
         <tr>
-            <th colspan="2" class="asignatura">
-                Asignatura:
-                <p id="fechatablilla" style="margin: 0;">Junio 2025</p>
+            <th colspan="2" class="Docente">
+                Docente:
+                <p style="margin: 0;">{{ curso.getNombresDocentes() }}</p>
             </th>
-            <th colspan="5" class="nombre-asignatura">Por Asistencia por Clase</th>
+            <th colspan="5" class="nombre-asignatura">
+                Asignatura:
+                <p> {{ curso.asignatura.nombre }} - Comisión {{ curso.comision.comision }}</p>
+            </th>
         </tr>
         <tr id="fechas-header">
-            <th>Nombre</th>
             <th>Apellido</th>
-            <!-- Aquí se agregarán dinámicamente los th con fechas -->
+            <th>Nombre</th>
+            <!-- Encabezados dinámicos de fechas -->
         </tr>
     </thead>
     <tbody>
-        <!-- Aquí se llenarán las filas de alumnos -->
+        <!-- Filas de alumnos cargadas dinámicamente -->
     </tbody>
 </table>
-<a href="{{ path('app_vistasdocente') }}" class="botondeporcentaje">
-    Regresar a la lista
-</a>
+
+<button id="verListaButton" class="btn-primary">Volver</button>
+
+{# Mostrar botón Guardar solo para admins #}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+    <button id="guardarCambiosButton" class="btn-success">Guardar Cambios</button>
+{% endif %}
 
 <script>
 const cursoId = {{ curso.id }};
+
+// Aquí paso a JS si puede editar el usuario
+const puedeEditar = {{ (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) ? 'true' : 'false' }};
+
 const theadRow = document.querySelector('#fechas-header');
 const tbody = document.querySelector('#EstadisticasModal tbody');
 
-const opciones = {
-    'Presente': 'Presente',
-    'Ausente': 'Ausente',
-    'Media falta': 'Media falta',
-    'Justificada': 'Justificada',
-    'No marcado': 'No marcado'
-};
+const opciones = ['P', 'A', 'T', 'J', 'N']; // Presente, Ausente, Media falta (T), Justificada, No marcado
 
 function crearSelect(valorSeleccionado) {
     const select = document.createElement('select');
-    for (const [valor, texto] of Object.entries(opciones)) {
+    opciones.forEach(opcion => {
         const option = document.createElement('option');
-        option.value = valor;
-        option.textContent = texto;
-        if (valor === valorSeleccionado) option.selected = true;
+        option.value = opcion;
+        option.textContent = opcion;
+        if (opcion === valorSeleccionado) option.selected = true;
         select.appendChild(option);
-    }
+    });
     return select;
 }
 
 async function cargarDatos() {
     try {
-        // 1) Traer fechas del calendario
         const resFechas = await fetch(`/local/public/index.php/api/calendario-fechas/${cursoId}`);
-        if (!resFechas.ok) throw new Error('Error al obtener fechas');
         const fechas = await resFechas.json();
 
-        // Limpiar columnas de fechas (dejamos solo nombre/apellido)
+        // Limpiar columnas de fechas anteriores
         while (theadRow.children.length > 2) {
             theadRow.removeChild(theadRow.lastChild);
         }
 
-        // Agregar encabezados de fecha con día/mes
         fechas.forEach(fechaObj => {
             const th = document.createElement('th');
             const partes = fechaObj.fecha.split('-');
             const dia = parseInt(partes[2], 10);
             const mes = parseInt(partes[1], 10);
             th.textContent = `${dia}/${mes}`;
+            th.setAttribute('data-id', fechaObj.id);
             theadRow.appendChild(th);
         });
 
-        // 2) Traer datos de alumnos con asistencias por fecha
         const resAlumnos = await fetch(`/local/public/index.php/api/asistencias-por-fecha/${cursoId}`);
-        if (!resAlumnos.ok) throw new Error('Error al obtener asistencias de alumnos');
         const alumnos = await resAlumnos.json();
-
-        tbody.innerHTML = ''; // Limpiar
+        tbody.innerHTML = '';
 
         alumnos.forEach(alumno => {
             const tr = document.createElement('tr');
-
-            // Nombre y apellido
-            tr.innerHTML = `<td>${alumno.nombre}</td><td>${alumno.apellido}</td>`;
+            tr.setAttribute('data-cursada-id', alumno.id);
+            tr.innerHTML = `<td>${alumno.apellido}</td><td>${alumno.nombre}</td>`;
 
             fechas.forEach(fechaObj => {
                 const td = document.createElement('td');
+                let asistencia = 'N'; // No marcado
 
-                let asistenciaValor = 'No marcado';
-
-                const asistenciaParaFecha = alumno.asistencias.find(a => a.fecha === fechaObj.fecha);
-                if (asistenciaParaFecha) {
-                    asistenciaValor = asistenciaParaFecha.asistencia || 'No marcado';
+                const encontrada = alumno.asistencias.find(a => a.fecha === fechaObj.fecha);
+                if (encontrada) {
+                    const valor = encontrada.asistencia;
+                    asistencia = valor === 'Presente' ? 'P' :
+                                 valor === 'Ausente' ? 'A' :
+                                 valor === 'Media falta' ? 'T' :
+                                 valor === 'Justificada' ? 'J' : 'N';
                 }
 
-                const select = crearSelect(asistenciaValor);
-                td.appendChild(select);
+                td.textContent = asistencia;
+                td.style.cursor = puedeEditar ? "pointer" : "default";
+
+                // Solo si puede editar, permito click para cambiar estado
+                if(puedeEditar) {
+                    td.addEventListener('click', () => {
+                        if (td.querySelector('select')) return;
+
+                        const select = crearSelect(asistencia);
+                        td.innerHTML = '';
+                        td.appendChild(select);
+                        select.focus();
+
+                        select.addEventListener('blur', actualizar);
+                        select.addEventListener('change', actualizar);
+
+                        function actualizar() {
+                            const nuevo = select.value;
+                            td.textContent = nuevo;
+                            td.classList.remove("modificado");
+                            if (nuevo !== asistencia) {
+                                td.classList.add("modificado", "modificado-" + nuevo.toLowerCase());
+                            }
+                        }
+                    });
+                }
+
                 tr.appendChild(td);
             });
 
@@ -115,13 +142,84 @@ async function cargarDatos() {
         });
     } catch (error) {
         console.error('Error cargando datos:', error);
+        alert('No se pudo cargar la asistencia.');
     }
 }
 
-// Ejecutar al cargar la página
-cargarDatos();
+document.addEventListener('DOMContentLoaded', () => {
+    cargarDatos();
+    document.getElementById('verListaButton').addEventListener('click', () => {
+        window.location.href = "{{ path('app_vistasdocente') }}";
+    });
+
+    if (puedeEditar) {
+        document.getElementById('guardarCambiosButton').addEventListener('click', EditarSeleccionados);
+    }
+});
+
+async function EditarSeleccionados() {
+    const datos = [];
+    const filas = tbody.querySelectorAll('tr');
+
+    const fechas = Array.from(theadRow.children).slice(2);
+
+    filas.forEach(fila => {
+        const cursadaId = fila.getAttribute('data-cursada-id');
+        if (!cursadaId) return;
+
+        const celdas = Array.from(fila.children).slice(2);
+        celdas.forEach((td, index) => {
+            if (td.classList.contains('modificado')) {
+                const select = td.querySelector('select');
+                const estadoLetra = select ? select.value : td.textContent;
+
+                const estadoCompleto = {
+                    'P': 'Presente',
+                    'A': 'Ausente',
+                    'T': 'Media falta',
+                    'J': 'Justificada',
+                    'N': 'No marcado'
+                }[estadoLetra];
+
+                const calendarioClaseId = fechas[index].getAttribute('data-id');
+
+                datos.push({
+                    cursada_id: parseInt(cursadaId),
+                    calendarioClase_id: parseInt(calendarioClaseId),
+                    estado: estadoCompleto
+                });
+            }
+        });
+    });
+
+    if (datos.length === 0) {
+        alert("No hay cambios para guardar.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/local/public/index.php/guardar-asistencia', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.mensaje || 'Cambios guardados exitosamente');
+            document.querySelectorAll('.modificado').forEach(td => td.classList.remove('modificado'));
+            cargarDatos();
+        } else {
+            alert(result.error || 'Error al guardar cambios');
+        }
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        alert('Ocurrió un error al intentar guardar.');
+    }
+}
 </script>
-
-
 
 {% endblock %}

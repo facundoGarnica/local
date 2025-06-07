@@ -169,76 +169,87 @@ console.log("Curso seleccionado:", selectedCursoId);
         let modalAbierto = false;
 
           
-    function abrirPasarAsistenciaModal() {
-        if (modalAbierto) {
-            console.log('El modal ya está abierto.');
-            return; // Evita abrir el modal si ya está abierto
-        }
+    let ModalidadOpen = false; // Variable para controlar si se creo la modalidad
     
-        // Reiniciar el índice del array
-        indiceActual = 0;
-    
-        // Mostrar overlay y modal
-        document.getElementById('spa-overlay').style.display = 'block';
-        document.getElementById('PasarAsistenciaModal').style.display = 'block';
-    
-        // Cargar el primer alumno
-        mostrarAlumno(indiceActual);
-    
-        // Cambiar el estado del modal a abierto
-        modalAbierto = true;
-    }
+        function abrirPasarAsistenciaModal() {
+            if (modalAbierto) {
+                console.log('El modal ya está abierto.');
+                return; // Evita abrir el modal si ya está abierto
+            }else{
+                if(!ModalidadOpen){
+                    alert('Por favor, crear la modalidad antes de pasar asistencia.');
+                    return; // Evita abrir el modal si no se ha creado la modalidad
+                }else{
+                    // Reiniciar el índice del array
+            indiceActual = 0;
         
+            // Mostrar overlay y modal
+            document.getElementById('spa-overlay').style.display = 'block';
+            document.getElementById('PasarAsistenciaModal').style.display = 'block';
+        
+            // Cargar el primer alumno
+            mostrarAlumno(indiceActual);
+        
+            // Cambiar el estado del modal a abierto
+            modalAbierto = true;
+                }
+            }
+        
+            
+        }
+        
+    
+
     function editarAsistencia(cursoId, cursadaId) {
-        fetch(`/local/public/index.php/actualizar-lista-alumnos/${cursoId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al obtener los datos actualizados');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const cursadaIndex = cursosData[cursoId].cursadas.findIndex(c => c.id === cursadaId);
-                if (cursadaIndex === -1) {
-                    console.error("No se encontró la cursada con ID:", cursadaId);
-                    return;
-                }
-    
-                // Actualiza el índice actual al del alumno que se está editando
-                indiceActual = cursadaIndex;
-    
-                const cursada = cursosData[cursoId].cursadas[cursadaIndex];
-                const alumno = cursada.alumno;
-                const ultimaAsistencia = cursada.asistencias.length > 0
-                    ? cursada.asistencias[cursada.asistencias.length - 1]
-                    : null;
-    
-                const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
-                const alumnoDniElemento = document.querySelector('.AlumnoDni');
-                const spanEstado = document.querySelector('.estado-text');
-                const observacionInput = document.getElementById('observacion-input');
-    
-                if (alumnoNombreElemento && alumnoDniElemento) {
-                    alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
-                    alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
-                }
-    
-                if (ultimaAsistencia) {
-                    spanEstado.textContent = ultimaAsistencia.asistencia;
-                    spanEstado.className = 'estado-text estado-' + ultimaAsistencia.asistencia.toLowerCase().replace(' ', '');
-                    observacionInput.value = ultimaAsistencia.observacion || '';
-                } else {
-                    spanEstado.textContent = 'No marcado';
-                    spanEstado.className = 'estado-text estado-neutral';
-                    observacionInput.value = '';
-                }
-    
-                document.getElementById('spa-overlay').style.display = 'block';
-                document.getElementById('PasarAsistenciaModal').style.display = 'block';
-                modalAbierto = true;
-            })
-            .catch(error => console.error('Error al cargar los datos del alumno:', error));
+        if (!ModalidadOpen) {
+            alert('Por favor, crear la modalidad antes de editar la asistencia.');
+            return; // Evita abrir el modal si no se ha creado la modalidad
+        } else {
+            // Buscar el índice de la cursada correspondiente al cursadaId
+            const cursadas = cursosData[cursoId].cursadas;
+            const cursadaIndex = cursadas.findIndex(c => c.id === cursadaId);
+
+            if (cursadaIndex === -1) {
+                console.error("No se encontró la cursada con ID:", cursadaId);
+                return;
+            }
+
+            // Actualiza el índice actual al del alumno que se está editando
+            indiceActual = cursadaIndex;
+
+            const cursada = cursadas[cursadaIndex];
+            const alumno = cursada.alumno;
+            const ultimaAsistencia = cursada.asistencias.length > 0
+                ? cursada.asistencias[cursada.asistencias.length - 1]
+                : null;
+
+            const alumnoNombreElemento = document.querySelector('.AlumnoNombre');
+            const alumnoDniElemento = document.querySelector('.AlumnoDni');
+            const spanEstado = document.querySelector('.estado-text');
+            const observacionInput = document.getElementById('observacion-input');
+
+            if (alumnoNombreElemento && alumnoDniElemento) {
+                alumnoNombreElemento.textContent = `${alumno.nombre} ${alumno.apellido}`;
+                alumnoDniElemento.textContent = `DNI: ${alumno.dni}`;
+            }
+
+            if (ultimaAsistencia) {
+                spanEstado.textContent = ultimaAsistencia.asistencia;
+                spanEstado.className = 'estado-text estado-' + ultimaAsistencia.asistencia.toLowerCase().replace(' ', '');
+                observacionInput.value = ultimaAsistencia.observacion || '';
+            } else {
+                spanEstado.textContent = 'No marcado';
+                spanEstado.className = 'estado-text estado-neutral';
+                observacionInput.value = '';
+            }
+
+            document.getElementById('spa-overlay').style.display = 'block';
+            document.getElementById('PasarAsistenciaModal').style.display = 'block';
+            modalAbierto = true;
+        }
     }
+    
+                
 
 
     function showCursoCursada(cursoId) {
@@ -852,8 +863,7 @@ console.log("Curso seleccionado:", selectedCursoId);
                 });
             });
         });
-        
-        
+
     </script>
     <!-- CAMPO DE LA NUEVA LISTA //////////////////////////////////// -->
     
@@ -1537,6 +1547,7 @@ document.getElementById('guardarModalidadBtn').addEventListener('click', () => {
   })
   .then(json => {
     console.log('Guardado con éxito:', json);
+    ModalidadOpen = true;
     // acá podés mostrar un mensaje al usuario, limpiar campos o actualizar UI
   })
   .catch(err => {
