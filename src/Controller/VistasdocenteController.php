@@ -493,66 +493,71 @@ public function actualizarAlumnos(
     }
 
                 
-    #[Route('/newcalendario', name: 'newcalendario', methods: ['POST'])]
+#[Route('/newcalendario', name: 'newcalendario', methods: ['POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
+{
+    $data = json_decode($request->getContent(), true);
 
-        if (!$data) {
-            return $this->json(['error' => 'No se recibió un JSON válido'], 400);
+    if (!$data) {
+        return $this->json(['error' => 'No se recibió un JSON válido'], 400);
+    }
+
+    if (!isset($data['modalidad'], $data['curso'], $data['fecha'])) {
+        return $this->json(['error' => 'Faltan datos requeridos'], 400);
+    }
+
+    $zona = new \DateTimeZone('America/Argentina/Buenos_Aires');
+
+    try {
+        // Crear la fecha con zona horaria Argentina y hora fija a 00:00:00
+        $fecha = \DateTimeImmutable::createFromFormat('Y-m-d', $data['fecha'], $zona);
+        if (!$fecha) {
+            return $this->json(['error' => 'Fecha no válida'], 400);
         }
-
-        if (!isset($data['modalidad'], $data['curso'], $data['fecha'])) {
-            return $this->json(['error' => 'Faltan datos requeridos'], 400);
-        }
-
-        try {
-    $fecha = \DateTime::createFromFormat('Y-m-d', $data['fecha']);
-    if (!$fecha) {
+        $fecha = $fecha->setTime(0, 0, 0);
+    } catch (\Exception $e) {
         return $this->json(['error' => 'Fecha no válida'], 400);
     }
-} catch (\Exception $e) {
-    return $this->json(['error' => 'Fecha no válida'], 400);
+
+    // Verificar si ya existe un calendario para ese curso y fecha
+    $calendarioExistente = $entityManager
+        ->getRepository(\App\Entity\CalendarioClase::class)
+        ->findByFechaAndCurso($fecha, (int)$data['curso']);
+
+    if ($calendarioExistente) {
+        $calendarioClase = $calendarioExistente;
+    } else {
+        $calendarioClase = new \App\Entity\CalendarioClase();
+    }
+
+    // Buscar modalidad
+    $modalidad = $entityManager->getRepository(\App\Entity\Modalidad::class)->find($data['modalidad']);
+    if (!$modalidad) {
+        return $this->json(['error' => 'Modalidad no válida'], 400);
+    }
+
+    // Buscar curso
+    $curso = $entityManager->getRepository(\App\Entity\Curso::class)->find($data['curso']);
+    if (!$curso) {
+        return $this->json(['error' => 'Curso no válido'], 400);
+    }
+
+    // Asignar datos al objeto
+    $calendarioClase->setModalidad($modalidad);
+    $calendarioClase->setCurso($curso);
+    $calendarioClase->setFecha($fecha);
+    $calendarioClase->setObservacion($data['observacion'] ?? '');
+
+    $entityManager->persist($calendarioClase);
+    $entityManager->flush();
+
+    return $this->json([
+        'success' => true,
+        'id' => $calendarioClase->getId(),
+        'message' => $calendarioExistente ? 'Calendario actualizado' : 'Calendario creado',
+    ]);
 }
 
-        // Verificar si ya existe un calendario para ese curso y fecha
-        $calendarioExistente = $entityManager
-            ->getRepository(\App\Entity\CalendarioClase::class)
-            ->findByFechaAndCurso($fecha, (int)$data['curso']);
-
-        if ($calendarioExistente) {
-            $calendarioClase = $calendarioExistente;
-        } else {
-            $calendarioClase = new CalendarioClase();
-        }
-
-        // Buscar modalidad
-        $modalidad = $entityManager->getRepository(\App\Entity\Modalidad::class)->find($data['modalidad']);
-        if (!$modalidad) {
-            return $this->json(['error' => 'Modalidad no válida'], 400);
-        }
-
-        // Buscar curso
-        $curso = $entityManager->getRepository(\App\Entity\Curso::class)->find($data['curso']);
-        if (!$curso) {
-            return $this->json(['error' => 'Curso no válido'], 400);
-        }
-
-        // Asignar datos al objeto
-        $calendarioClase->setModalidad($modalidad);
-        $calendarioClase->setCurso($curso);
-        $calendarioClase->setFecha($fecha);
-        $calendarioClase->setObservacion($data['observacion'] ?? '');
-
-        $entityManager->persist($calendarioClase);
-        $entityManager->flush();
-
-        return $this->json([
-            'success' => true,
-            'id' => $calendarioClase->getId(),
-            'message' => $calendarioExistente ? 'Calendario actualizado' : 'Calendario creado',
-        ]);
-    }
 
 
 

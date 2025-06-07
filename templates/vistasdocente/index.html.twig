@@ -1495,6 +1495,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+function obtenerFechaLocal() {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0'); // Mes empieza en 0
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 document.getElementById('guardarModalidadBtn').addEventListener('click', () => {
   // Obtener modalidad seleccionada y convertir a id
   const modalidadTexto = document.querySelector('input[name="modalidad"]:checked').value;
@@ -1506,15 +1514,15 @@ document.getElementById('guardarModalidadBtn').addEventListener('click', () => {
   // Variable que ya tenés con el curso seleccionado
   const cursoId = selectedCursoId;
 
-  // Armar el cuerpo para enviar
+  // Armar el cuerpo para enviar con fecha local
   const data = {
     modalidad: modalidadId,
     curso: cursoId,
     observacion: observacion || null,
-    fecha: new Date().toISOString().split('T')[0] // fecha actual en formato YYYY-MM-DD
+    fecha: obtenerFechaLocal() // aquí pasamos la fecha local en formato YYYY-MM-DD
   };
 
-// Enviar la solicitud POST a Symfony
+  // Enviar la solicitud POST a Symfony
   fetch('/local/public/index.php/newcalendario', {
     method: 'POST',
     headers: {
@@ -1536,7 +1544,6 @@ document.getElementById('guardarModalidadBtn').addEventListener('click', () => {
     // mostrar mensaje de error en UI si querés
   });
 });
-
 //
 
         </script>

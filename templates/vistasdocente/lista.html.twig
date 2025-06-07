@@ -73,11 +73,13 @@ async function cargarDatos() {
             theadRow.removeChild(theadRow.lastChild);
         }
 
-        // Agregar encabezados de fecha
+        // Agregar encabezados de fecha con día/mes
         fechas.forEach(fechaObj => {
             const th = document.createElement('th');
-            const dia = new Date(fechaObj.fecha).getDate();
-            th.textContent = dia;
+            const partes = fechaObj.fecha.split('-');
+            const dia = parseInt(partes[2], 10);
+            const mes = parseInt(partes[1], 10);
+            th.textContent = `${dia}/${mes}`;
             theadRow.appendChild(th);
         });
 
@@ -119,6 +121,7 @@ async function cargarDatos() {
 // Ejecutar al cargar la página
 cargarDatos();
 </script>
+
 
 
 {% endblock %}
