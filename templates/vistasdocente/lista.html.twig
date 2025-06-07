@@ -41,12 +41,12 @@ const cursoId = {{ curso.id }};
 const theadRow = document.querySelector('#fechas-header');
 const tbody = document.querySelector('#EstadisticasModal tbody');
 
-// Opciones para select
 const opciones = {
-    'P': 'Presente',
-    'A': 'Ausente',
-    'M': 'Media falta',
-    'J': 'Justificada'
+    'Presente': 'Presente',
+    'Ausente': 'Ausente',
+    'Media falta': 'Media falta',
+    'Justificada': 'Justificada',
+    'No marcado': 'No marcado'
 };
 
 function crearSelect(valorSeleccionado) {
@@ -63,53 +63,45 @@ function crearSelect(valorSeleccionado) {
 
 async function cargarDatos() {
     try {
-        // 1) Traer todas las fechas del calendario
+        // 1) Traer fechas del calendario
         const resFechas = await fetch(`/local/public/index.php/api/calendario-fechas/${cursoId}`);
         if (!resFechas.ok) throw new Error('Error al obtener fechas');
         const fechas = await resFechas.json();
 
-        // Limpiar columnas de fechas en el thead (dejamos solo Nombre y Apellido)
+        // Limpiar columnas de fechas (dejamos solo nombre/apellido)
         while (theadRow.children.length > 2) {
             theadRow.removeChild(theadRow.lastChild);
         }
 
-        // Agregar th con las fechas
+        // Agregar encabezados de fecha
         fechas.forEach(fechaObj => {
             const th = document.createElement('th');
-            // Mostrar solo el día (por ej: 25) o formatear como quieras
             const dia = new Date(fechaObj.fecha).getDate();
             th.textContent = dia;
             theadRow.appendChild(th);
         });
 
-        // 2) Traer alumnos y asistencias
-        const resAlumnos = await fetch(`/local/public/index.php/actualizaralumnos/${cursoId}`);
-        if (!resAlumnos.ok) throw new Error('Error al obtener alumnos');
-        const data = await resAlumnos.json();
+        // 2) Traer datos de alumnos con asistencias por fecha
+        const resAlumnos = await fetch(`/local/public/index.php/api/asistencias-por-fecha/${cursoId}`);
+        if (!resAlumnos.ok) throw new Error('Error al obtener asistencias de alumnos');
+        const alumnos = await resAlumnos.json();
 
-        tbody.innerHTML = ''; // Limpiar tabla
+        tbody.innerHTML = ''; // Limpiar
 
-        // Por cada alumno
-        data.data.forEach(alumno => {
+        alumnos.forEach(alumno => {
             const tr = document.createElement('tr');
 
             // Nombre y apellido
             tr.innerHTML = `<td>${alumno.nombre}</td><td>${alumno.apellido}</td>`;
 
-            // Por cada fecha, crear celda con select
             fechas.forEach(fechaObj => {
                 const td = document.createElement('td');
 
-                // Aquí deberías buscar la asistencia de ese alumno para esa fecha,
-                // por ejemplo suponiendo que "alumno.asistencias" es un array con objetos {fecha: 'YYYY-MM-DD', asistencia: 'P'|'A'|...}
+                let asistenciaValor = 'No marcado';
 
-                let asistenciaValor = ''; // default sin selección
-
-                if (alumno.asistencias) {
-                    const asistenciaParaFecha = alumno.asistencias.find(a => a.fecha === fechaObj.fecha);
-                    if (asistenciaParaFecha) {
-                        asistenciaValor = asistenciaParaFecha.asistencia;
-                    }
+                const asistenciaParaFecha = alumno.asistencias.find(a => a.fecha === fechaObj.fecha);
+                if (asistenciaParaFecha) {
+                    asistenciaValor = asistenciaParaFecha.asistencia || 'No marcado';
                 }
 
                 const select = crearSelect(asistenciaValor);

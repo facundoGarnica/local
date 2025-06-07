@@ -507,10 +507,13 @@ public function new(Request $request, EntityManagerInterface $entityManager): Js
         }
 
         try {
-            $fecha = new \DateTime($data['fecha']);
-        } catch (\Exception $e) {
-            return $this->json(['error' => 'Fecha no válida'], 400);
-        }
+    $fecha = \DateTime::createFromFormat('Y-m-d', $data['fecha']);
+    if (!$fecha) {
+        return $this->json(['error' => 'Fecha no válida'], 400);
+    }
+} catch (\Exception $e) {
+    return $this->json(['error' => 'Fecha no válida'], 400);
+}
 
         // Verificar si ya existe un calendario para ese curso y fecha
         $calendarioExistente = $entityManager
@@ -588,6 +591,59 @@ public function getFechasCalendario(int $cursoId, CalendarioClaseRepository $rep
 
     return $this->json($fechasFormateadas);
 }
+#[Route('/api/asistencias-por-fecha/{cursoId}', name: 'asistencias_por_fecha', methods: ['GET'])]
+public function asistenciasPorFecha(
+    int $cursoId,
+    CursoRepository $cursoRepo,
+    CursadaRepository $cursadaRepo,
+    CalendarioClaseRepository $calendarioRepo
+): JsonResponse {
+    $curso = $cursoRepo->find($cursoId);
+    if (!$curso) {
+        return $this->json(['error' => 'Curso no encontrado'], 404);
+    }
+
+    $cursadas = $cursadaRepo->findBy(['curso' => $curso]);
+
+    // ✅ Corregido: el campo es "Fecha", no "fecha"
+    $calendarios = $calendarioRepo->findBy(['Curso' => $curso], ['Fecha' => 'ASC']);
+
+    $data = [];
+
+    foreach ($cursadas as $cursada) {
+        $alumno = $cursada->getAlumno();
+        $persona = $alumno ? $alumno->getPersona() : null;
+
+        $asistenciasPorFecha = [];
+
+        foreach ($calendarios as $calendario) {
+            $asistencia = null;
+            foreach ($cursada->getAsistencias() as $a) {
+                if ($a->getCalendarioClase() && $a->getCalendarioClase()->getId() === $calendario->getId()) {
+                    $asistencia = $a;
+                    break;
+                }
+            }
+
+            $asistenciasPorFecha[] = [
+                'fecha' => $calendario->getFecha()->format('Y-m-d'),
+                'asistencia' => $asistencia ? $asistencia->getAsistencia() : 'No marcado',
+                'observacion' => $asistencia ? $asistencia->getObservacion() : '',
+            ];
+        }
+
+        $data[] = [
+            'id' => $cursada->getId(),
+            'nombre' => $persona ? $persona->getNombre() : 'Sin nombre',
+            'apellido' => $persona ? $persona->getApellido() : 'Sin apellido',
+            'dni' => $persona ? $persona->getDniPasaporte() : 'Sin DNI',
+            'asistencias' => $asistenciasPorFecha,
+        ];
+    }
+
+    return $this->json($data);
+}
+
 
     #[Route('/lista/{curso_id}', name: 'app_lista')]
     public function listaAsistencia(int $curso_id, CursoRepository $cursoRepository): Response
